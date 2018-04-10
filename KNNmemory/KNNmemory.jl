@@ -1,8 +1,8 @@
 # NOT FINISHED!
 mutable struct KNNmemory
-    M::Array{AbstractFloat, 2}
-    V::Array{Integer, 1}
-    A::Array{Integer, 1}
+    M::Array{Float64, 2}
+    V::Array{Int64, 1}
+    A::Array{Int64, 1}
     k::Integer
     α::Real
 
@@ -71,6 +71,7 @@ function memoryLoss(memory::KNNmemory, q::AbstractArray{Float64, 1}, nearestPosi
 end
 
 function memoryUpdate(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer, nearestNeighbourID::Integer)
+    q = Flux.Tracker.data(q)
     if memory.V[nearestNeighbourID] == v
         memory.M[nearestNeighbourID, :] = (q + memory.M[nearestNeighbourID, :]) / norm((q + memory.M[nearestNeighbourID, :]))
         memory.A[nearestNeighbourID] = 0
@@ -102,22 +103,22 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 2}, v::Array{I
     # Find k nearest neighbours and compute losses
     batchSize = size(q, 2)
     similarity = memory.M * q
-    loss = zeros(Flux.Tracker.TrackedReal{Float64}, batchSize)
+    loss::Flux.Tracker.TrackedReal{Float64} = 0.
     nearestNeighbourIDs = zeros(Integer, batchSize)
 
-    @parallel for i in 1:batchSize
+    for i in 1:batchSize
         kLargestIDs = selectperm(similarity[:, i], 1:memory.k, rev = true)
         nearestNeighbourIDs[i] = kLargestIDs[1];
-        loss[i] = memoryLoss(memory, q[:, i], findNearestPositiveAndNegative(memory, kLargestIDs, v[i]))
+        loss = loss + memoryLoss(memory, q[:, i], findNearestPositiveAndNegative(memory, kLargestIDs, v[i]))
     end
 
     # Memory update - cannot be done above because we have to compute all losses before changing the memory
-    @parallel for i in 1:batchSize
+    for i in 1:batchSize
         memoryUpdate(memory, q[:, i], v[i], nearestNeighbourIDs[i])
     end
 
     # Update the age of all items
     memory.A = memory.A + 1;
 
-    return loss
+    return loss / batchSize
 end

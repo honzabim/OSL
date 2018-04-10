@@ -29,12 +29,30 @@ dataset = repeated((X, Y), 100)
 evalcb = () -> @show(loss(X, Y))
 opt = ADAM(params(m))
 
-Flux.train!(loss, dataset, opt, cb = throttle(evalcb, 10))
+iterations = 1000
+batchSize = 100
+
+for i in 1:iterations
+    # sample from data
+    batchIndeces = rand(1:size(X, 2),batchSize)
+    x = X[:, batchIndeces];
+    y = Y[batchIndeces];
+
+    # gradient computation and update
+    l = loss(x, y)
+    if i % 10 == 0
+        print(l)
+    end
+    Flux.Tracker.back!(l)
+    opt()
+end
+
+# Flux.train!(loss, dataset, opt, cb = throttle(evalcb, 10))
 
 accuracy(X, Y)
 
 # Test set accuracy
 tX = hcat(float.(reshape.(MNIST.images(:test), :))...)
-tY = onehotbatch(MNIST.labels(:test), 0:9)
+tY = MNIST.labels(:test)
 
 accuracy(tX, tY)
