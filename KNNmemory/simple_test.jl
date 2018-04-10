@@ -1,4 +1,5 @@
-include("KNNmemory.jl")
+push!(LOAD_PATH, pwd())
+using KNNmem
 
 function twoSpirals(N::Integer = 2000, degrees = 570, start = 90, noise = 0.2)
     # Generate "two spirals" dataset with N instances.
@@ -52,7 +53,7 @@ end
 
 points = [points norms]
 
-scatter(points[:, 1], points[:, 2], group=labels)
+#scatter(points[:, 1], points[:, 2], group=labels)
 
 mem = KNNmemory(5, 3, 5, 2);
 

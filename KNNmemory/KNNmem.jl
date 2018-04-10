@@ -20,15 +20,11 @@ mutable struct KNNmemory
         A = zeros(Int64, memorySize)
 
         for i = 1:memorySize
-            M[i,:] = normalise(M[i,:])
+            M[i,:] = normalize(M[i,:])
         end
 
         new(M, V, A, k > memorySize ? memorySize : k, α)
     end
-end
-
-function normalise(vec)
-    normalisedVec = vec / nomr(vec)
 end
 
 # Partitions the list l into chunks of the length n
@@ -92,7 +88,7 @@ function memoryUpdate(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Intege
 
     # If the memory return the correct value for the given key, update the centroid
     if memory.V[nearestNeighbourID] == v
-        memory.M[nearestNeighbourID, :] = normalise(q + memory.M[nearestNeighbourID, :])
+        memory.M[nearestNeighbourID, :] = normalize(q + memory.M[nearestNeighbourID, :])
         memory.A[nearestNeighbourID] = 0
 
     # If the memory did not return the correct value for the given key, store the key-value pair instead of the oldest element
