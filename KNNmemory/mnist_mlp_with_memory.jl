@@ -2,7 +2,8 @@ using Flux, Flux.Data.MNIST
 using Flux: onehotbatch, argmax, crossentropy, throttle
 using Base.Iterators: repeated
 
-include("KNNmemory.jl")
+push!(LOAD_PATH, pwd())
+using KNNmem
 
 # Classify MNIST digits with a simple multi-layer-perceptron
 
@@ -32,6 +33,8 @@ opt = ADAM(params(m))
 iterations = 1000
 batchSize = 100
 
+accuracy(X, Y)
+
 for i in 1:iterations
     # sample from data
     batchIndeces = rand(1:size(X, 2),batchSize)
@@ -41,7 +44,7 @@ for i in 1:iterations
     # gradient computation and update
     l = loss(x, y)
     if i % 10 == 0
-        print(l)
+        println(l)
     end
     Flux.Tracker.back!(l)
     opt()
