@@ -83,6 +83,11 @@ function memoryUpdate(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Intege
     end
 end
 
+# Update the age of all items
+function increaseMemoryAge(memory::KNNmemory) 
+    memory.A = memory.A + 1;
+end
+
 function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer)
     # Find k nearest neighbours
     similarity = memory.M * q
@@ -92,9 +97,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer
 
     loss = memoryLoss(memory, q, findNearestPositiveAndNegative(memory, kLargestIDs, v))
     memoryUpdate(memory, q, v, n1)
-
-    # Update the age of all items
-    memory.A = memory.A + 1;
+    increaseMemoryAge(memory)
 
     return loss
 end
@@ -116,9 +119,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 2}, v::Array{I
     for i in 1:batchSize
         memoryUpdate(memory, q[:, i], v[i], nearestNeighbourIDs[i])
     end
-
-    # Update the age of all items
-    memory.A = memory.A + 1;
+    increaseMemoryAge(memory)
 
     return loss / batchSize
 end
