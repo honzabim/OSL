@@ -29,7 +29,7 @@ reconstructionError(x) = Flux.mse(model(x), x)
 loss(x, y) = reconstructionError(x) + β * trainQuery!(memory, encoder(x), y)
 opt = ADAM(params(model))
 
-iterations = 10000
+iterations = 1000
 batchSize = 1000
 
 for i in 1:iterations
