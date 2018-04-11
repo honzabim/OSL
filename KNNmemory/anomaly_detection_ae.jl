@@ -1,4 +1,5 @@
 using Flux
+using MLBase: roc, correctrate, precision, recall, f1score, false_positive_rate, false_negative_rate
 
 push!(LOAD_PATH, pwd(), "/home/jan/dev/anomaly detection/anomaly_detection/src", "/home/jan/dev/FluxExtensions.jl/src")
 using KNNmem
@@ -24,10 +25,11 @@ model = Chain(encoder, decoder)
 
 memory = KNNmemory(memorySize, zSize, k, 2)
 
-loss(x, y) = Flux.mse(model(x), x) + β * trainQuery!(memory, encoder(x), y)
+reconstructionError(x) = Flux.mse(model(x), x)
+loss(x, y) = reconstructionError(x) + β * trainQuery!(memory, encoder(x), y)
 opt = ADAM(params(model))
 
-iterations = 1000
+iterations = 10000
 batchSize = 1000
 
 for i in 1:iterations
@@ -44,3 +46,13 @@ for i in 1:iterations
     Flux.Tracker.back!(l)
     opt()
 end
+
+println("Reconstruction err: $(reconstructionError(test.data))")
+
+rocData = roc(test.labels, query(memory, encoder(test.data)))
+print(rocData)
+print("precision: $(precision(rocData))\n")
+print("f1score: $(f1score(rocData))\n")
+print("recall: $(recall(rocData))\n")
+print("false positive rate: $(false_positive_rate(rocData))\n")
+print("equal error rate: $((false_positive_rate(rocData) + false_negative_rate(rocData))/2)\n")
