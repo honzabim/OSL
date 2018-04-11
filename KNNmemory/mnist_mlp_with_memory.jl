@@ -31,7 +31,7 @@ evalcb = () -> @show(loss(X, Y))
 opt = ADAM(params(m))
 
 iterations = 1000
-batchSize = 1000
+batchSize = 100
 
 accuracy(X, Y)
 

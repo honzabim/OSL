@@ -16,7 +16,7 @@ mutable struct KNNmemory
 
     function KNNmemory(memorySize::Integer, keySize::Integer, k::Integer, labelCount::Integer, α::Float64 = 0.1)
         M = rand(Float64, memorySize, keySize)
-        V = rand(1:labelCount, memorySize)
+        V = rand(0:(labelCount - 1), memorySize)
         A = zeros(Int64, memorySize)
 
         for i = 1:memorySize
