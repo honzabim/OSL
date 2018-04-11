@@ -18,7 +18,7 @@ Y = labels
 
 m = Chain(
   Dense(28^2, 32, relu),
-  Dense(32, 10))
+  Dense(32, 10, tanh))
 
 memory = KNNmemory(1000, 10, 256, 10)
 
@@ -31,7 +31,7 @@ evalcb = () -> @show(loss(X, Y))
 opt = ADAM(params(m))
 
 iterations = 1000
-batchSize = 100
+batchSize = 1000
 
 accuracy(X, Y)
 

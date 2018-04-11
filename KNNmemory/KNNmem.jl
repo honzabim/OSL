@@ -79,22 +79,23 @@ end
 memoryLoss(memory::KNNmemory, q::AbstractArray{Float64, 1}, nearestPosAndNegIDs::Tuple) = memoryLoss(memory, q, nearestPosAndNegIDs...)
 
 function memoryLoss(memory::KNNmemory, q::AbstractArray{Float64, 1}, nearestPositiveID::Integer, nearestNegativeID::Integer)
-    loss = max(dot(q, memory.M[nearestNegativeID, :]) - dot(q, memory.M[nearestPositiveID, :]) + memory.α, 0)
+    normalizedQ = normalize(Flux.Tracker.data(q))
+    loss = max(dot(normalizedQ, memory.M[nearestNegativeID, :]) - dot(normalizedQ, memory.M[nearestPositiveID, :]) + memory.α, 0)
 end
 
 # function that computes the appropriate update of the memory after a key-value pair was lookedup in it
-function memoryUpdate(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer, nearestNeighbourID::Integer)
-    q = Flux.Tracker.data(q)
+function memoryUpdate!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer, nearestNeighbourID::Integer)
+    normalizedQ = normalize(Flux.Tracker.data(q))
 
     # If the memory return the correct value for the given key, update the centroid
     if memory.V[nearestNeighbourID] == v
-        memory.M[nearestNeighbourID, :] = normalize(q + memory.M[nearestNeighbourID, :])
+        memory.M[nearestNeighbourID, :] = normalize(normalizedQ + memory.M[nearestNeighbourID, :])
         memory.A[nearestNeighbourID] = 0
 
     # If the memory did not return the correct value for the given key, store the key-value pair instead of the oldest element
     else
         oldestElementID = indmax(memory.A + rand(1:5))
-        memory.M[oldestElementID, :] = q
+        memory.M[oldestElementID, :] = normalizedQ
         memory.V[oldestElementID] = v
         memory.A[oldestElementID] = 0
     end
@@ -114,7 +115,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer
     nearestNeighbour = memory.V[n1]
 
     loss = memoryLoss(memory, q, findNearestPositiveAndNegative(memory, kLargestIDs, v))
-    memoryUpdate(memory, q, v, n1)
+    memoryUpdate!(memory, q, v, n1)
     increaseMemoryAge(memory)
 
     return loss
@@ -136,7 +137,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 2}, v::Array{I
 
     # Memory update - cannot be done above because we have to compute all losses before changing the memory
     for i in 1:batchSize
-        memoryUpdate(memory, q[:, i], v[i], nearestNeighbourIDs[i])
+        memoryUpdate!(memory, q[:, i], v[i], nearestNeighbourIDs[i])
     end
     increaseMemoryAge(memory)
 
