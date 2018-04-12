@@ -8,7 +8,7 @@ using AnomalyDetection
 dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
-dataset = allData["abalone"]
+dataset = allData["pendigits"]
 train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.8, "easy", 0.05, "high")
 
 inputSize = size(train.data, 1)
