@@ -9,7 +9,7 @@ dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
 dataset = allData["pendigits"]
-train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.8, "easy", 0.05, "high")
+train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.9, "normal", 0.05, "high")
 
 inputSize = size(train.data, 1)
 zSize = 10 # size of the encoding vector
