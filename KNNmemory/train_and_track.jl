@@ -1,7 +1,7 @@
 using Flux
 using ValueHistories
 
-function trainAndTrack!(loss, optimizer, iterations::Integer, batchSize::Integer, trainData::AbstractArray, trainLabels::AbstractArray, testData::AbstractArray, testLabels::AbstractArray, printInterationCount = 100)
+function trainAndTrack!(loss, performance, optimizer, iterations::Integer, batchSize::Integer, trainData::AbstractArray, trainLabels::AbstractArray, testData::AbstractArray, testLabels::AbstractArray, printInterationCount = 100)
     history = MVHistory()
     storedLoss = 0.
 
@@ -18,8 +18,8 @@ function trainAndTrack!(loss, optimizer, iterations::Integer, batchSize::Integer
             println(Flux.Tracker.data(l))
 
             # store to memory
-            push!(history, :train, i, storedLoss / printInterationCount)
-            push!(history, :test, i, Flux.Tracker.data(loss(testData, testLabels)))
+            push!(history, :trainLoss, i, storedLoss / printInterationCount)
+            push!(history, :performance, i, Flux.Tracker.data(performance(testData, testLabels)))
             storedLoss = 0.
         end
         Flux.Tracker.back!(l)
