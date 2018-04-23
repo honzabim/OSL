@@ -1,7 +1,7 @@
 using Flux
 
 push!(LOAD_PATH, pwd())
-using KNNmemory
+using KNNmem
 
 const DEFAULT_LABEL = 0
 
@@ -17,13 +17,11 @@ end
 
 reconstructionError(ae::AutoencoderWithMemory, x) = Flux.mse(ae.decoder(ae.encoder(x)), x)
 memoryTrainQuery(ae::AutoencoderWithMemory, data, label) = trainQuery!(ae.memory, ae.encoder(data), label)
-learnAnomaly(ae::AutoencoderWithMemory, data, label, β) = reconstructionError(ae, data) + β * trainQuery!(ae.memory, ae.encoder(data), label)
-memoryClassify(ae::AutoencoderWithMemory, x) = query(ae, ae.encoder(x))
+learnAnomaly(ae::AutoencoderWithMemory, data, label, β = 0.5) = reconstructionError(ae, data) + β * trainQuery!(ae.memory, ae.encoder(data), label)
+memoryClassify(ae::AutoencoderWithMemory, x) = query(ae.memory, ae.encoder(x))
 
 function learnRepresentation(ae::AutoencoderWithMemory, x)
     latentVariable = ae.encoder(x)
     trainQuery!(ae.memory, latentVariable, DEFAULT_LABEL)
     return Flux.mse(ae.decoder(latentVariable))
 end
-
-
