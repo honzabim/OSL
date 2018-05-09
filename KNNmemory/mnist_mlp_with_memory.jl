@@ -3,7 +3,7 @@ using Flux: onehotbatch, argmax, crossentropy, throttle
 using Base.Iterators: repeated
 using FluxExtensions
 
-push!(LOAD_PATH, pwd())
+push!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory")
 using KNNmem
 
 imgs = MNIST.images()
@@ -11,11 +11,10 @@ X = hcat(float.(reshape.(imgs, :))...)
 
 labels = MNIST.labels()
 Y = labels
-oneHotY = Flux.onehot(Y, 0:9) # for softmax
 
 tX = hcat(float.(reshape.(MNIST.images(:test), :))...)
 tY = MNIST.labels(:test)
-oneHotTY = Flux.onehot(tY, 0:9);
+#oneHotTY = Flux.onehot(tY, 0:9);
 
 # Classify MNIST digits with a simple multi-layer-perceptron
 
@@ -35,7 +34,10 @@ m = Chain(
 memory = KNNmemory(1000, 10, 256, 10)
 
 loss(x, y) = trainQuery!(memory, m(x), y)
-accuracy(x, y) = mean(query(memory, m(x)) .== y)
+function accuracy(x, y)
+    (vals, _) = query(memory, m(x))
+    mean(vals .== y)
+end
 
 opt = ADAM(params(m))
 

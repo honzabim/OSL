@@ -1,7 +1,7 @@
 using Flux
 using MLBase: roc, correctrate, precision, recall, f1score, false_positive_rate, false_negative_rate
 
-push!(LOAD_PATH, pwd(), "/home/jan/dev/anomaly detection/anomaly_detection/src", "/home/jan/dev/FluxExtensions.jl/src")
+push!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory", "/home/jan/dev/anomaly detection/anomaly_detection/src", "/home/jan/dev/FluxExtensions.jl/src")
 using KNNmem
 using AnomalyDetection
 
@@ -9,7 +9,7 @@ dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
 dataset = allData["pendigits"]
-train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.9, "normal", 0.05, "high")
+train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.9, "easy", 0.05, "high")
 
 inputSize = size(train.data, 1)
 zSize = 10 # size of the encoding vector
@@ -49,7 +49,8 @@ end
 
 println("Reconstruction err: $(reconstructionError(test.data))")
 
-rocData = roc(test.labels, query(memory, encoder(test.data)))
+(labels, probs) = query(memory, encoder(test.data))
+rocData = roc(test.labels, labels)
 print(rocData)
 print("precision: $(precision(rocData))\n")
 print("f1score: $(f1score(rocData))\n")

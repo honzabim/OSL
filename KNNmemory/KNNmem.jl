@@ -30,16 +30,12 @@ end
 # Partitions the list l into chunks of the length n
 partition(list, n) = [list[i:min(i + n - 1,length(list))] for i in 1:n:length(list)]
 
-
-# This particular version of the query is not the most efficient, however, since it is only used for evaluation and
-# not training it seemed reasonable (computes the similarity n times for n queries instead of one big matrix multiplication)
-query(memory::KNNmemory, q::AbstractArray{Float64, 2}) = map(x -> query(memory, x), partition(q, size(q, 1)))
-
 # query just returns the nearest neighbour's value for a given key q
-function query(memory::KNNmemory, q::AbstractArray{Float64, 1})
-    similarity = memory.M * q
-    largestID = indmax(similarity)
-    return memory.V[largestID]
+function query(memory::KNNmemory, q::AbstractArray{Float64, N} where N)
+    similarity = memory.M * normalizeQuery(Flux.Tracker.data(q))
+    values = memory.V[Flux.argmax(similarity)]
+    probabilities = maximum(softmax(similarity), 1)
+    return values, probabilities
 end
 
 # For given set of k nearest neighbours, find the closest that has the same label and a different label
@@ -65,6 +61,7 @@ function findNearestPositiveAndNegative(memory::KNNmemory, kLargestIDs::Array{In
 
         We also assume that this won't happen very often, otherwise,
         we would need to randomize this selection (possible TODO) =#
+
     if nearestPositiveID == nothing
         nearestPositiveID = indmax(memory.V .== v)
     end
@@ -81,23 +78,24 @@ memoryLoss(memory::KNNmemory, q::AbstractArray{Float64, 1}, nearestPosAndNegIDs:
 # The inbuild function normalize() does not work with tracked vectors, this one does
 trackedNormalize(x) = x / norm(x)
 
+# Normalizes all queries in the matrix separately by converting it into an array of arrays
+normalizeQuery(q) = hcat((trackedNormalize.([q[:, i] for i in 1:size(q, 2)]))...)
+
 function memoryLoss(memory::KNNmemory, q::AbstractArray{Float64, 1}, nearestPositiveID::Integer, nearestNegativeID::Integer)
     loss = max(dot(trackedNormalize(q), memory.M[nearestNegativeID, :]) - dot(trackedNormalize(q), memory.M[nearestPositiveID, :]) + memory.α, 0)
 end
 
-# function that computes the appropriate update of the memory after a key-value pair was lookedup in it
+# function that computes the appropriate update of the memory after a key-value pairpush!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory", "/home/jan/dev/anomaly detection/anomaly_detection/src") was lookedup in it
 function memoryUpdate!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer, nearestNeighbourID::Integer)
-    normalizedQ = normalize(Flux.Tracker.data(q)) # here we want to save just the numbers - no need to have the tracked data
-
     # If the memory return the correct value for the given key, update the centroid
     if memory.V[nearestNeighbourID] == v
-        memory.M[nearestNeighbourID, :] = normalize(normalizedQ + memory.M[nearestNeighbourID, :])
+        memory.M[nearestNeighbourID, :] = normalize(q + memory.M[nearestNeighbourID, :])
         memory.A[nearestNeighbourID] = 0
 
     # If the memory did not return the correct value for the given key, store the key-value pair instead of the oldest element
     else
         oldestElementID = indmax(memory.A + rand(1:5))
-        memory.M[oldestElementID, :] = normalizedQ
+        memory.M[oldestElementID, :] = q
         memory.V[oldestElementID] = v
         memory.A[oldestElementID] = 0
     end
@@ -108,26 +106,13 @@ function increaseMemoryAge(memory::KNNmemory)
     memory.A = memory.A + 1;
 end
 
-# Query that results in a change of the memory and a loss value
-function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 1}, v::Integer)
-    # Find k nearest neighbours
-    similarity = memory.M * q
-    kLargestIDs = selectperm(similarity, 1:memory.k, rev = true)
-    n1 = kLargestIDs[1]
-    nearestNeighbour = memory.V[n1]
-
-    loss = memoryLoss(memory, q, findNearestPositiveAndNegative(memory, kLargestIDs, v))
-    memoryUpdate!(memory, q, v, n1)
-    increaseMemoryAge(memory)
-
-    return loss
-end
-
+trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, N} where N, v::Int64) = trainQuery!(memory, q, [v])
 # Batch version of the trainQuery
-function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 2}, v::Array{Int64, 1})
+function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, N} where N, v::Array{Int64, 1})
     # Find k nearest neighbours and compute losses
     batchSize = size(q, 2)
-    similarity = memory.M * q # computes all similarities of all qs and all keys in the memory at once
+    normalizedQuery = normalizeQuery(Flux.Tracker.data(q))
+    similarity = memory.M * normalizedQuery # computes all similarities of all qs and all keys in the memory at once
     loss::Flux.Tracker.TrackedReal{Float64} = 0. # loss must be tracked; otherwise flux cannot use it
     nearestNeighbourIDs = zeros(Integer, batchSize)
 
@@ -139,7 +124,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, 2}, v::Array{I
 
     # Memory update - cannot be done above because we have to compute all losses before changing the memory
     for i in 1:batchSize
-        memoryUpdate!(memory, q[:, i], v[i], nearestNeighbourIDs[i])
+        memoryUpdate!(memory, normalizedQuery[:, i], v[i], nearestNeighbourIDs[i])
     end
     increaseMemoryAge(memory)
 

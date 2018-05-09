@@ -4,7 +4,7 @@ using Base.Iterators: repeated
 using FluxExtensions
 using MLBase: roc, correctrate, precision, recall, f1score, false_positive_rate, false_negative_rate
 
-push!(LOAD_PATH, ".", "/home/jan/dev/anomaly detection/anomaly_detection/src")
+push!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory", "/home/jan/dev/anomaly detection/anomaly_detection/src")
 using KNNmem
 using AnomalyDetection
 
@@ -83,7 +83,8 @@ for i in anomaliesIDs
 
     # test how well it got it
     print("\n\nAnomalies seen: $anomalyCounter \n")
-    rocData = roc(test.labels, memoryClassify(ae, test.data))
+    (values, probs) = memoryClassify(ae, test.data)
+    rocData = roc(test.labels, values)
     print(rocData)
     print("precision: $(precision(rocData))\n")
     print("f1score: $(f1score(rocData))\n")
