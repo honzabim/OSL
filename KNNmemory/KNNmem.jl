@@ -9,7 +9,7 @@ export KNNmemory, query, trainQuery!
 
 mutable struct KNNmemory
     M::Array{Float64, 2} # keys in the memory
-    V::Array{Int64, 1} # values in the memory
+    V::Array{Int64, 1} # values in the memory (labels)
     A::Array{Int64, 1} # age of a given key-value pair
     k::Integer # number of neighbors used in kNN
     α::Real # parameter setting the required distance between the nearest positive and negative sample in the kNN
@@ -27,9 +27,6 @@ mutable struct KNNmemory
     end
 end
 
-# Partitions the list l into chunks of the length n
-partition(list, n) = [list[i:min(i + n - 1,length(list))] for i in 1:n:length(list)]
-
 # query just returns the nearest neighbour's value for a given key q
 function query(memory::KNNmemory, q::AbstractArray{Float64, N} where N)
     similarity = memory.M * normalizeQuery(Flux.Tracker.data(q))
@@ -38,7 +35,7 @@ function query(memory::KNNmemory, q::AbstractArray{Float64, N} where N)
     return values, probabilities
 end
 
-# For given set of k nearest neighbours, find the closest that has the same label and a different label
+# For given set of k nearest neighbours, find the closest two that have the same label and a different label respectively
 function findNearestPositiveAndNegative(memory::KNNmemory, kLargestIDs::Array{Int64, 1}, v::Integer)
     nearestPositiveID = nothing
     nearestNegativeID = nothing
@@ -119,7 +116,7 @@ function trainQuery!(memory::KNNmemory, q::AbstractArray{Float64, N} where N, v:
     for i in 1:batchSize
         kLargestIDs = selectperm(similarity[:, i], 1:memory.k, rev = true)
         nearestNeighbourIDs[i] = kLargestIDs[1];
-        loss = loss + memoryLoss(memory, q[:, i], findNearestPositiveAndNegative(memory, kLargestIDs, v[i]))
+        loss += memoryLoss(memory, q[:, i], findNearestPositiveAndNegative(memory, kLargestIDs, v[i]))
     end
 
     # Memory update - cannot be done above because we have to compute all losses before changing the memory
