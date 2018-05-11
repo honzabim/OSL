@@ -2,7 +2,4 @@
 *.jl.*.cov
 *.jl.mem
 deps/deps.jl
-.ipynb_checkpoints/*
-Gradient/.ipynb_checkpoints/*
-KNNmemory/.ipynb_checkpoints/*
-KNNmemory/benchmarking/.ipynb_checkpoints/*
+*-checkpoint.ipynb
