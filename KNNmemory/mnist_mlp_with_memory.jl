@@ -7,31 +7,21 @@ push!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory")
 using KNNmem
 
 imgs = MNIST.images()
-X = hcat(float.(reshape.(imgs, :))...)
+X = convert(Array{Float32}, hcat((reshape.(imgs, :))...))
+
+
 
 labels = MNIST.labels()
 Y = labels
 
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...)
+tX = convert(Array{Float32}, hcat(float.(reshape.(MNIST.images(:test), :))...))
 tY = MNIST.labels(:test)
-#oneHotTY = Flux.onehot(tY, 0:9);
 
-# Classify MNIST digits with a simple multi-layer-perceptron
-
-imgs = MNIST.images()
-# Stack images into one large batch
-X = hcat(float.(reshape.(imgs, :))...)
-
-labels = MNIST.labels()
-# One-hot-encode the labels
-#Y = onehotbatch(labels, 0:9)
-Y = labels
-
-m = Chain(
+m = Flux.adapt(Float32, Chain(
   FluxExtensions.ResDense(28^2, 32, relu),
-  FluxExtensions.ResDense(32, 10, relu))
+  FluxExtensions.ResDense(32, 10, relu)))
 
-memory = KNNmemory(1000, 10, 256, 10)
+memory = KNNmemory{Float32}(1000, 10, 256, 10)
 
 loss(x, y) = trainQuery!(memory, m(x), y)
 function accuracy(x, y)
@@ -62,11 +52,6 @@ for i in 1:iterations
 end
 
 # Flux.train!(loss, dataset, opt, cb = throttle(evalcb, 10))
-
 accuracy(X, Y)
-
-# Test set accuracy
-tX = hcat(float.(reshape.(MNIST.images(:test), :))...)
-tY = MNIST.labels(:test)
 
 accuracy(tX, tY)
