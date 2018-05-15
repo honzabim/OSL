@@ -5,7 +5,7 @@ module KNNmem
 
 using Flux
 
-export KNNmemory, query, trainQuery!
+export KNNmemory, query, trainQuery!, augmentModelWithMemory
 
 mutable struct KNNmemory{T <: Real}
     M::Matrix{T} # keys in the memory
@@ -47,7 +47,7 @@ function findNearestPositiveAndNegative(memory::KNNmemory, kLargestIDs::Vector{<
 
     #= We assume that there exists such i that memory.V[i] == v
         and also such j that memory.V[j] != v
-
+list
         We also assume that this won't happen very often, otherwise,
         we would need to randomize this selection (possible TODO) =#
 
@@ -128,4 +128,13 @@ function trainQuery!(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, v::Ve
 
     return loss / batchSize
 end
+
+function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
+    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
+    trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
+    trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
+    testQ(data) = query(memory, model(data))
+    return trainQ!, testQ, trainQOnLatent!
+end
+
 end
