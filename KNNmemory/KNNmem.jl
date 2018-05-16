@@ -69,7 +69,7 @@ function memoryLoss(memory::KNNmemory{T}, q::AbstractArray{T, 1}, nearestPositiv
 end
 
 # The inbuild function normalize() does not work with tracked vectors, this one does
-Base.normalize(v::Flux.Tracker.TrackedArray{T}) where {T <: Real} = v ./ sqrt(sum(v .^ 2) + eps(T))
+Base.normalize(v::Flux.Tracker.TrackedArray{T}) where {T <: Real} = v ./ (sqrt(sum(v .^ 2) + eps(T)))
 
 # Normalizes all queries in the matrix separately by converting it into an array of arrays
 normalizeQuery(q) = hcat((normalize.([q[:, i] for i in 1:size(q, 2)]))...)

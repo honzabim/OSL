@@ -49,7 +49,9 @@ function runExperiment(train, test, createModel, anomalyCounts, batchSize = 100,
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
     for ac in anomalyCounts
         if ac <= size(anomalies, 2)
-            learnAnomaly!(anomalies[:, ac], 1)
+            l = learnAnomaly!(anomalies[:, ac], 1)
+            Flux.Tracker.back!(l)
+            opt()
         else
             break;
         end
@@ -68,4 +70,4 @@ train, test, clusterdness = AnomalyDetection.makeset(dataset, 0.9, "easy", 0.05,
 evaluateOneConfig = p -> runExperiment(train, test, () -> createAutoencoderModel(size(train.data, 1), p...), 1:5, 100, 10000)
 
 # inputDim (already in), hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, γ = 0.5
-results = gridSearch(evaluateOneConfig, 32, 5, [3, 4, 5], ["relu", "leakyrelu"], ["Dense", "ResDense"], [128, 256, 512, 1024], [32, 64], 2)
+results = gridSearch(evaluateOneConfig, 32, 5, 4, ["relu", "leakyrelu"], ["ResDense"], [128, 256], [32, 64], 2)
