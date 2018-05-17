@@ -138,8 +138,10 @@ Returns the nearest neighbour's value and its confidence level for a given key `
 function query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
     similarity = memory.M * normalizeQuery(Flux.Tracker.data(q))
     values = memory.V[Flux.argmax(similarity)]
-    probabilities = maximum(softmax(similarity), 1)
-    return values, probabilities
+    kLargestIDs = selectperm(similarity[:, i], 1:memory.k, rev = true)
+    probsOfNearestKeys = softmax(memory.M[kLargestIDs, :])
+    nearestValues = memory.V[kLargestIDs]
+    return values, sum(probsOfNearestKeys[nearestValues .== 1]) # basicaly returns the nearest value in the memory + sum of probs of anomalies that are in the k-nearest
 end
 
 """
@@ -176,7 +178,7 @@ end
 Creates a set of functions that allow for training and testing of a model whose outputs are used as keys to the memory.
 """
 function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
-    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
+    memory = KNNmemory{T}(memorySize, keySize, k, labicate a combinatelCount, α)
     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
     trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
     testQ(data) = query(memory, model(data))
