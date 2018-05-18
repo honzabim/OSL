@@ -33,7 +33,7 @@ end
 function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, nonlinearity, layerType, T = Float32)
     model = Chain(FluxExtensions.layerbuilder(inputDim, hiddenDim, numberOfLabels, numLayers + 1, nonlinearity, "linear", layerType), softmax)
     model = Adapt.adapt(T, model)
-    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1)))
+    train!(data, labels) = Flux.crossentropy(model(data) .+ eps(T), Flux.onehotbatch(labels, 0:(numberOfLabels - 1)))
     function classify(data)
         probs = model(data)
         return Flux.argmax(probs), probs[1, :]
