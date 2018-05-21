@@ -126,7 +126,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = "/home/jan/dev/OSL/experiments/first/"
+outputFolder = "/home/jan/dev/OSL/experiments/first_without_ff/"
 mkpath(outputFolder)
 
 datasets = ["abalone", "breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
@@ -144,30 +144,30 @@ for (dn, df) in zip(datasets, difficulties)
 
     println("$dn $df")
 
-    # println("Running autoencoder...")
-    #
-    # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createAutoencoderModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
-    # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 1)
-    # #println(results)were
-    # results = reshape(results, length(results), 1)
-    # println(typeof(results))
-    # save(outputFolder * dn * "-autoencoder.jld2", "results", results)
-    #
-    # println("Running ff with memory...")
-    #
-    # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createFeedForwardModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
-    # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 2)
-    # #println(results)
-    # results = reshape(results, length(results), 1)
-    # println(typeof(results))
-    # save(outputFolder * dn * "-ffMem.jld2", "results", results)
+    println("Running autoencoder...")
 
-    println("Running ff...")
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createAutoencoderModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 1)
+    #println(results)were
+    results = reshape(results, length(results), 1)
+    println(typeof(results))
+    save(outputFolder * dn * "-autoencoder.jld2", "results", results)
 
-    evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
-    results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
+    println("Running ff with memory...")
+
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createFeedForwardModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 2)
     #println(results)
     results = reshape(results, length(results), 1)
     println(typeof(results))
-    save(outputFolder * dn * "-ff.jld2", "results", results)
+    save(outputFolder * dn * "-ffMem.jld2", "results", results)
+
+    # println("Running ff...")
+    #
+    # evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
+    # results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
+    # #println(results)
+    # results = reshape(results, length(results), 1)
+    # println(typeof(results))
+    # save(outputFolder * dn * "-ff.jld2", "results", results)
 end
