@@ -34,8 +34,67 @@ function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, 
     model = FluxExtensions.layerbuilder(inputDim, hiddenDim, numberOfLabels, numLayers + 1, nonlinearity, "linear", layerType)
     push!(model.layers, softmax)
     model = Adapt.adapt(T, model)
+    const size = sum(x -> sum(length(x)), params(model))
+    println(size)
 
-    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.001 * sum(x -> sum(x .^ 2), params(model))
+    function train!(data, labels)
+        if sum(isnan.(labels)) > 0
+            println("Labels were NaN")
+            exit(1)
+        end
+
+        ohb = Flux.onehotbatch(labels, 0:(numberOfLabels - 1))
+        if sum(isnan.(ohb)) > 0
+            println("Ohb was NaN")
+            exit(1)
+        end
+
+        if sum(isnan.(data)) > 0
+            println("Data contains NaN")
+            exit(1)
+        end
+
+        m = model(data)
+        if sum(isnan.(m)) > 0
+            println("Model outputs NaN")
+            showall(model)
+            x = data
+            for i in 1:length(model.layers)
+                showall(model[i])
+                println()
+                println("$i $(sum(isnan.(x)))")
+                x = model[i](x)
+            end
+            exit(1)
+        end
+
+        loss = Flux.crossentropy(m, ohb) + 0.001 * sum(x -> sum(x .^ 2), params(model))
+        if sum(isnan.(loss)) > 0
+            println("loss was NaN")
+            exit(1)
+        end
+
+        # TODO: SMAZAT !!!
+        Flux.Tracker.back!(loss)
+        #       SMAZAT !!!
+
+        # if sum(isnan.(model[1].W.grad)) > 0
+        #     println("gradient was NaN")
+        #     for i in 1:4
+        #         println("Layer $i W grad: $(model[i].W.grad)\n")
+        #         println("Layer $i b grad: $(model[i].b.grad)\n")
+        #     end
+        #     println(model[4].W.data)
+        #     println(model[4].b.data)
+        #     println(loss)
+        #     println("$(maximum(data)) $(minimum(data))")
+        #     println("$(maximum(m)) $(minimum(m))")
+        #     println("$(maximum(model[1:4](data))) $(minimum(model[1:4](data)))")
+        #     exit(1)
+        # end
+
+        return loss
+    end
 
     function classify(data)
         probs = model(data)
@@ -70,6 +129,7 @@ end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
+    println(params(model))
     opt = Flux.Optimise.ADAM(params(model), 0.0001)
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
     results = []
@@ -112,16 +172,15 @@ loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
 
-    println("$dn")
+    println("$dn $df")
 
-    # iterations = 10000
     # println("Running autoencoder...")
     #
     # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createAutoencoderModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
     # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 1)
-    # #println(results)
+    # #println(results)were
     # results = reshape(results, length(results), 1)
-    # #println(typeof(results))
+    # println(typeof(results))
     # save(outputFolder * dn * "-autoencoder.jld2", "results", results)
     #
     # println("Running ff with memory...")
@@ -130,16 +189,15 @@ for (dn, df) in zip(datasets, difficulties)
     # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 2)
     # #println(results)
     # results = reshape(results, length(results), 1)
-    # #println(typeof(results))
+    # println(typeof(results))
     # save(outputFolder * dn * "-ffMem.jld2", "results", results)
-
-    iterations = 50000
-    println("Running ff...")
+    #
+    # println("Running ff...")
 
     evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
     results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
     #println(results)
     results = reshape(results, length(results), 1)
-    #println(typeof(results))
+    println(typeof(results))
     save(outputFolder * dn * "-ff.jld2", "results", results)
 end
