@@ -35,7 +35,7 @@ function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, 
     push!(model.layers, softmax)
     model = Adapt.adapt(T, model)
 
-    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.001 * sum(x -> sum(x .^ 2), params(model))
+    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.01 * sum(x -> sum(x .^ 2), params(model))
 
     function classify(data)
         probs = model(data)
