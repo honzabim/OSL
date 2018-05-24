@@ -20,7 +20,7 @@ function processFile!(dataframe, model, dataset)
 
     for i in 1:length(results)
         for ac in 1:anomalycount
-            pars = length(results[1][1]) > 5 ? results[i][1][1:7] : vcat(results[i][1]..., missing, missing)
+            pars = length(results[1][1]) > 5 ? results[i][1][1:7] : vcat(results[i][1]..., -1, -1)
             push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
         end
     end
