@@ -7,13 +7,13 @@ const dataFolder = "/home/jan/dev/OSL/experiments/first_without_ff/"
 const datasets = ["abalone", "breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 const models = ["autoencoder", "ffMem", "ff"]
 const scores = ["f1", "auc"]
+const anomalycount = 5
 
 loadExperiment(filePath) = load(filePath)["results"]
 
 params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
 types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
-anomalycount = 5
-
+const anomalycount = 5
 function processFile!(dataframe, model, dataset)
     println("Processing $model $dataset")
     results = loadExperiment(dataFolder * dataset * "-" * model * ".jld2")
@@ -27,34 +27,45 @@ function processFile!(dataframe, model, dataset)
 end
 
 function ranks(allData, score)
-    types = [String]
+    types = [String, Int]
     foreach(d -> push!(types, Int), models)
 
-    names = [:dataset]
+    names = [:dataset, :anomaliesSeen]
     foreach(x -> push!(names, Symbol(x)), models)
 
     rnks = DataFrame(types, names, 0)
 
     for ds in datasets
-        row = Array{Any, 1}()
-        push!(row, ds)
-        scores = map(model -> getMax(allData, ds, model, score), models)
-        rnk = Array{Int}(length(models))
-        for (i, j) in enumerate(sortperm(scores, rev = true))
-            rnk[j] = i
+        for as in 1:anomalycount
+            row = [ds, as]
+            scores = map(model -> getMax(allData, ds, as, model, score), models)
+            rnk = Array{Int}(length(models))
+            for (i, j) in enumerate(sortperm(scores, rev = true))
+                rnk[j] = i
+            end
+            foreach(i -> push!(row, i), rnk)
+            push!(rnks, row)
         end
-        foreach(i -> push!(row, i), rnk)
-        push!(rnks, row)
     end
 
     return rnks
 end
 
-getMax(allData, dataset, model, score) = maximum(allData[(allData[:dataset] .== dataset) .* (allData[:model] .== model), score])
+getMax(allData, dataset, anomaliesSeen, model, score) = maximum(allData[(allData[:dataset] .== dataset) .* (allData[:model] .== model) .* (allData[:anomaliesSeen] .== anomaliesSeen), score])
 
 allData = DataFrame(types, params, 0)
 foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
 CSV.write(dataFolder * "results.csv", allData)
 
 showall(ranks(allData, :f1))
+println()
 showall(ranks(allData, :auc))
+println()
+
+aedf = allData[allData[:model] .== "autoencoder", :]
+fmdf = allData[allData[:model] .== "ffMem", :]
+ffdf = allData[allData[:model] .== "ff", :]
+
+by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:f1]))
+println()
+by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:auc]))
