@@ -5,4 +5,3 @@ deps/deps.jl
 *-checkpoint.ipynb
 *.jld
 *.jld2
-*.csv

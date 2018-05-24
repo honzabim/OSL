@@ -35,7 +35,7 @@ function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, 
     push!(model.layers, softmax)
     model = Adapt.adapt(T, model)
 
-    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.01 * sum(x -> sum(x .^ 2), params(model))
+    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.001 * sum(x -> sum(x .^ 2), params(model))
 
     function classify(data)
         probs = model(data)
@@ -70,7 +70,7 @@ end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
-    opt = Flux.Optimise.ADAM(params(model), 0.0001)
+    opt = Flux.Optimise.ADAM(params(model), 0.000001)
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
     results = []
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
@@ -101,11 +101,15 @@ mkpath(outputFolder)
 
 datasets = ["abalone", "breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 difficulties = ["hard", "easy", "easy", "easy", "easy", "medium"]
+
+#datasets = ["yeast"]
+#difficulties = ["medium"]
+
 dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
 batchSize = 100
-iterations = 50000
+iterations = 100000
 
 loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
 
@@ -133,7 +137,7 @@ for (dn, df) in zip(datasets, difficulties)
     # #println(typeof(results))
     # save(outputFolder * dn * "-ffMem.jld2", "results", results)
 
-    iterations = 50000
+    iterations = 100000
     println("Running ff...")
 
     evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))

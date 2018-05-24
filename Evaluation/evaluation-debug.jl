@@ -34,8 +34,6 @@ function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, 
     model = FluxExtensions.layerbuilder(inputDim, hiddenDim, numberOfLabels, numLayers + 1, nonlinearity, "linear", layerType)
     push!(model.layers, softmax)
     model = Adapt.adapt(T, model)
-    const size = sum(x -> sum(length(x)), params(model))
-    println(size)
 
     function train!(data, labels)
         if sum(isnan.(labels)) > 0
@@ -68,7 +66,7 @@ function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, 
             exit(1)
         end
 
-        loss = Flux.crossentropy(m, ohb) + 0.001 * sum(x -> sum(x .^ 2), params(model))
+        loss = Flux.crossentropy(m, ohb) + 0.003 * sum(x -> sum(x .^ 2), params(model))
         if sum(isnan.(loss)) > 0
             println("loss was NaN")
             exit(1)
@@ -171,7 +169,8 @@ loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName
 
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
-
+    dn = "sonar"
+    df = "easy"
     println("$dn $df")
 
     # println("Running autoencoder...")
@@ -195,7 +194,7 @@ for (dn, df) in zip(datasets, difficulties)
     # println("Running ff...")
 
     evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
-    results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
+    results = gridSearch(evaluateOneConfig, [32], 2, [5], ["leakyrelu"], ["ResDense"])
     #println(results)
     results = reshape(results, length(results), 1)
     println(typeof(results))
