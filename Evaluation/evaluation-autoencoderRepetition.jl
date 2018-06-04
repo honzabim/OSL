@@ -65,13 +65,17 @@ function createAutoencoderModelWithMem(inputDim, hiddenDim, latentDim, numLayers
         return (1 - γ) * Flux.mse(decoder(latentVariable), data) + γ * trainOnLatent!(latentVariable, labels)
     end
 
-    return model, learnRepresentation!, learnAnomaly!, classify
+    rscore(data) = Flux.mse(model(data), data)
+
+    return model, learnRepresentation!, learnAnomaly!, classify, rscore
 end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
-    (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
+    (model, learnRepresentation!, learnAnomaly!, classify, rscore) = createModel()
     opt = Flux.Optimise.ADAM(params(model))
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
+    rstrn = rscore(train.data)
+    rstst = rscore(test.data)
     results = []
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
     for ac in anomalyCounts
@@ -91,7 +95,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
         f1 = f1score(rocData)
         tprvec, fprvec = EvalCurves.roccurve(probScore, test.labels)
         auc = EvalCurves.auc(fprvec, tprvec)
-        push!(results, (ac, f1, auc, values, probScore))
+        push!(results, (ac, f1, auc, values, probScore, rstrn, rstst))
     end
     return results
 end
