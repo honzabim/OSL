@@ -3,9 +3,9 @@ using FileIO
 using DataFrames
 using CSV
 
-const dataFolder = "/home/jan/dev/OSL/experiments/first_without_ff/"
-const datasets = ["abalone", "breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
-const models = ["autoencoder", "ffMem", "ff"]
+const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
+const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
+const models = ["autoencoder"]
 const scores = ["f1", "auc"]
 const anomalycount = 5
 

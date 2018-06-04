@@ -51,7 +51,7 @@ Creates an autoencoder model that has a kNN memory connected to the latent layer
 function createAutoencoderModelWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, γ = 0.5, T = Float32)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
-    model(x) = decoder(encoder(x))
+    model = Chain(encoder, decoder)
     train!, classify, trainOnLatent! = augmentModelWithMemory(encoder, memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
@@ -70,7 +70,7 @@ end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
-    opt = Flux.Optimise.ADAM(params(model), 0.000001)
+    opt = Flux.Optimise.ADAM(params(model))
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
     results = []
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
@@ -96,11 +96,11 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = "/home/jan/dev/OSL/experiments/first/"
+outputFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
 mkpath(outputFolder)
 
-datasets = ["abalone", "breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
-difficulties = ["hard", "easy", "easy", "easy", "easy", "medium"]
+datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
+difficulties = ["easy", "easy", "easy", "easy", "easy"]
 
 #datasets = ["yeast"]
 #difficulties = ["medium"]
@@ -109,7 +109,7 @@ dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
 batchSize = 100
-iterations = 100000
+iterations = 10000
 
 loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
 
@@ -118,15 +118,15 @@ for (dn, df) in zip(datasets, difficulties)
 
     println("$dn")
 
-    # iterations = 10000
-    # println("Running autoencoder...")
-    #
-    # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createAutoencoderModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
-    # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 1)
-    # #println(results)
-    # results = reshape(results, length(results), 1)
-    # #println(typeof(results))
-    # save(outputFolder * dn * "-autoencoder.jld2", "results", results)
+    iterations = 10000
+    println("Running autoencoder...")
+
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createAutoencoderModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [8 16 32], [2], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [256 1024], [32 64], 1)
+    #println(results)
+    results = reshape(results, length(results), 1)
+    #println(typeof(results))
+    save(outputFolder * dn * "-autoencoder.jld2", "results", results)
     #
     # println("Running ff with memory...")
     #
@@ -137,13 +137,13 @@ for (dn, df) in zip(datasets, difficulties)
     # #println(typeof(results))
     # save(outputFolder * dn * "-ffMem.jld2", "results", results)
 
-    iterations = 100000
-    println("Running ff...")
-
-    evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
-    results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
-    #println(results)
-    results = reshape(results, length(results), 1)
-    #println(typeof(results))
-    save(outputFolder * dn * "-ff.jld2", "results", results)
+    # iterations = 100000
+    # println("Running ff...")
+    #
+    # evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
+    # results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
+    # #println(results)
+    # results = reshape(results, length(results), 1)
+    # #println(typeof(results))
+    # save(outputFolder * dn * "-ff.jld2", "results", results)
 end
