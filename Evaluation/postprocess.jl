@@ -3,7 +3,8 @@ using FileIO
 using DataFrames
 using CSV
 
-const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
+# const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
+const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
 const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 const models = ["autoencoder"]
 const scores = ["f1", "auc"]
