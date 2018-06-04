@@ -99,11 +99,11 @@ end
 outputFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
 mkpath(outputFolder)
 
-datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
-difficulties = ["easy", "easy", "easy", "easy", "easy"]
+#datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
+#difficulties = ["easy", "easy", "easy", "easy", "easy"]
 
-#datasets = ["yeast"]
-#difficulties = ["medium"]
+datasets = ["waveform-1"]
+difficulties = ["easy"]
 
 dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
@@ -127,7 +127,7 @@ for (dn, df) in zip(datasets, difficulties)
     #println(results)
     results = reshape(results, length(results), 1)
     #println(typeof(results))
-    save(outputFolder * dn * "$i-autoencoder.jld2", "results", results)
+    save(outputFolder * dn * ".$i-autoencoder.jld2", "results", results)
     #
     # println("Running ff with memory...")
     #
