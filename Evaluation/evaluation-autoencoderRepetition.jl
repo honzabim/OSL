@@ -74,8 +74,8 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     (model, learnRepresentation!, learnAnomaly!, classify, rscore) = createModel()
     opt = Flux.Optimise.ADAM(params(model))
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
-    rstrn = rscore(train.data)
-    rstst = rscore(test.data)
+    rstrn = Flux.Tracker.data(rscore(train.data))
+    rstst = Flux.Tracker.data(rscore(test.data))
     results = []
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
     for ac in anomalyCounts
