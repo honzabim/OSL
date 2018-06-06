@@ -4,16 +4,20 @@ using DataFrames
 using CSV
 
 # const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
-const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
-const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
+# const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
+const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
+# const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
+const datasets = ["waveform-1"]
 const models = ["autoencoder"]
 const scores = ["f1", "auc"]
 const anomalycount = 5
 
 loadExperiment(filePath) = load(filePath)["results"]
 
-params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
-types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
+# params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :model, :dataset]
+# types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
+types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, Float64, Float64, String, String]
 const anomalycount = 5
 function processFile!(dataframe, model, dataset)
     println("Processing $model $dataset")
@@ -22,7 +26,8 @@ function processFile!(dataframe, model, dataset)
     for i in 1:length(results)
         for ac in 1:anomalycount
             pars = length(results[1][1]) > 5 ? results[i][1][1:7] : vcat(results[i][1]..., -1, -1)
-            push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
+            # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
+            push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., results[i][2][ac][6:7]..., model, dataset))
         end
     end
 end
@@ -55,7 +60,11 @@ end
 getMax(allData, dataset, anomaliesSeen, model, score) = maximum(allData[(allData[:dataset] .== dataset) .* (allData[:model] .== model) .* (allData[:anomaliesSeen] .== anomaliesSeen), score])
 
 allData = DataFrame(types, params, 0)
-foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
+# foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
+for i in 1:100
+    processFile!(allData, models[1], datasets[1] * ".$i")
+end
+
 CSV.write(dataFolder * "results.csv", allData)
 
 showall(ranks(allData, :f1))
