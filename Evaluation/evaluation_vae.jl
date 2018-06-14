@@ -19,7 +19,12 @@ include("/home/jan/dev/OSL/Evaluation/external/vae.jl")
     gridSearch(f, parameters...)
 Maps `f` to product of `parameters`.
 """
-gridSearch(f, parameters...) = map(p -> (p, f(p)), Base.product(parameters...))
+gridSearch(f, parameters...) = map(p -> printAndRun(f, p), Base.product(parameters...))
+
+function printAndRun(f, p)
+    println(p)
+    (p, f(p))
+end
 
 """
     createFeedForwardModel(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, [α = 0.1], [T = Float32])
@@ -72,14 +77,10 @@ end
 
 function createVaeWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β = 1., s::Symbol = :unit, α = 0.1, T = Float32)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, latentDim * 2, numLayers, nonlinearity, "", layerType))
-    decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
+    decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, s == :unit ? inputDim : inputDim * 2, numLayers + 1, nonlinearity, "linear", layerType))
 
     vae = VAE(encoder, decoder, convert(T, β), s)
     train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> z(vae, x), memorySize, latentDim, k, labelCount, α, T)
-
-
-
-    train!, classify, trainOnLatent! = augmentModelWithMemory(encoder, memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(z(vae, data), zeros(collect(labels))) # changes labels to zeros!
@@ -109,8 +110,8 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     opt = Flux.Optimise.ADAM(params(model))
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
 
-    rstrn = rscore(model, train.data)
-    rstst = rscore(model, test.data)
+    rstrn = Flux.Tracker.data(rscore(model, train.data))
+    rstst = Flux.Tracker.data(rscore(model, test.data))
 
     results = []
     anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
@@ -124,7 +125,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
         end
 
         values, probScore = classify(test.data)
-        values = Flux.Tracker.data(values)indingBestAEWith2Latent
+        values = Flux.Tracker.data(values)
         probScore = Flux.Tracker.data(probScore)
 
         rocData = roc(test.labels, values)
@@ -139,8 +140,10 @@ end
 outputFolder = "/home/jan/dev/OSL/experiments/firstVae/"
 mkpath(outputFolder)
 
-datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
-difficulties = ["easy", "easy", "easy", "easy", "easy"]
+datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
+difficulties = ["easy", "easy", "easy", "easy"]
+# datasets = ["yeast"]
+# difficulties = ["easy"]
 
 dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
@@ -154,8 +157,6 @@ for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
 
     println("$dn")
-
-    iterations = 10000
     println("Running vae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createVaeWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)

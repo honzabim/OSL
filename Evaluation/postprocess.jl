@@ -5,10 +5,11 @@ using CSV
 
 # const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2Latent/"
 # const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
-const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
+# const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
+const dataFolder = "/home/jan/dev/OSL/experiments/firstVae/"
 # const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
-const datasets = ["waveform-1"]
-const models = ["autoencoder"]
+const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
+const models = ["vae"]
 const scores = ["f1", "auc"]
 const anomalycount = 5
 
@@ -60,10 +61,10 @@ end
 getMax(allData, dataset, anomaliesSeen, model, score) = maximum(allData[(allData[:dataset] .== dataset) .* (allData[:model] .== model) .* (allData[:anomaliesSeen] .== anomaliesSeen), score])
 
 allData = DataFrame(types, params, 0)
-# foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
-for i in 1:100
-    processFile!(allData, models[1], datasets[1] * ".$i")
-end
+foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
+# for i in 1:100
+#     processFile!(allData, models[1], datasets[1] * ".$i")
+# end
 
 CSV.write(dataFolder * "results.csv", allData)
 
@@ -72,9 +73,9 @@ println()
 showall(ranks(allData, :auc))
 println()
 
-aedf = allData[allData[:model] .== "autoencoder", :]
-fmdf = allData[allData[:model] .== "ffMem", :]
-ffdf = allData[allData[:model] .== "ff", :]
+vaedf = allData[allData[:model] .== "autoencoder", :]
+# fmdf = allData[allData[:model] .== "ffMem", :]
+# ffdf = allData[allData[:model] .== "ff", :]
 
 by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:f1]))
 println()
