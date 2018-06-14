@@ -1,12 +1,28 @@
 using Flux
 
-S(μ, σ, z) = @. (z - μ) / σ
-Sinv(μ, σ, ϵ) = @. μ +  σ * ϵ
-Sinv(μ::TrackedArray, σ::TrackedArray, ϵ) = Tracker.track(Sinv, μ, σ, ϵ)
-Sinv(μ::Flux.Tracker.TrackedReal, σ::Flux.Tracker.TrackedReal, ϵ) = Tracker.track(Sinv, μ, σ, ϵ)
+S(z, μ, σ ) = @. (z - μ) / σ
+Sinv(ϵ, μ, σ) = @. μ +  σ * ϵ
+Sinv(ϵ, μ::TrackedArray, σ::TrackedArray) = Tracker.track(Sinv, ϵ, μ, σ)
+Sinv(ϵ, μ::Flux.Tracker.TrackedReal, σ::Flux.Tracker.TrackedReal) = Tracker.track(Sinv, ϵ, μ, σ)
 
-function Tracker.back(::typeof(Sinv), Δ, μ, σ, ϵ)
-    _z = Sinv(Flux.Tracker.data(μ), Flux.Tracker.data(σ), Flux.Tracker.data(ϵ))
+function ∇Sinv(ϵ, params...)
+    _params = map(x -> Flux.Tracker.data(x), params)
+    _z = param(Sinv(Flux.Tracker.data(ϵ), _params...))
+    _params = map(x -> param(x), _params)
+
+    l = S(_z, _params...)
+    Flux.Tracker.back!(l)
+
+    dSdz = Flux.Tracker.grad(_z)
+    dSdϕ = map(x -> Flux.Tracker.grad(x), _params)
+
+    dzdϕ = map(x -> -x ./ dSdz, dSdϕ)
+
+    # foreach((x, dx) -> Tracker.@back(x, dx .* Δ), params, dzdϕ)
+end
+
+function Tracker.back(::typeof(Sinv), Δ, ϵ, μ, σ)
+    _z = Sinv(Flux.Tracker.data(ϵ), Flux.Tracker.data(μ), Flux.Tracker.data(σ))
 
     _μ = Flux.Tracker.data(μ)
     _σ = Flux.Tracker.data(σ)
@@ -15,7 +31,7 @@ function Tracker.back(::typeof(Sinv), Δ, μ, σ, ϵ)
     _σ = param(_σ)
     _z = param(_z)
 
-    l = S(_μ, _σ, _z)
+    l = S(_z, _μ, _σ)
     Flux.Tracker.back!(l)
 
     dSdz = Flux.Tracker.grad(_z)
@@ -42,5 +58,3 @@ Flux.Tracker.back!(z)
 
 Flux.Tracker.grad(mu)
 Flux.Tracker.grad(sigma)
-
-S⁻¹
