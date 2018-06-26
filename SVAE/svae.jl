@@ -1,4 +1,4 @@
-include(bessel.jl)
+include("bessel.jl")
 
 using Flux
 using NNlib
@@ -43,6 +43,11 @@ function sampleω(model::SVAE, κ)
 		end
 	end
 	return ω
+end
+
+function householderrotation(x, e1, μ)
+	u = normalize(e1 - μ)
+	z = x - 2 * sum(x * u) * u
 end
 
 function z(μz, κz)
