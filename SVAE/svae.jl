@@ -3,6 +3,7 @@ include("bessel.jl")
 using Flux
 using NNlib
 using Distributions
+using SpecialFunctions
 
 struct SVAE
 	q	# encoder (inference modul)
@@ -20,6 +21,12 @@ end
 function zparams(model::SVAE, x)
 	_zparams = model.q(x)
 	return model.μzfromhidden(_zparams), model.κzfromhidden(_zparams)
+end
+
+function kldiv(model::SVAE, κ)
+	m = model.zdim
+	return κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) -
+			(κ log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
 end
 
 function sampleω(model::SVAE, κ)
@@ -45,11 +52,18 @@ function sampleω(model::SVAE, κ)
 	return ω
 end
 
-function householderrotation(x, e1, μ)
+function householderrotation(x, μ)
+	e1 = zeros(μ)
+	e1[1] = 1
 	u = normalize(e1 - μ)
-	z = x - 2 * sum(x * u) * u
+	z = x' - 2 * u * u' * x'
 end
 
-function z(μz, κz)
+function z(m::SVAE, μz, κz)
+	ω = sampleω(m, κz)
 
+	normal = Normal()
+	v = rand(normal, length(μz) - 1)
+	z = householderrotation(vcat(ω, √(1 - ω ^ 2) * v), μz)
+	return z
 end
