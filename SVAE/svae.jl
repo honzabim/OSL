@@ -43,20 +43,30 @@ function sampleω(model::SVAE, κ)
 	b = @. (-2κ + c) / (m - 1)
 	a = @. (m - 1 + 2κ + c) / 4
 	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
-	map(rejectionsampling, m, a, b, d)
+	# print(typeof(m))
+	# print(typeof(c))
+	# print(typeof(a))
+	# print(typeof(b))
+	# print(typeof(d))
+	map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d)
 end
 
 function rejectionsampling(m, a, b, d)
+	println(typeof(m))
+	println(typeof(a))
+	println(typeof(b))
+	println(typeof(d))
 	uniform = Uniform()
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
 
+	ω = zero(a)
 	while true
 		ϵ = rand(beta)
 		ω = (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 		t = 2 * a * b / (1 - (1 - b) * ϵ)
 		u = rand(uniform)
 
-		if ((m - 1) * log(t) - t + d) >= log(u)
+		if Flux.Tracker.data(((m - 1) * log(t) - t + d)) >= log(u)
 			break
 		end
 	end
