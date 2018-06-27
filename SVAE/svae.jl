@@ -18,6 +18,13 @@ struct SVAE
 	SVAE(q, g, hdim::Integer, zdim::Integer) = SVAE(q, g, zdim, Dense(hdim, zdim, normalize), Dense(hdim, 1, softplus))
 end
 
+function loss(m::SVAE, x)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+	return Flux.mse(x, xgivenz) + kldiv(m, κz)
+end
+
 function zparams(model::SVAE, x)
 	_zparams = model.q(x)
 	return model.μzfromhidden(_zparams), model.κzfromhidden(_zparams)
@@ -59,7 +66,7 @@ function householderrotation(x, μ)
 	z = x' - 2 * u * u' * x'
 end
 
-function z(m::SVAE, μz, κz)
+function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)
 
 	normal = Normal()
@@ -67,3 +74,5 @@ function z(m::SVAE, μz, κz)
 	z = householderrotation(vcat(ω, √(1 - ω ^ 2) * v), μz)
 	return z
 end
+
+zfromx(m::SVAE, x) = samplez(m, zparams(m, x)...)
