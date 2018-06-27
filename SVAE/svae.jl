@@ -5,6 +5,8 @@ using NNlib
 using Distributions
 using SpecialFunctions
 
+Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(Float32)))
+
 struct SVAE
 	q	# encoder (inference modul)
 	g	# decoder (generator)
@@ -12,10 +14,10 @@ struct SVAE
 	μzfromhidden # function to compute μz from the hidden layer
 	κzfromhidden # function to compute κz from the hidden layer
 
-	'''
+	"""
 	SVAE(q, g, hdim, zdim) Constructor of the S-VAE with hidden dim `hdim` and latent dim = `zdim`. `zdim > 3`
-	'''
-	SVAE(q, g, hdim::Integer, zdim::Integer) = SVAE(q, g, zdim, Dense(hdim, zdim, normalize), Dense(hdim, 1, softplus))
+	"""
+	SVAE(q, g, hdim::Integer, zdim::Integer) = new(q, g, zdim, Dense(hdim, zdim, normalize), Dense(hdim, 1, softplus))
 end
 
 function loss(m::SVAE, x)
@@ -32,17 +34,19 @@ end
 
 function kldiv(model::SVAE, κ)
 	m = model.zdim
-	return κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) -
-			(κ log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
+	return κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
 end
 
 function sampleω(model::SVAE, κ)
 	m = model.zdim
-	c = √(4κ ^ 2 + (m - 1) ^ 2)
-	b = (-2κ + c) / (m - 1)
-	a = (m - 1 + 2κ + c) / 4
-	d = (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
+	c = @. √(4κ ^ 2 + (m - 1) ^ 2)
+	b = @. (-2κ + c) / (m - 1)
+	a = @. (m - 1 + 2κ + c) / 4
+	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
+	map(rejectionsampling, m, a, b, d)
+end
 
+function rejectionsampling(m, a, b, d)
 	uniform = Uniform()
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
 
