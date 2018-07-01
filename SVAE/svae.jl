@@ -1,6 +1,6 @@
 include("bessel.jl")
 
-using Flux
+import Flux
 using NNlib
 using Distributions
 using SpecialFunctions
@@ -43,29 +43,19 @@ function sampleω(model::SVAE, κ)
 	b = @. (-2κ + c) / (m - 1)
 	a = @. (m - 1 + 2κ + c) / 4
 	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
-	println(typeof(m))
-	println(typeof(κ))
-	println(typeof(c))
-	println(typeof(a))
-	println(typeof(b))
-	println(typeof(d))
-	ω = map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d)
-	println(typeof(ω))
-	println(typeof(Flux.Tracker.collect(ω)))
+	ω = Flux.Tracker.collect(map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d))
 	return ω
 end
 
 function rejectionsampling(m, a, b, d)
 	uniform = Uniform()
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
-
 	ω = zero(a)
 	while true
-		ϵ = rand(beta)
+		ϵ = convert(eltype(Flux.Tracker.data(a)), rand(beta))
 		ω = (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 		t = 2 * a * b / (1 - (1 - b) * ϵ)
-		u = rand(uniform)
-
+		u = convert(eltype(Flux.Tracker.data(a)), rand(uniform))
 		if Flux.Tracker.data(((m - 1) * log(t) - t + d)) >= log(u)
 			break
 		end
@@ -77,35 +67,22 @@ matrixtocolumns(x) = [x[:, i] for i in 1:size(x, 2)]
 
 function householderrotation(zprime, μ)
 	println("μ size $(size(μ))")
-	e1 = zeros(Float64, size(μ))
+	e1 = zeros(eltype(Flux.Tracker.data(μ)), size(μ))
 	e1[1, :] = 1
 	# I would use mapslices but that does not work with Flux arrays - cannot create empty array
 	u = e1 .- μ
 	U = matrixtocolumns(u)
 	Z = matrixtocolumns(zprime)
 	NU = map(x -> normalize(x), U)
-	println(typeof(e1))
-	println(typeof(μ))
-	println(typeof(zprime))
-	println(typeof(u))
-	println(typeof(U))
-	println(typeof(Z))
-	println(typeof(NU))
-	z = hcat(map((u, z) -> z - 2 * (u' * z) * u, NU, Z)...)
-	println("z size $(size(z))")
+	z = Flux.Tracker.collect(hcat(map((u, z) -> z - 2 * (u' * z) * u, NU, Z)...))
 	return z
 end
 
 function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)
-	println(size(ω))
-	println(typeof(ω))
-
 	normal = Normal()
-	v = rand(normal, size(μz, 1) - 1, size(μz, 2))
+	v = Adapt.adapt(eltype(Flux.Tracker.data(κz)), rand(normal, size(μz, 1) - 1, size(μz, 2)))
 	z = householderrotation(vcat(ω, sqrt.(1 .- ω .^ 2) .* v), μz)
-	println(size(z))
-	println(size(μz))
 	return z
 end
 
