@@ -24,7 +24,7 @@ function loss(m::SVAE, x)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
 	xgivenz = m.g(z)
-	return Flux.mse(x, xgivenz) + kldiv(m, κz)
+	return Flux.mse(x, xgivenz) + mean(kldiv(m, κz))
 end
 
 function zparams(model::SVAE, x)
@@ -34,7 +34,7 @@ end
 
 function kldiv(model::SVAE, κ)
 	m = model.zdim
-	return κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
+	return @. κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
 end
 
 function sampleω(model::SVAE, κ)
@@ -43,19 +43,19 @@ function sampleω(model::SVAE, κ)
 	b = @. (-2κ + c) / (m - 1)
 	a = @. (m - 1 + 2κ + c) / 4
 	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
-	# print(typeof(m))
-	# print(typeof(c))
-	# print(typeof(a))
-	# print(typeof(b))
-	# print(typeof(d))
-	map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d)
-end
-
-function rejectionsampling(m, a, b, d)
 	println(typeof(m))
+	println(typeof(κ))
+	println(typeof(c))
 	println(typeof(a))
 	println(typeof(b))
 	println(typeof(d))
+	ω = map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d)
+	println(typeof(ω))
+	println(typeof(Flux.Tracker.collect(ω)))
+	return ω
+end
+
+function rejectionsampling(m, a, b, d)
 	uniform = Uniform()
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
 
@@ -73,19 +73,39 @@ function rejectionsampling(m, a, b, d)
 	return ω
 end
 
-function householderrotation(x, μ)
-	e1 = zeros(μ)
-	e1[1] = 1
-	u = normalize(e1 - μ)
-	z = x' - 2 * u * u' * x'
+matrixtocolumns(x) = [x[:, i] for i in 1:size(x, 2)]
+
+function householderrotation(zprime, μ)
+	println("μ size $(size(μ))")
+	e1 = zeros(Float64, size(μ))
+	e1[1, :] = 1
+	# I would use mapslices but that does not work with Flux arrays - cannot create empty array
+	u = e1 .- μ
+	U = matrixtocolumns(u)
+	Z = matrixtocolumns(zprime)
+	NU = map(x -> normalize(x), U)
+	println(typeof(e1))
+	println(typeof(μ))
+	println(typeof(zprime))
+	println(typeof(u))
+	println(typeof(U))
+	println(typeof(Z))
+	println(typeof(NU))
+	z = hcat(map((u, z) -> z - 2 * (u' * z) * u, NU, Z)...)
+	println("z size $(size(z))")
+	return z
 end
 
 function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)
+	println(size(ω))
+	println(typeof(ω))
 
 	normal = Normal()
-	v = rand(normal, length(μz) - 1)
-	z = householderrotation(vcat(ω, √(1 - ω ^ 2) * v), μz)
+	v = rand(normal, size(μz, 1) - 1, size(μz, 2))
+	z = householderrotation(vcat(ω, sqrt.(1 .- ω .^ 2) .* v), μz)
+	println(size(z))
+	println(size(μz))
 	return z
 end
 
