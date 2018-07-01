@@ -4,6 +4,7 @@ import Flux
 using NNlib
 using Distributions
 using SpecialFunctions
+using Adapt
 
 Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(Float32)))
 
@@ -17,7 +18,7 @@ struct SVAE
 	"""
 	SVAE(q, g, hdim, zdim) Constructor of the S-VAE with hidden dim `hdim` and latent dim = `zdim`. `zdim > 3`
 	"""
-	SVAE(q, g, hdim::Integer, zdim::Integer) = new(q, g, zdim, Dense(hdim, zdim, normalize), Dense(hdim, 1, softplus))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
 function loss(m::SVAE, x)
@@ -66,7 +67,6 @@ end
 matrixtocolumns(x) = [x[:, i] for i in 1:size(x, 2)]
 
 function householderrotation(zprime, μ)
-	println("μ size $(size(μ))")
 	e1 = zeros(eltype(Flux.Tracker.data(μ)), size(μ))
 	e1[1, :] = 1
 	# I would use mapslices but that does not work with Flux arrays - cannot create empty array

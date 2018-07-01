@@ -28,60 +28,11 @@ function printAndRun(f, p)
     (p, f(p))
 end
 
-"""
-    createFeedForwardModel(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, [α = 0.1], [T = Float32])
-Creates a feed-forward model that ends with a kNN memory and provides functions for its training and use as a classifier.
-"""
-function createFeedForwardModelWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, T = Float32)
-    model = FluxExtensions.layerbuilder(inputDim, hiddenDim, latentDim, numLayers + 1, nonlinearity, "linear", layerType)
-    model = Adapt.adapt(T, model)
-    train!, classify, _ = augmentModelWithMemory(model, memorySize, latentDim, k, labelCount, α, T)
-    return model, (data, labels) -> train!(data, zeros(collect(labels))), train!, classify
-end
-
-function createFeedForwardModel(inputDim, hiddenDim, numberOfLabels, numLayers, nonlinearity, layerType, T = Float32)
-    model = FluxExtensions.layerbuilder(inputDim, hiddenDim, numberOfLabels, numLayers + 1, nonlinearity, "linear", layerType)
-    push!(model.layers, softmax)
-    model = Adapt.adapt(T, model)
-
-    train!(data, labels) = Flux.crossentropy(model(data), Flux.onehotbatch(labels, 0:(numberOfLabels - 1))) + 0.001 * sum(x -> sum(x .^ 2), params(model))
-
-    function classify(data)
-        probs = model(data)
-        return  Flux.argmax(probs), probs[1, :]
-    end
-    return model, train!, train!, classify
-end
-
-"""
-    createAutoencoderModel(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, [α = 0.1], [γ = 0.5], [T = Float32])
-Creates an autoencoder model that has a kNN memory connected to the latent layer and provides functions for its training and use as a classifier.
-"""
-function createAutoencoderModelWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, γ = 0.5, T = Float32)
-    encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, "", layerType))
-    decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
-    model = Chain(encoder, decoder)
-    train!, classify, trainOnLatent! = augmentModelWithMemory(encoder, memorySize, latentDim, k, labelCount, α, T)
-
-    function learnRepresentation!(data, labels)
-        latentVariables = encoder(data)
-        trainOnLatent!(latentVariables, zeros(collect(labels))) # changes labels to zeros!
-        return Flux.mse(decoder(latentVariables), data)
-    end
-
-    function learnAnomaly!(data, labels)
-        latentVariable = encoder(data)
-        return (1 - γ) * Flux.mse(decoder(latentVariable), data) + γ * trainOnLatent!(latentVariable, labels)
-    end
-
-    return model, learnRepresentation!, learnAnomaly!, classify
-end
-
 function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, T = Float32)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
-    svae = SVAE(encoder, decoder, hiddenDim, latentDim)
+    svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
     train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
@@ -105,7 +56,7 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 100)
 
     rstrn = Flux.Tracker.data(rscore(model, train.data))
     rstst = Flux.Tracker.data(rscore(model, test.data))
@@ -145,7 +96,7 @@ difficulties = ["easy", "easy", "easy", "easy"]
 dataPath = folderpath * "data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
-batchSize = 100
+batchSize = 10
 iterations = 1000
 
 loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
