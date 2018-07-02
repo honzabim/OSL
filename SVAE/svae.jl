@@ -12,14 +12,19 @@ struct SVAE
 	q	# encoder (inference modul)
 	g	# decoder (generator)
 	zdim
+	hue #Hyperspherical Uniform Entropy - constant with dimensionality - zdim
 	μzfromhidden # function to compute μz from the hidden layer
 	κzfromhidden # function to compute κz from the hidden layer
 
 	"""
 	SVAE(q, g, hdim, zdim) Constructor of the S-VAE with hidden dim `hdim` and latent dim = `zdim`. `zdim > 3`
 	"""
-	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
+
+vmfentropy(m, κ) = -κ .* besselix.(m / 2, κ) ./ besselix.(m / 2 - 1, κ) .+ lognormalization(m, κ)
+lognormalization(m, κ) = @. -((m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))))
+huentropy(m) = m / 2 * log(π) + log(2) - lgamma(m / 2)
 
 function loss(m::SVAE, x)
 	(μz, κz) = zparams(m, x)
@@ -33,10 +38,22 @@ function zparams(model::SVAE, x)
 	return model.μzfromhidden(_zparams), model.κzfromhidden(_zparams)
 end
 
-function kldiv(model::SVAE, κ)
+kldiv(model::SVAE, κ) = -vmfentropy(model.zdim, Flux.Tracker.data(κ)) + model.hue
+kldiv(model::SVAE, κ::TrackedArray) = Tracker.track(kldiv, model, κ)
+kldiv(model::SVAE, κ::Flux.Tracker.TrackedReal) = Tracker.track(kldiv, model, κ)
+
+function ∇kldiv(model::SVAE, κ)
 	m = model.zdim
-	return @. κ * besselix(m / 2, κ) / besselix(m / 2 - 1, κ) + (m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))) + m / 2 * log(π) + log(2) - lgamma(m / 2)
+	k = Flux.Tracker.data(κ)
+
+	a = @. besselix(m / 2 + 1, k) / besselix(m / 2 - 1, k)
+	b = @. besselix(m / 2, k) * (besselix(m / 2 - 2, k) + besselix(m / 2, k)) / besselix(m / 2 - 1, k) ^ 2
+
+	return @. k / 2 * (a - b + 1)
 end
+
+Tracker.back(::typeof(kldiv), Δ, model::SVAE, κ) = Tracker.@back(κ, ∇kldiv(model, κ) .* Δ)
+
 
 function sampleω(model::SVAE, κ)
 	m = model.zdim
