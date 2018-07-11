@@ -6,7 +6,7 @@ using JLD2
 using FileIO
 
 folderpath = "/home/jan/dev/"
-folderpath = "D:/dev/"
+# folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath * "OSL/KNNmemory", folderpath * "FluxExtensions.jl/src", folderpath * "anomaly detection/anomaly_detection/src", folderpath * "EvalCurves.jl/src", folderpath)
 using KNNmem
 using FluxExtensions

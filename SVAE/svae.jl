@@ -66,34 +66,36 @@ function sampleω(model::SVAE, κ)
 end
 
 function rejectionsampling(m, a, b, d)
-	uniform = Uniform()
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
-	ω = zero(a)
-	while true
-		ϵ = convert(eltype(Flux.Tracker.data(a)), rand(beta))
-		ω = (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
-		t = 2 * a * b / (1 - (1 - b) * ϵ)
-		u = convert(eltype(Flux.Tracker.data(a)), rand(uniform))
-		if Flux.Tracker.data(((m - 1) * log(t) - t + d)) >= log(u)
-			break
-		end
+	ϵ, u = rand(beta,size(a)), rand(size(a))
+
+	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		while all(accepted)
+		mask = .! accepted
+		accepted[mask] .= isaccepted(mask,ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		ϵ[mask] = rand(beta,sum(mask))
+		u[mask] = rand(sum(mask))
 	end
-	return ω
+	@. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
+end
+
+isaccepted(mask, ϵ, u, m:: Int, a, b, d) = isaccepted(ϵ[mask], u[mask], m, a[mask], b[mask], d[mask])
+function isaccepted(ϵ, u, m:: Int, a, b, d)
+	ω = @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
+	t = @. 2 * a * b / (1 - (1 - b) * ϵ)
+	@. (m - 1) * log(t) - t + d > log(u)
 end
 
 matrixtocolumns(x) = [x[:, i] for i in 1:size(x, 2)]
 
 function householderrotation(zprime, μ)
-	e1 = zeros(eltype(Flux.Tracker.data(μ)), size(μ))
+	e1 = similar(μ) .= 0
 	e1[1, :] = 1
-	# I would use mapslices but that does not work with Flux arrays - cannot create empty array
 	u = e1 .- μ
-	U = matrixtocolumns(u)
-	Z = matrixtocolumns(zprime)
-	NU = map(x -> normalize(x), U)
-	z = Flux.Tracker.collect(hcat(map((u, z) -> z - 2 * (u' * z) * u, NU, Z)...))
-	return z
+	normalizedu = u ./ sqrt.(sum(u.^2, 2) + 1f-6)
+	zprime .- 2.* normalizedu.* sum(normalizedu .* zprime, 1)
 end
+
 
 function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)

@@ -16,5 +16,11 @@ using PyCall
 #     end
 # end
 
- DiffRules.@define_diffrule SpecialFunctions.besselix(ν, x) = :NaN, :(besselix($ν - 1, $x) - besselix($ν, $x) * ($ν + $x) / $x)
+# DiffRules.@define_diffrule SpecialFunctions.besselix(ν, x) = :NaN, :(besselix($ν - 1, $x) - besselix($ν, $x) * ($ν + $x) / $x)
 # DiffRules.@define_diffrule SpecialFunctions.besselix(ν, x) = :NaN, :(∇besselix($v, $x))
+
+mybessel(ν, x) = SpecialFunctions.besselix.(ν, x)
+∇mybessel(ν,x) = @. SpecialFunctions.besselix(ν - 1, x) - SpecialFunctions.besselix(ν, x) * (ν + x) / x
+
+SpecialFunctions.besselix(ν, x::Flux.Tracker.TrackedMatrix) = Flux.Tracker.track(mybessel, ν, x)
+Flux.Tracker.back(::typeof(mybessel), Δ, ν, x) = Flux.Tracker.@back(x, ∇mybessel(ν,Flux.data(x)) .* Δ)
