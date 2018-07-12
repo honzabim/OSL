@@ -5,6 +5,7 @@ that can be used as the last layer in a NN in the Flux framework.
 module KNNmem
 
 using Flux
+using Juno
 
 export KNNmemory, query, trainQuery!, augmentModelWithMemory
 
@@ -38,7 +39,7 @@ mutable struct KNNmemory{T <: Real}
             M[i,:] = normalize(M[i,:])
         end
 
-        new(M, V, A, k > memorySize ? memorySize : k, α)
+        new(M, V, A, k > memorySize ? memorySize : k, convert(T, α))
     end
 end
 
@@ -162,7 +163,7 @@ function trainQuery!(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, v::Ve
     batchSize = size(q, 2)
     normalizedQuery = normalizeQuery(Flux.Tracker.data(q))
     similarity = memory.M * normalizedQuery # computes all similarities of all qs and all keys in the memory at once
-    loss::Flux.Tracker.TrackedReal{T} = 0. # loss must be tracked; otherwise flux cannot use it
+    loss::Flux.Tracker.TrackedReal{T} = 0 # loss must be tracked; otherwise flux cannot use it
     nearestNeighbourIDs = zeros(Integer, batchSize)
 
     for i in 1:batchSize

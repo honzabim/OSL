@@ -5,6 +5,7 @@ using NNlib
 using Distributions
 using SpecialFunctions
 using Adapt
+using Juno
 
 Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(Float32)))
 
@@ -22,8 +23,7 @@ struct SVAE
 	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
-vmfentropy(m, κ) = -κ .* besselix.(m / 2, κ) ./ besselix.(m / 2 - 1, κ) .+ lognormalization(m, κ)
-lognormalization(m, κ) = @. -((m / 2 - 1) * log(κ) - (m / 2) * log(2π) - (κ * log(besselix(m / 2 - 1, κ))))
+vmfentropy(m, κ) = .-κ .* besselix(m / 2, κ) ./ besselix(m / 2 - 1, κ) .- ((m ./ 2 .- 1) .* log.(κ) .- (m ./ 2) .* log(2π) .- (κ .+ log.(besselix(m / 2 - 1, κ))))
 huentropy(m) = m / 2 * log(π) + log(2) - lgamma(m / 2)
 
 function loss(m::SVAE, x)
@@ -34,25 +34,25 @@ function loss(m::SVAE, x)
 end
 
 function zparams(model::SVAE, x)
-	_zparams = model.q(x)
-	return model.μzfromhidden(_zparams), model.κzfromhidden(_zparams)
+	hidden = model.q(x)
+	return model.μzfromhidden(hidden), model.κzfromhidden(hidden)
 end
 
-kldiv(model::SVAE, κ) = -vmfentropy(model.zdim, Flux.Tracker.data(κ)) + model.hue
-kldiv(model::SVAE, κ::TrackedArray) = Tracker.track(kldiv, model, κ)
-kldiv(model::SVAE, κ::Flux.Tracker.TrackedReal) = Tracker.track(kldiv, model, κ)
-
-function ∇kldiv(model::SVAE, κ)
-	m = model.zdim
-	k = Flux.Tracker.data(κ)
-
-	a = @. besselix(m / 2 + 1, k) / besselix(m / 2 - 1, k)
-	b = @. besselix(m / 2, k) * (besselix(m / 2 - 2, k) + besselix(m / 2, k)) / besselix(m / 2 - 1, k) ^ 2
-
-	return @. k / 2 * (a - b + 1)
-end
-
-Tracker.back(::typeof(kldiv), Δ, model::SVAE, κ) = Tracker.@back(κ, ∇kldiv(model, κ) .* Δ)
+kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
+# kldiv(model::SVAE, κ::TrackedArray) = Tracker.track(kldiv, model, κ)
+# kldiv(model::SVAE, κ::Flux.Tracker.TrackedReal) = Tracker.track(kldiv, model, κ)
+#
+# function ∇kldiv(model::SVAE, κ)
+# 	m = model.zdim
+# 	k = Flux.Tracker.data(κ)
+#
+# 	a = @. besselix(m / 2 + 1, k) / besselix(m / 2 - 1, k)
+# 	b = @. besselix(m / 2, k) * (besselix(m / 2 - 2, k) + besselix(m / 2, k)) / besselix(m / 2 - 1, k) ^ 2
+#
+# 	return @. k / 2 * (a - b + 1)
+# end
+#
+# Tracker.back(::typeof(kldiv), Δ, model::SVAE, κ) = Tracker.@back(κ, ∇kldiv(model, κ) .* Δ)
 
 
 function sampleω(model::SVAE, κ)
@@ -61,20 +61,21 @@ function sampleω(model::SVAE, κ)
 	b = @. (-2κ + c) / (m - 1)
 	a = @. (m - 1 + 2κ + c) / 4
 	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
-	ω = Flux.Tracker.collect(map((a, b, d) -> rejectionsampling(m, a, b, d), a, b, d))
+	ω = rejectionsampling(m, a, b, d)
 	return ω
 end
 
 function rejectionsampling(m, a, b, d)
 	beta = Beta((m - 1) / 2., (m - 1) / 2.)
-	ϵ, u = rand(beta,size(a)), rand(size(a))
+	T = eltype(Flux.Tracker.data(a))
+	ϵ, u = Adapt.adapt(T, rand(beta, size(Flux.Tracker.data(a))...)), Adapt.adapt(T, rand(size(Flux.Tracker.data(a))))
 
-	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
-		while all(accepted)
+	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
+	while !all(accepted)
 		mask = .! accepted
-		accepted[mask] .= isaccepted(mask,ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
-		ϵ[mask] = rand(beta,sum(mask))
-		u[mask] = rand(sum(mask))
+		accepted[mask] .= isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
+		u[mask] = Adapt.adapt(T, rand(sum(mask)))
 	end
 	@. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 end
@@ -83,17 +84,15 @@ isaccepted(mask, ϵ, u, m:: Int, a, b, d) = isaccepted(ϵ[mask], u[mask], m, a[m
 function isaccepted(ϵ, u, m:: Int, a, b, d)
 	ω = @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 	t = @. 2 * a * b / (1 - (1 - b) * ϵ)
-	@. (m - 1) * log(t) - t + d > log(u)
+	@. (m - 1) * log(t) - t + d >= log(u)
 end
-
-matrixtocolumns(x) = [x[:, i] for i in 1:size(x, 2)]
 
 function householderrotation(zprime, μ)
 	e1 = similar(μ) .= 0
 	e1[1, :] = 1
 	u = e1 .- μ
-	normalizedu = u ./ sqrt.(sum(u.^2, 2) + 1f-6)
-	zprime .- 2.* normalizedu.* sum(normalizedu .* zprime, 1)
+	normalizedu = u ./ sqrt.(sum(u.^2, 1) + eps(Float32))
+	zprime .- 2 .* normalizedu .* sum(normalizedu .* zprime, 1)
 end
 
 

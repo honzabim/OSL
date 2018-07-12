@@ -56,7 +56,7 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 100)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), ()->(), 100)
 
     rstrn = Flux.Tracker.data(rscore(model, train.data))
     rstst = Flux.Tracker.data(rscore(model, test.data))
@@ -93,7 +93,7 @@ dataPath = folderpath * "data/loda/public/datasets/numerical"
 allData = AnomalyDetection.loaddata(dataPath)
 
 batchSize = 100
-iterations = 1000
+iterations = 10000
 
 loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
 
