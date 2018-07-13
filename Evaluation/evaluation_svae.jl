@@ -12,6 +12,7 @@ using KNNmem
 using FluxExtensions
 using AnomalyDetection
 using EvalCurves
+using ADatasets
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
@@ -56,13 +57,13 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), ()->(), 100)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 
-    rstrn = Flux.Tracker.data(rscore(model, train.data))
-    rstst = Flux.Tracker.data(rscore(model, test.data))
+    rstrn = Flux.Tracker.data(rscore(model, train[1]))
+    rstst = Flux.Tracker.data(rscore(model, test[1]))
 
     results = []
-    anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
+    anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
     for ac in anomalyCounts
         if ac <= size(anomalies, 2)
             l = learnAnomaly!(anomalies[:, ac], [1])
@@ -70,13 +71,13 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
             break;
         end
 
-        values, probScore = classify(test.data)
+        values, probScore = classify(test[1])
         values = Flux.Tracker.data(values)
         probScore = Flux.Tracker.data(probScore)
 
-        rocData = roc(test.labels, values)
+        rocData = roc(test[2] .- 1, values)
         f1 = f1score(rocData)
-        tprvec, fprvec = EvalCurves.roccurve(probScore, test.labels)
+        tprvec, fprvec = EvalCurves.roccurve(probScore, test[2] .- 1)
         auc = EvalCurves.auc(fprvec, tprvec)
         push!(results, (ac, f1, auc, values, probScore, rstrn, rstst))
     end
@@ -88,14 +89,11 @@ mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 difficulties = ["easy", "easy", "easy", "easy"]
-
-dataPath = folderpath * "data/loda/public/datasets/numerical"
-allData = AnomalyDetection.loaddata(dataPath)
-
+const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
 iterations = 10000
 
-loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
+loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
 
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
@@ -103,7 +101,7 @@ for (dn, df) in zip(datasets, difficulties)
     println("$dn")
     println("Running svae...")
 
-    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
     results = gridSearch(evaluateOneConfig, [16 32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)

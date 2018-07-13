@@ -66,18 +66,18 @@ function sampleω(model::SVAE, κ)
 end
 
 function rejectionsampling(m, a, b, d)
-	beta = Beta((m - 1) / 2., (m - 1) / 2.)
+	beta = Beta((m - 1) / 2, (m - 1) / 2)
 	T = eltype(Flux.Tracker.data(a))
 	ϵ, u = Adapt.adapt(T, rand(beta, size(Flux.Tracker.data(a))...)), Adapt.adapt(T, rand(size(Flux.Tracker.data(a))))
 
 	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
 	while !all(accepted)
 		mask = .! accepted
-		accepted[mask] .= isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
 		u[mask] = Adapt.adapt(T, rand(sum(mask)))
+		accepted[mask] .= isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 	end
-	@. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
+	return @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 end
 
 isaccepted(mask, ϵ, u, m:: Int, a, b, d) = isaccepted(ϵ[mask], u[mask], m, a[mask], b[mask], d[mask])
@@ -89,12 +89,11 @@ end
 
 function householderrotation(zprime, μ)
 	e1 = similar(μ) .= 0
-	e1[1, :] = 1
+	e1[1, :] .= 1
 	u = e1 .- μ
 	normalizedu = u ./ sqrt.(sum(u.^2, 1) + eps(Float32))
-	zprime .- 2 .* normalizedu .* sum(normalizedu .* zprime, 1)
+	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
 end
-
 
 function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)
@@ -105,3 +104,6 @@ function samplez(m::SVAE, μz, κz)
 end
 
 zfromx(m::SVAE, x) = samplez(m, zparams(m, x)...)
+
+gradtest(f, xs::AbstractArray...) = Flux.Tracker.gradcheck((xs...) -> sum(sin.(f(xs...))), xs...)
+gradtest(f, dims...) = gradtest(f, rand.(dims)...)
