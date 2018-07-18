@@ -23,12 +23,15 @@ struct SVAE
 	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
+Flux.treelike(SVAE)
+
 vmfentropy(m, κ) = .-κ .* besselix(m / 2, κ) ./ besselix(m / 2 - 1, κ) .- ((m ./ 2 .- 1) .* log.(κ) .- (m ./ 2) .* log(2π) .- (κ .+ log.(besselix(m / 2 - 1, κ))))
 huentropy(m) = m / 2 * log(π) + log(2) - lgamma(m / 2)
 
 function loss(m::SVAE, x)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
+	z = μz
 	xgivenz = m.g(z)
 	return Flux.mse(x, xgivenz) + mean(kldiv(m, κz))
 end
@@ -57,7 +60,7 @@ kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
 
 function sampleω(model::SVAE, κ)
 	m = model.zdim
-	c = @. √(4κ ^ 2 + (m - 1) ^ 2)
+	c = @. sqrt(4κ ^ 2 + (m - 1) ^ 2)
 	b = @. (-2κ + c) / (m - 1)
 	a = @. (m - 1 + 2κ + c) / 4
 	d = @. (4 * a * b) / (1 + b) - (m - 1) * log(m - 1)
@@ -99,6 +102,7 @@ function samplez(m::SVAE, μz, κz)
 	ω = sampleω(m, κz)
 	normal = Normal()
 	v = Adapt.adapt(eltype(Flux.Tracker.data(κz)), rand(normal, size(μz, 1) - 1, size(μz, 2)))
+	v = v ./ sqrt.(sum(v .^ 2, 1)) + eps(Float32)
 	z = householderrotation(vcat(ω, sqrt.(1 .- ω .^ 2) .* v), μz)
 	return z
 end

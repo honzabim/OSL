@@ -102,7 +102,7 @@ for (dn, df) in zip(datasets, difficulties)
     println("Running svae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [16 32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
+    results = gridSearch(evaluateOneConfig, [16 32], [4 8], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end
