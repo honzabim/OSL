@@ -54,10 +54,10 @@ function rscore(m::SVAE, x)
     return Flux.mse(x, xgivenz)
 end
 
-function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
+function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 1000)
 
     rstrn = Flux.Tracker.data(rscore(model, train[1]))
     rstst = Flux.Tracker.data(rscore(model, test[1]))
@@ -84,7 +84,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/testSVAE/"
+outputFolder = folderpath * "OSL/experiments/SVAE/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -101,8 +101,8 @@ for (dn, df) in zip(datasets, difficulties)
     println("$dn")
     println("Running svae...")
 
-    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [16 32], [4 8], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [8 16 32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end

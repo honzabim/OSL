@@ -5,11 +5,14 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-push!(LOAD_PATH, "/home/jan/dev/OSL/KNNmemory", "/home/jan/dev/FluxExtensions.jl/src", "/home/jan/dev/anomaly detection/anomaly_detection/src", "/home/jan/dev/EvalCurves.jl/src")
+folderpath = "/home/jan/dev/"
+# folderpath = "D:/dev/"
+push!(LOAD_PATH, folderpath * "OSL/KNNmemory", folderpath * "FluxExtensions.jl/src", folderpath * "anomaly detection/anomaly_detection/src", folderpath * "EvalCurves.jl/src", folderpath)
 using KNNmem
 using FluxExtensions
 using AnomalyDetection
 using EvalCurves
+using ADatasets
 
 include("/home/jan/dev/OSL/Evaluation/external/vae.jl")
 
@@ -108,13 +111,13 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 1000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train.data, train.labels), batchSize, numBatches), cbreak = 1000)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 1000)
 
-    rstrn = Flux.Tracker.data(rscore(model, train.data))
-    rstst = Flux.Tracker.data(rscore(model, test.data))
+    rstrn = Flux.Tracker.data(rscore(model, train[1]))
+    rstst = Flux.Tracker.data(rscore(model, test[1]))
 
     results = []
-    anomalies = train.data[:, train.labels .== 1] # TODO needs to be shuffled!!!
+    anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
     for ac in anomalyCounts
         if ac <= size(anomalies, 2)
             l = learnAnomaly!(anomalies[:, ac], [1])
@@ -124,20 +127,20 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
             break;
         end
 
-        values, probScore = classify(test.data)
+        values, probScore = classify(test[1])
         values = Flux.Tracker.data(values)
         probScore = Flux.Tracker.data(probScore)
 
-        rocData = roc(test.labels, values)
+        rocData = roc(test[2] .- 1, values)
         f1 = f1score(rocData)
-        tprvec, fprvec = EvalCurves.roccurve(probScore, test.labels)
+        tprvec, fprvec = EvalCurves.roccurve(probScore, test[2] .- 1)
         auc = EvalCurves.auc(fprvec, tprvec)
         push!(results, (ac, f1, auc, values, probScore, rstrn, rstst))
     end
     return results
 end
 
-outputFolder = "/home/jan/dev/OSL/experiments/firstVae/"
+outputFolder = "/home/jan/dev/OSL/experiments/VAE/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -146,12 +149,11 @@ difficulties = ["easy", "easy", "easy", "easy"]
 # difficulties = ["easy"]
 
 dataPath = "/home/jan/dev/data/loda/public/datasets/numerical"
-allData = AnomalyDetection.loaddata(dataPath)
 
 batchSize = 100
 iterations = 10000
 
-loadData(datasetName, difficulty) = AnomalyDetection.makeset(allData[datasetName], 0.9, difficulty, 0.1, "high")
+loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
 
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
@@ -159,8 +161,8 @@ for (dn, df) in zip(datasets, difficulties)
     println("$dn")
     println("Running vae...")
 
-    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createVaeWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [16 32], [2 4 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1, [1. 2. 8. 16. 64.], [:unit :sigma])
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createVaeWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [8 16 32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1, [1.], [:unit])
     #println(results)
     results = reshape(results, length(results), 1)
     #println(typeof(results))
@@ -168,7 +170,7 @@ for (dn, df) in zip(datasets, difficulties)
     #
     # println("Running ff with memory...")
     #
-    # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createFeedForwardModelWithMem(size(train.data, 1), p...), 1:5, batchSize, iterations)
+    # evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createFeedForwardModelWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
     # results = gridSearch(evaluateOneConfig, [8 16 32], [4 16], [3 4 5], ["leakyrelu"], ["Dense", "ResDense"], [1024], [64], 2)
     # #println(results)
     # results = reshape(results, length(results), 1)
@@ -178,7 +180,7 @@ for (dn, df) in zip(datasets, difficulties)
     # iterations = 100000
     # println("Running ff...")
     #
-    # evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train.data, 1), p...), 1:5, batchSize, iterations))
+    # evaluateOneConfig = p -> (println(p); runExperiment(dn, train, test, () -> createFeedForwardModel(size(train[1], 1), p...), 1:5, batchSize, iterations))
     # results = gridSearch(evaluateOneConfig, [8 16 32], 2, [3 4 5], ["leakyrelu"], ["Dense", "ResDense"])
     # #println(results)
     # results = reshape(results, length(results), 1)
