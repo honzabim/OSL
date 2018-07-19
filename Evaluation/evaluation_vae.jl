@@ -133,8 +133,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
         rocData = roc(test[2] .- 1, values)
         f1 = f1score(rocData)
-        tprvec, fprvec = EvalCurves.roccurve(probScore, test[2] .- 1)
-        auc = EvalCurves.auc(fprvec, tprvec)
+        auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
         push!(results, (ac, f1, auc, values, probScore, rstrn, rstst))
     end
     return results
@@ -162,7 +161,7 @@ for (dn, df) in zip(datasets, difficulties)
     println("Running vae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createVaeWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [8 16 32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1, [1.], [:unit])
+    results = gridSearch(evaluateOneConfig, [32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1, [1.], [:unit])
     #println(results)
     results = reshape(results, length(results), 1)
     #println(typeof(results))
