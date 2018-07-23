@@ -83,7 +83,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAE/"
+outputFolder = folderpath * "OSL/experiments/SVAEtest/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]

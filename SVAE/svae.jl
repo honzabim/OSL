@@ -1,33 +1,72 @@
 include("bessel.jl")
 
-import Flux
+using Flux
 using NNlib
 using Distributions
 using SpecialFunctions
 using Adapt
-using Juno
 
-Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(Float32)))
+"""
+		Implementation of Hyperspherical Variational Auto-Encoders
 
+		Original paper: https://arxiv.org/abs/1804.00891
+
+		SVAE(q,g,zdim,hue,μzfromhidden,κzfromhidden)
+
+		q --- encoder - in this case encoder only encodes from input to a hidden
+						layer which is then transformed into parameters for the latent
+						layer by `μzfromhidden` and `κzfromhidden` functions
+		g --- decoder
+		zdim --- dimension of the latent space
+		hue --- Hyperspherical Uniform Entropy that is part of the KL divergence but depends only on dimensionality so can be computed in constructor
+		μzfromhidden --- function that transforms the hidden layer to μ parameter of the latent layer by normalization
+		κzfromhidden --- transforms hidden layer to κ parameter of the latent layer using softplus since κ is a positive scalar
+"""
 struct SVAE
-	q	# encoder (inference modul)
-	g	# decoder (generator)
+	q
+	g
 	zdim
-	hue #Hyperspherical Uniform Entropy - constant with dimensionality - zdim
-	μzfromhidden # function to compute μz from the hidden layer
-	κzfromhidden # function to compute κz from the hidden layer
+	hue
+	μzfromhidden
+	κzfromhidden
 
 	"""
-	SVAE(q, g, hdim, zdim) Constructor of the S-VAE with hidden dim `hdim` and latent dim = `zdim`. `zdim > 3`
+	SVAE(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
 	"""
-	SVAE(q, g, hdim::Integer, zdim::Integer, T) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
 Flux.treelike(SVAE)
 
+Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(eltype(v))))
+normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
+
+"""
+	vmfentropy(m, κ)
+
+	Entropy of Von Mises-Fisher distribution
+"""
 vmfentropy(m, κ) = .-κ .* besselix(m / 2, κ) ./ besselix(m / 2 - 1, κ) .- ((m ./ 2 .- 1) .* log.(κ) .- (m ./ 2) .* log(2π) .- (κ .+ log.(besselix(m / 2 - 1, κ))))
+
+"""
+	huentropy(m)
+
+	Entropy of Hyperspherical Uniform distribution
+"""
 huentropy(m) = m / 2 * log(π) + log(2) - lgamma(m / 2)
 
+"""
+	kldiv(model::SVAE, κ)
+
+	KL divergence between Von Mises-Fisher and Hyperspherical Uniform distributions
+"""
+kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
+
+"""
+	loss(m::SVAE, x)
+
+	Loss function of the S-VAE combining reconstruction error and the KL divergence
+"""
 function loss(m::SVAE, x)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
@@ -36,27 +75,49 @@ function loss(m::SVAE, x)
 	return Flux.mse(x, xgivenz) + mean(kldiv(m, κz))
 end
 
+"""
+	zparams(model::SVAE, x)
+
+	Computes μ and κ from the hidden layer
+"""
 function zparams(model::SVAE, x)
 	hidden = model.q(x)
 	return model.μzfromhidden(hidden), model.κzfromhidden(hidden)
 end
 
-kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
-# kldiv(model::SVAE, κ::TrackedArray) = Tracker.track(kldiv, model, κ)
-# kldiv(model::SVAE, κ::Flux.Tracker.TrackedReal) = Tracker.track(kldiv, model, κ)
-#
-# function ∇kldiv(model::SVAE, κ)
-# 	m = model.zdim
-# 	k = Flux.Tracker.data(κ)
-#
-# 	a = @. besselix(m / 2 + 1, k) / besselix(m / 2 - 1, k)
-# 	b = @. besselix(m / 2, k) * (besselix(m / 2 - 2, k) + besselix(m / 2, k)) / besselix(m / 2 - 1, k) ^ 2
-#
-# 	return @. k / 2 * (a - b + 1)
-# end
-#
-# Tracker.back(::typeof(kldiv), Δ, model::SVAE, κ) = Tracker.@back(κ, ∇kldiv(model, κ) .* Δ)
+"""
+	zfromx(m::SVAE, x)
 
+	convenience function that returns latent layer based on the input `x`
+"""
+zfromx(m::SVAE, x) = samplez(m, zparams(m, x)...)
+
+"""
+	samplez(m::SVAE, μz, κz)
+
+	samples z layer based on its parameters
+"""
+function samplez(m::SVAE, μz, κz)
+	ω = sampleω(m, κz)
+	normal = Normal()
+	v = Adapt.adapt(eltype(Flux.Tracker.data(κz)), rand(normal, size(μz, 1) - 1, size(μz, 2)))
+	v = normalizecolumns(v)
+	z = householderrotation(vcat(ω, sqrt.(1 .- ω .^ 2) .* v), μz)
+	return z
+end
+
+"""
+	householderrotation(zprime, μ)
+
+	uses Householder reflection to rotate the `zprime` vector according to mapping of e1 to μ
+"""
+function householderrotation(zprime, μ)
+	e1 = similar(μ) .= 0
+	e1[1, :] .= 1
+	u = e1 .- μ
+	normalizedu = normalizecolumns(u)
+	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
+end
 
 function sampleω(model::SVAE, κ)
 	m = model.zdim
@@ -71,7 +132,7 @@ end
 function rejectionsampling(m, a, b, d)
 	beta = Beta((m - 1) / 2, (m - 1) / 2)
 	T = eltype(Flux.Tracker.data(a))
-	ϵ, u = Adapt.adapt(T, rand(beta, size(Flux.Tracker.data(a))...)), Adapt.adapt(T, rand(size(Flux.Tracker.data(a))))
+	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(size(a)))
 
 	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
 	while !all(accepted)
@@ -89,25 +150,3 @@ function isaccepted(ϵ, u, m:: Int, a, b, d)
 	t = @. 2 * a * b / (1 - (1 - b) * ϵ)
 	@. (m - 1) * log(t) - t + d >= log(u)
 end
-
-function householderrotation(zprime, μ)
-	e1 = similar(μ) .= 0
-	e1[1, :] .= 1
-	u = e1 .- μ
-	normalizedu = u ./ sqrt.(sum(u.^2, 1) + eps(Float32))
-	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
-end
-
-function samplez(m::SVAE, μz, κz)
-	ω = sampleω(m, κz)
-	normal = Normal()
-	v = Adapt.adapt(eltype(Flux.Tracker.data(κz)), rand(normal, size(μz, 1) - 1, size(μz, 2)))
-	v = v ./ sqrt.(sum(v .^ 2, 1)) + eps(Float32)
-	z = householderrotation(vcat(ω, sqrt.(1 .- ω .^ 2) .* v), μz)
-	return z
-end
-
-zfromx(m::SVAE, x) = samplez(m, zparams(m, x)...)
-
-gradtest(f, xs::AbstractArray...) = Flux.Tracker.gradcheck((xs...) -> sum(sin.(f(xs...))), xs...)
-gradtest(f, dims...) = gradtest(f, rand.(dims)...)

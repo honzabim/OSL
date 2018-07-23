@@ -7,10 +7,10 @@ using CSV
 # const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/firstVae/"
-const dataFolder = "/home/jan/dev/OSL/experiments/VAE/"
+const dataFolder = "/home/jan/dev/OSL/experiments/SVAE/"
 # const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
-const models = ["vae"]
+const models = ["svae"]
 const scores = ["f1", "auc"]
 const anomalycount = 5
 
