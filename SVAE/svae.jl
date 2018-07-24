@@ -76,6 +76,19 @@ function loss(m::SVAE, x)
 end
 
 """
+	infer(m::SVAE, x)
+
+	infer latent variables and sample output x
+"""
+function infer(m::SVAE, x)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	z = μz
+	xgivenz = m.g(z)
+	return xgivenz
+end
+
+"""
 	zparams(model::SVAE, x)
 
 	Computes μ and κ from the hidden layer

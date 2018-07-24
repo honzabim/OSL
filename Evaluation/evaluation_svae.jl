@@ -59,6 +59,8 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     opt = Flux.Optimise.ADAM(Flux.params(model))
     FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 1000)
 
+    learnRepresentation!(train[1], train[2] - 1)
+
     rstrn = Flux.Tracker.data(rscore(model, train[1]))
     rstst = Flux.Tracker.data(rscore(model, test[1]))
 
@@ -83,7 +85,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAEtest/"
+outputFolder = folderpath * "OSL/experiments/SVAEaftertraining/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
