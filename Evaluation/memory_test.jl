@@ -48,8 +48,8 @@ end
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
-idim = 5
-hdim = 8
+idim = 2
+hdim = 16
 zdim = 2
 numLayers = 3
 nonlinearity = "leakyrelu"
@@ -99,14 +99,15 @@ for i in 1:250:751
 end
 Plots.display(p)
 
-transofrm = rand(5, 2) .* 2 .- 1
+transofrm = rand(2, 2) .* 2 .- 1
 
 trdata = transofrm * origlatent
+# trdata = origlatent
 trlabels = vcat(repmat([1], 250, 1), repmat([2], 250, 1), repmat([3], 250, 1), repmat([4], 250, 1))
 train = (trdata, vec(trlabels))
 
 batchSize = 100
-numBatches = 5000
+numBatches = 2000
 
 opt = Flux.Optimise.ADAM(Flux.params(svae))
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
@@ -121,24 +122,31 @@ end
 Plots.display(p)
 
 xgivenz = Flux.Tracker.data(infer(svae, train[1]))
-Plots.scatter(xgivenz[1, 1:trainCount], xgivenz[2, 1:trainCount])
-Plots.scatter!(xgivenz[1, trainCount + 1:end], xgivenz[2, trainCount + 1:end])
-
-anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
-anomalyCount = 1:5
-for ac in anomalyCount
-    if ac <= size(anomalies, 2)
-        l = learnAnomaly!(anomalies[:, ac], [1])
-    else
-        break;
-    end
-
-    values, probScore = classify(test[1])
-    values = Flux.Tracker.data(values)
-    probScore = Flux.Tracker.data(probScore)
-
-    rocData = roc(test[2], values)
-    showall(rocData)
-    f1 = f1score(rocData)
-    auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
+p = Plots.scatter(0,0)
+for i in 1:250:751
+    Plots.scatter!(xgivenz[1, i:i+249], xgivenz[2, i:i+249])
 end
+Plots.display(p)
+
+
+# Plots.scatter(xgivenz[1, 1:trainCount], xgivenz[2, 1:trainCount])
+# Plots.scatter!(xgivenz[1, trainCount + 1:end], xgivenz[2, trainCount + 1:end])
+#
+# anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
+# anomalyCount = 1:5
+# for ac in anomalyCount
+#     if ac <= size(anomalies, 2)
+#         l = learnAnomaly!(anomalies[:, ac], [1])
+#     else
+#         break;
+#     end
+#
+#     values, probScore = classify(test[1])
+#     values = Flux.Tracker.data(values)
+#     probScore = Flux.Tracker.data(probScore)
+#
+#     rocData = roc(test[2], values)
+#     showall(rocData)
+#     f1 = f1score(rocData)
+#     auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
+# end
