@@ -29,7 +29,7 @@ function printAndRun(f, p)
     (p, f(p))
 end
 
-function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, T = Float32)
+function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
@@ -37,13 +37,13 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
-        trainOnLatent!(zfromx(svae, data), zeros(collect(labels))) # changes labels to zeros!
-        return loss(svae, data)
+        # trainOnLatent!(zfromx(svae, data), zeros(collect(labels))) # changes labels to zeros!
+        return loss(svae, data, 0.01f0)
     end
 
     function learnAnomaly!(data, labels)
         trainOnLatent!(zfromx(svae, data), labels)
-        return loss(svae, data)
+        return loss(svae, data, 0.01f0)
     end
 
     return svae, learnRepresentation!, learnAnomaly!, classify
@@ -56,10 +56,10 @@ end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
-    opt = Flux.Optimise.ADAM(Flux.params(model))
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 1000)
+    opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 
-    learnRepresentation!(train[1], train[2] - 1)
+    # learnRepresentation!(train[1], train[2] - 1)
 
     rstrn = Flux.Tracker.data(rscore(model, train[1]))
     rstst = Flux.Tracker.data(rscore(model, test[1]))
@@ -85,7 +85,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAEaftertraining/"
+outputFolder = folderpath * "OSL/experiments/SVAE/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -102,8 +102,8 @@ for (dn, df) in zip(datasets, difficulties)
     println("$dn")
     println("Running svae...")
 
-    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [32], [4 8 16], [3], ["leakyrelu"], ["Dense"], [1024], [64], 1)
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
+    results = gridSearch(evaluateOneConfig, [32], [2 4 8], [3], ["relu"], ["Dense"], [1024], [64], 1)
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end

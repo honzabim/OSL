@@ -33,12 +33,11 @@ struct SVAE
 	"""
 	SVAE(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
 	"""
-	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Dense(hdim, zdim, normalize)), Adapt.adapt(T, Dense(hdim, 1, softplus)))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
 Flux.treelike(SVAE)
 
-Base.normalize(v) = v ./ (sqrt(sum(v .^ 2) + eps(eltype(v))))
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
 """
@@ -67,12 +66,11 @@ kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
 
 	Loss function of the S-VAE combining reconstruction error and the KL divergence
 """
-function loss(m::SVAE, x)
+function loss(m::SVAE, x, β)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
-	z = μz
 	xgivenz = m.g(z)
-	return Flux.mse(x, xgivenz) + mean(kldiv(m, κz))
+	return Flux.mse(x, xgivenz) + β * mean(kldiv(m, κz))
 end
 
 """
@@ -83,7 +81,6 @@ end
 function infer(m::SVAE, x)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
-	z = μz
 	xgivenz = m.g(z)
 	return xgivenz
 end
@@ -157,7 +154,7 @@ function rejectionsampling(m, a, b, d)
 	return @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 end
 
-isaccepted(mask, ϵ, u, m:: Int, a, b, d) = isaccepted(ϵ[mask], u[mask], m, a[mask], b[mask], d[mask])
+isaccepted(mask, ϵ, u, m:: Int, a, b, d) = isaccepted(ϵ[mask], u[mask], m, a[mask], b[mask], d[mask]);
 function isaccepted(ϵ, u, m:: Int, a, b, d)
 	ω = @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 	t = @. 2 * a * b / (1 - (1 - b) * ϵ)

@@ -18,6 +18,9 @@ importall KNNmem
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
+folderpath = "/home/jan/dev/"
+const dataPath = folderpath * "data/loda/public/datasets/numerical"
+
 function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
@@ -35,7 +38,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(zfromx(svae, data), zeros(collect(labels))) # changes labels to zeros!
-        return loss(svae, data)
+        return loss(svae, data, 0.01)
     end
 
     function learnAnomaly!(data, labels)
@@ -48,11 +51,11 @@ end
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
-idim = 2
-hdim = 16
+idim = 30
+hdim = 32
 zdim = 2
 numLayers = 3
-nonlinearity = "leakyrelu"
+nonlinearity = "relu"
 layerType = "Dense"
 memorySize = 32
 k = 5
@@ -87,46 +90,52 @@ end
 # Plots.scatter(train[1][1, 1:trainCount])
 # Plots.scatter!(train[1][1, trainCount + 1:end])
 
-origlatent = rand(2,1000)
-origlatent[1, 501:1000] = -origlatent[1, 501:1000]
-origlatent[2, 251:500] = -origlatent[2, 251:500]
-origlatent[2, 751:1000] = -origlatent[2, 751:1000]
-origlatent = normalizecolumns(origlatent)
+# origlatent = rand(2,1000)
+# origlatent[1, 501:1000] = -origlatent[1, 501:1000]
+# origlatent[2, 251:500] = -origlatent[2, 251:500]
+# origlatent[2, 751:1000] = -origlatent[2, 751:1000]
+# origlatent = normalizecolumns(origlatent)
+#
+# p = Plots.scatter(0,0)
+# for i in 1:250:751
+#     Plots.scatter!(origlatent[1, i:i + 249], origlatent[2, i:i + 249])
+# end
+# Plots.display(p)
+#
+# transofrm = rand(100, 2) .* 2 .- 1
 
-p = Plots.scatter(0,0)
-for i in 1:250:751
-    Plots.scatter!(origlatent[1, i:i+249], origlatent[2, i:i+249])
-end
-Plots.display(p)
+loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
+train, test, clusterdness = loadData("breast-cancer-wisconsin", "easy")
 
-transofrm = rand(2, 2) .* 2 .- 1
-
-trdata = transofrm * origlatent
+# trdata = transofrm * origlatent
 # trdata = origlatent
-trlabels = vcat(repmat([1], 250, 1), repmat([2], 250, 1), repmat([3], 250, 1), repmat([4], 250, 1))
-train = (trdata, vec(trlabels))
+# trdata = train[1]
+# # trlabels = vcat(repmat([1], 250, 1), repmat([2], 250, 1), repmat([3], 250, 1), repmat([4], 250, 1))
+# trlabels = train[2] .- 1
+# train = (trdata, vec(trlabels))
 
 batchSize = 100
-numBatches = 2000
+numBatches = 10000
 
-opt = Flux.Optimise.ADAM(Flux.params(svae))
+opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
 
 z = Flux.Tracker.data(zfromx(svae, train[1]))
+Plots.scatter(z[1, :], z[2, :], zcolor = train[2])
 # Plots.scatter(z[1, 1:trainCount], z[2, 1:trainCount])
 # Plots.scatter!(z[1, trainCount + 1:end], z[2, trainCount + 1:end])
-p = Plots.scatter(0,0)
-for i in 1:250:751
-    Plots.scatter!(z[1, i:i+249], z[2, i:i+249])
-end
-Plots.display(p)
-
-xgivenz = Flux.Tracker.data(infer(svae, train[1]))
-p = Plots.scatter(0,0)
-for i in 1:250:751
-    Plots.scatter!(xgivenz[1, i:i+249], xgivenz[2, i:i+249])
-end
-Plots.display(p)
+# p = Plots.scatter(0,0)
+# for i in 1:250:751
+#     Plots.scatter!(z[1, i:i + 249], z[2, i:i + 249])
+# end
+# Plots.display(p)
+#
+# xgivenz = Flux.Tracker.data(infer(svae, train[1]))
+# p = Plots.scatter(0,0)
+# for i in 1:250:751
+#     Plots.scatter!(xgivenz[1, i:i+249], xgivenz[2, i:i+249])
+# end
+# Plots.display(p)
 
 
 # Plots.scatter(xgivenz[1, 1:trainCount], xgivenz[2, 1:trainCount])
