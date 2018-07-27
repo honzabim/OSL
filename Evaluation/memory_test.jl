@@ -51,17 +51,6 @@ end
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
-idim = 30
-hdim = 32
-zdim = 2
-numLayers = 3
-nonlinearity = "relu"
-layerType = "Dense"
-memorySize = 32
-k = 5
-
-svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1)
-
 genanomalies(x, y) = gendata(x, y, -1)
 gendata(x, y) = gendata(x, y, 1)
 function gendata(x, y, α)
@@ -105,57 +94,50 @@ end
 # transofrm = rand(100, 2) .* 2 .- 1
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
-train, test, clusterdness = loadData("breast-cancer-wisconsin", "easy")
 
-# trdata = transofrm * origlatent
-# trdata = origlatent
-# trdata = train[1]
-# # trlabels = vcat(repmat([1], 250, 1), repmat([2], 250, 1), repmat([3], 250, 1), repmat([4], 250, 1))
-# trlabels = train[2] .- 1
-# train = (trdata, vec(trlabels))
+datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
+
+# for d in datasets
+train, test, clusterdness = loadData(datasets[1], "easy")
+
+idim = size(train[1], 1)
+hdim = 32
+zdim = 2
+numLayers = 3
+nonlinearity = "relu"
+layerType = "Dense"
+memorySize = 32
+k = 5
+
+svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1)
 
 batchSize = 100
-numBatches = 10000
+numBatches = 12000
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
 
 z = Flux.Tracker.data(zfromx(svae, train[1]))
-Plots.scatter(z[1, :], z[2, :], zcolor = train[2])
-# Plots.scatter(z[1, 1:trainCount], z[2, 1:trainCount])
-# Plots.scatter!(z[1, trainCount + 1:end], z[2, trainCount + 1:end])
-# p = Plots.scatter(0,0)
-# for i in 1:250:751
-#     Plots.scatter!(z[1, i:i + 249], z[2, i:i + 249])
+p = Plots.plot(Plots.scatter(z[1, train[2] .== 1], z[2, train[2] .== 1]), Plots.scatter(z[1, train[2] .== 2], z[2, train[2] .== 2]))
+Plots.title!(d)
+Plots.display(p)
 # end
-# Plots.display(p)
-#
-# xgivenz = Flux.Tracker.data(infer(svae, train[1]))
-# p = Plots.scatter(0,0)
-# for i in 1:250:751
-#     Plots.scatter!(xgivenz[1, i:i+249], xgivenz[2, i:i+249])
-# end
-# Plots.display(p)
 
+anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
+anomalyCount = 1:5
+for ac in anomalyCount
+    if ac <= size(anomalies, 2)
+        l = learnAnomaly!(anomalies[:, ac], [1])
+    else
+        break;
+    end
 
-# Plots.scatter(xgivenz[1, 1:trainCount], xgivenz[2, 1:trainCount])
-# Plots.scatter!(xgivenz[1, trainCount + 1:end], xgivenz[2, trainCount + 1:end])
-#
-# anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
-# anomalyCount = 1:5
-# for ac in anomalyCount
-#     if ac <= size(anomalies, 2)
-#         l = learnAnomaly!(anomalies[:, ac], [1])
-#     else
-#         break;
-#     end
-#
-#     values, probScore = classify(test[1])
-#     values = Flux.Tracker.data(values)
-#     probScore = Flux.Tracker.data(probScore)
-#
-#     rocData = roc(test[2], values)
-#     showall(rocData)
-#     f1 = f1score(rocData)
-#     auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
-# end
+    values, probScore = classify(test[1])
+    values = Flux.Tracker.data(values)
+    probScore = Flux.Tracker.data(probScore)
+
+    rocData = roc(test[2], values)
+    showall(rocData)
+    f1 = f1score(rocData)
+    auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
+end
