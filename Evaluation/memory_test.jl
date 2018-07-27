@@ -51,19 +51,19 @@ end
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
-genanomalies(x, y) = gendata(x, y, -1)
-gendata(x, y) = gendata(x, y, 1)
-function gendata(x, y, α)
-    data = rand(x, y) .* 2 .- 1
-    data[1, :] = abs.(data[1, :]) * α
-    data = normalizecolumns(data)
-end
-
-function genset(normal, anomalies)
-    n = gendata(1, normal)
-    a = genanomalies(1, anomalies)
-    train = (hcat(n, a), vcat(zeros(Int64, normal), ones(Int64, anomalies)))
-end
+# genanomalies(x, y) = gendata(x, y, -1)
+# gendata(x, y) = gendata(x, y, 1)
+# function gendata(x, y, α)
+#     data = rand(x, y) .* 2 .- 1
+#     data[1, :] = abs.(data[1, :]) * α
+#     data = normalizecolumns(data)
+# end
+#
+# function genset(normal, anomalies)
+#     n = gendata(1, normal)
+#     a = genanomalies(1, anomalies)
+#     train = (hcat(n, a), vcat(zeros(Int64, normal), ones(Int64, anomalies)))
+# end
 
 # trainCount = 100
 # anomaliesCount = 100
@@ -96,9 +96,9 @@ end
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
-
+d = datasets[1]
 # for d in datasets
-train, test, clusterdness = loadData(datasets[1], "easy")
+train, test, clusterdness = loadData(d, "easy")
 
 idim = size(train[1], 1)
 hdim = 32
@@ -112,7 +112,7 @@ k = 5
 svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1)
 
 batchSize = 100
-numBatches = 12000
+numBatches = 10000
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
@@ -122,6 +122,8 @@ p = Plots.plot(Plots.scatter(z[1, train[2] .== 1], z[2, train[2] .== 1]), Plots.
 Plots.title!(d)
 Plots.display(p)
 # end
+
+plotmemory(mem)
 
 anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
 anomalyCount = 1:5
@@ -140,4 +142,8 @@ for ac in anomalyCount
     showall(rocData)
     f1 = f1score(rocData)
     auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
+end
+
+function plotmemory(m::KNNmemory)
+    Plots.scatter(m.M[:, 1], m.M[:, 2], zcolor = m.V)
 end
