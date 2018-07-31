@@ -43,10 +43,14 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
 
     function learnAnomaly!(data, labels)
         trainOnLatent!(zfromx(svae, data), labels)
-        return loss(svae, data)
+        return loss(svae, data, 0.01)
     end
 
     return svae, memory, learnRepresentation!, learnAnomaly!, classify
+end
+
+function plotmemory(m::KNNmemory)
+    Plots.scatter(m.M[:, 1], m.M[:, 2], zcolor = m.V)
 end
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
@@ -114,6 +118,8 @@ svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idi
 batchSize = 100
 numBatches = 10000
 
+Plots.display(plotmemory(mem))
+
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
 
@@ -123,13 +129,18 @@ Plots.title!(d)
 Plots.display(p)
 # end
 
-plotmemory(mem)
+Plots.display(plotmemory(mem))
 
-anomalies = train[1][:, train[2] .== 1] # TODO needs to be shuffled!!!
-anomalyCount = 1:5
+learnRepresentation!(train[1], zeros(collect(train[2])))
+
+Plots.display(plotmemory(mem))
+
+
+anomalies = train[1][:, train[2] .== 2] # TODO needs to be shuffled!!!
+anomalyCount = 1:10
 for ac in anomalyCount
     if ac <= size(anomalies, 2)
-        l = learnAnomaly!(anomalies[:, ac], [1])
+        l = learnAnomaly!(anomalies[:, ac], [2])
     else
         break;
     end
@@ -142,8 +153,7 @@ for ac in anomalyCount
     showall(rocData)
     f1 = f1score(rocData)
     auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
-end
 
-function plotmemory(m::KNNmemory)
-    Plots.scatter(m.M[:, 1], m.M[:, 2], zcolor = m.V)
+    println("AUC: $(auc)")
+    Plots.display(plotmemory(mem))
 end
