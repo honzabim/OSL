@@ -31,7 +31,7 @@ mutable struct KNNmemory{T <: Real}
     - `α::Real`: parameter of the memory loss function that determines required distance between clusters
     """
     function KNNmemory{T}(memorySize::Integer, keySize::Integer, k::Integer, labelCount::Integer, α::Real = 0.1) where T
-        M = rand(T, memorySize, keySize)
+        M = rand(T, memorySize, keySize) .* 2 .- 1
         V = rand(0:(labelCount - 1), memorySize)
         A = zeros(Int, memorySize)
 
