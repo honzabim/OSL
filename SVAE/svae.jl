@@ -73,6 +73,23 @@ function loss(m::SVAE, x, β)
 	return Flux.mse(x, xgivenz) + β * mean(kldiv(m, κz))
 end
 
+pairwisecos(x, y) = acos.(x' * y)
+pairwisecos(x) = pairwisecos(x, x)
+
+function samplehsuniform(size...)
+	v = randn(size...)
+	v = normalizecolumns(v)
+end
+
+function wloss(m::SVAE, x, β, d)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	zp = samplehsuniform(size(x))
+	Ω = d(z, zp)
+	xgivenz = m.g(z)
+	return Flux.mse(x, xgivenz) + β * Ω
+end
+
 """
 	infer(m::SVAE, x)
 
