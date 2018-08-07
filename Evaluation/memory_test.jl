@@ -9,7 +9,7 @@ folderpath = "/home/jan/dev/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath * "OSL/KNNmemory", folderpath * "FluxExtensions.jl/src", folderpath * "anomaly detection/anomaly_detection/src", folderpath * "EvalCurves.jl/src", folderpath)
 using FluxExtensions
-using AnomalyDetection
+using ADatasets
 using EvalCurves
 using ADatasets
 using Plots
@@ -38,12 +38,13 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(zfromx(svae, data), zeros(collect(labels))) # changes labels to zeros!
-        return loss(svae, data, 0.01)
+        return wloss(svae, data, 0.001, (x, y) -> mmd_imq(x, y, 1))
+        # return loss(svae, data, 0.01)
     end
 
     function learnAnomaly!(data, labels)
         trainOnLatent!(zfromx(svae, data), labels)
-        return loss(svae, data, 0.01)
+        return loss(svae, data, 0.005)
     end
 
     return svae, memory, learnRepresentation!, learnAnomaly!, classify
@@ -97,11 +98,14 @@ normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m
 #
 # transofrm = rand(100, 2) .* 2 .- 1
 
-loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
+function loadData(datasetName, difficulty)
+    train, test, clusterdness = ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.9, "low")
+    return ADatasets.subsampleanomalous(train, 0.05), test, clusterdness
+end
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 d = datasets[1]
-# for d in datasets
+for d in datasets
 train, test, clusterdness = loadData(d, "easy")
 
 idim = size(train[1], 1)
@@ -118,7 +122,7 @@ svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idi
 batchSize = 100
 numBatches = 10000
 
-Plots.display(plotmemory(mem))
+# Plots.display(plotmemory(mem))
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
@@ -127,33 +131,33 @@ z = Flux.Tracker.data(zfromx(svae, train[1]))
 p = Plots.plot(Plots.scatter(z[1, train[2] .== 1], z[2, train[2] .== 1]), Plots.scatter(z[1, train[2] .== 2], z[2, train[2] .== 2]))
 Plots.title!(d)
 Plots.display(p)
-# end
-
-Plots.display(plotmemory(mem))
-
-learnRepresentation!(train[1], zeros(collect(train[2])))
-
-Plots.display(plotmemory(mem))
-
-
-anomalies = train[1][:, train[2] .== 2] # TODO needs to be shuffled!!!
-anomalyCount = 1:10
-for ac in anomalyCount
-    if ac <= size(anomalies, 2)
-        l = learnAnomaly!(anomalies[:, ac], [2])
-    else
-        break;
-    end
-
-    values, probScore = classify(test[1])
-    values = Flux.Tracker.data(values)
-    probScore = Flux.Tracker.data(probScore)
-
-    rocData = roc(test[2], values)
-    showall(rocData)
-    f1 = f1score(rocData)
-    auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
-
-    println("AUC: $(auc)")
-    Plots.display(plotmemory(mem))
 end
+
+# Plots.display(plotmemory(mem))
+#
+# learnRepresentation!(train[1], zeros(collect(train[2])))
+#
+# Plots.display(plotmemory(mem))
+#
+#
+# anomalies = train[1][:, train[2] .== 2] # TODO needs to be shuffled!!!
+# anomalyCount = 1:10
+# for ac in anomalyCount
+#     if ac <= size(anomalies, 2)
+#         l = learnAnomaly!(anomalies[:, ac], [2])
+#     else
+#         break;
+#     end
+#
+#     values, probScore = classify(test[1])
+#     values = Flux.Tracker.data(values)
+#     probScore = Flux.Tracker.data(probScore)
+#
+#     rocData = roc(test[2], values)
+#     showall(rocData)
+#     f1 = f1score(rocData)
+#     auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2])...)
+#
+#     println("AUC: $(auc)")
+#     Plots.display(plotmemory(mem))
+# end

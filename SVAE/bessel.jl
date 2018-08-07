@@ -42,4 +42,4 @@ SpecialFunctions.besselix(ν, x::Flux.Tracker.TrackedMatrix) = Flux.Tracker.trac
 SpecialFunctions.besselix(ν::Real, x::Flux.Tracker.TrackedReal) = Flux.Tracker.track(mybessel, ν, x)
 SpecialFunctions.besselix(ν, x::Flux.Tracker.TrackedArray) = Flux.Tracker.track(mybessel, ν, x)
 SpecialFunctions.besselix(ν, x::AbstractArray) = besselix.(ν, x)
-Flux.Tracker.back(::typeof(mybessel), Δ, ν, x) = Flux.Tracker.@back(x, ∇mybessel(ν, Flux.data(x)) .* Δ)
+Flux.Tracker.back(::typeof(mybessel), Δ, ν, x) = Flux.Tracker.back(x, ∇mybessel(ν, Flux.data(x)) .* Δ)

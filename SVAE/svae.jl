@@ -73,7 +73,10 @@ function loss(m::SVAE, x, β)
 	return Flux.mse(x, xgivenz) + β * mean(kldiv(m, κz))
 end
 
-pairwisecos(x, y) = acos.(x' * y)
+function pairwisecos(x, y)
+	m = x' * y .* (1 - eps(Float32) * size(x, 1))
+	acos.(m)
+end
 pairwisecos(x) = pairwisecos(x, x)
 
 function samplehsuniform(size...)
@@ -81,10 +84,16 @@ function samplehsuniform(size...)
 	v = normalizecolumns(v)
 end
 
+k_imq(x,y,c) = sum( c./ (c .+ pairwisecos(x,y)))/(size(x,2) * size(y,2))
+k_imq(x::T,c) where {T<:AbstractMatrix} = sum(c ./(c .+ pairwisecos(x)))/(size(x,2) * (size(x,2) -1 ))
+k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
+
+mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
+
 function wloss(m::SVAE, x, β, d)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
-	zp = samplehsuniform(size(x))
+	zp = samplehsuniform(size(z))
 	Ω = d(z, zp)
 	xgivenz = m.g(z)
 	return Flux.mse(x, xgivenz) + β * Ω

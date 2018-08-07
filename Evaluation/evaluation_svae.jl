@@ -13,6 +13,15 @@ using FluxExtensions
 using AnomalyDetection
 using EvalCurves
 using ADatasets
+using NearestNeighbors
+
+using PyCall
+@pyimport sklearn.metrics as sm
+
+function pyauc(labels, ascores)
+	pyfpr, pytpr, _ = sm.roc_curve(labels, ascores, drop_intermediate = true)
+	pyauc = sm.auc(pyfpr, pytpr)
+end
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
@@ -29,7 +38,7 @@ function printAndRun(f, p)
     (p, f(p))
 end
 
-function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, α = 0.1, T = Float64)
+function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
@@ -38,12 +47,12 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
 
     function learnRepresentation!(data, labels)
         # trainOnLatent!(zfromx(svae, data), zeros(collect(labels))) # changes labels to zeros!
-        return loss(svae, data, 0.01f0)
+        return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     end
 
     function learnAnomaly!(data, labels)
         trainOnLatent!(zfromx(svae, data), labels)
-        return loss(svae, data, 0.01f0)
+        return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     end
 
     return svae, learnRepresentation!, learnAnomaly!, classify
@@ -57,12 +66,18 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
+    Flux.train!(learnRepresentation!, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), opt)
+    # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 
     # learnRepresentation!(train[1], train[2] - 1)
 
     rstrn = Flux.Tracker.data(rscore(model, train[1]))
     rstst = Flux.Tracker.data(rscore(model, test[1]))
+
+    balltree = BallTree(train[1], Euclidean(); reorder = false)
+    idxs, dists = knn(balltree, test[1], 5, false)
+    knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
+    knnauc = pyauc(test[2] .- 1, knnscores)
 
     results = []
     anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
@@ -79,13 +94,14 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
         rocData = roc(test[2] .- 1, values)
         f1 = f1score(rocData)
-        auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-        push!(results, (ac, f1, auc, values, probScore, rstrn, rstst))
+        # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+        auc = pyauc(test[2] .- 1, probScore)
+        push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc))
     end
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAE/"
+outputFolder = folderpath * "OSL/experiments/WSVAEkNN/"
 mkpath(outputFolder)
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -94,7 +110,7 @@ const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
 iterations = 10000
 
-loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "high")
+loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
@@ -103,7 +119,7 @@ for (dn, df) in zip(datasets, difficulties)
     println("Running svae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [32], [2 4 8], [3], ["relu"], ["Dense"], [1024], [64], 1)
+    results = gridSearch(evaluateOneConfig, [32], [2 4 8], [3], ["relu"], ["Dense"], [1024], [16], [1], [0.001 0.01 0.05 0.1])
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end
