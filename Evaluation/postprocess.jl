@@ -18,9 +18,9 @@ const anomalycount = 5
 loadExperiment(filePath) = load(filePath)["results"]
 
 # params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
-params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :model, :dataset]
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :knnauc, :knnprec, :knnrecall, :model, :dataset]
 # types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
-types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, Float64, Float64, String, String]
+types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Float64, Int, Float64, Float64, Float64, Float64, Float64, Float64, Float64, String, String]
 const anomalycount = 5
 function processFile!(dataframe, model, dataset)
     println("Processing $model $dataset")
@@ -28,9 +28,9 @@ function processFile!(dataframe, model, dataset)
 
     for i in 1:length(results)
         for ac in 1:anomalycount
-            pars = length(results[1][1]) > 5 ? results[i][1][1:7] : vcat(results[i][1]..., -1, -1)
+            pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
             # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
-            push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., results[i][2][ac][6:7]..., model, dataset))
+            push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., results[i][2][ac][6:10]..., model, dataset))
         end
     end
 end
@@ -68,17 +68,17 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 #     processFile!(allData, models[1], datasets[1] * ".$i")
 # end
 
-CSV.write(dataFolder * "results.csv", allData)
-
-showall(ranks(allData, :f1))
-println()
-showall(ranks(allData, :auc))
-println()
-
-vaedf = allData[allData[:model] .== "autoencoder", :]
-# fmdf = allData[allData[:model] .== "ffMem", :]
-# ffdf = allData[allData[:model] .== "ff", :]
-
-by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:f1]))
-println()
-by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:auc]))
+# CSV.write(dataFolder * "results.csv", allData)
+#
+# showall(ranks(allData, :f1))
+# println()
+# showall(ranks(allData, :auc))
+# println()
+#
+# vaedf = allData[allData[:model] .== "autoencoder", :]
+# # fmdf = allData[allData[:model] .== "ffMem", :]
+# # ffdf = allData[allData[:model] .== "ff", :]
+#
+# by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:f1]))
+# println()
+# by(allData, [:model, :dataset, :anomaliesSeen], (df) -> maximum(df[:auc]))
