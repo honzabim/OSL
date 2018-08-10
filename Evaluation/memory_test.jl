@@ -5,21 +5,19 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "/home/jan/dev/"
-# folderpath = "D:/dev/"
-push!(LOAD_PATH, folderpath * "OSL/KNNmemory", folderpath * "FluxExtensions.jl/src", folderpath * "anomaly detection/anomaly_detection/src", folderpath * "EvalCurves.jl/src", folderpath)
+# folderpath = "/home/jan/dev/"
+folderpath = "D:/dev/julia/"
+push!(LOAD_PATH, folderpath * "OSL/KNNmemory/", folderpath)
 using FluxExtensions
 using ADatasets
 using EvalCurves
-using ADatasets
 using Plots
-plotly()
-importall KNNmem
+pyplot()
 
+importall KNNmem
 include(folderpath * "OSL/SVAE/svae.jl")
 
-folderpath = "/home/jan/dev/"
-const dataPath = folderpath * "data/loda/public/datasets/numerical"
+const dataPath = "D:/dev/data/loda/public/datasets/numerical"
 
 function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
@@ -105,33 +103,33 @@ end
 
 datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 d = datasets[1]
-for d in datasets
-train, test, clusterdness = loadData(d, "easy")
+# for d in datasets
+    train, test, clusterdness = loadData(d, "easy")
 
-idim = size(train[1], 1)
-hdim = 32
-zdim = 2
-numLayers = 3
-nonlinearity = "relu"
-layerType = "Dense"
-memorySize = 32
-k = 5
+    idim = size(train[1], 1)
+    hdim = 32
+    zdim = 2
+    numLayers = 3
+    nonlinearity = "relu"
+    layerType = "Dense"
+    memorySize = 32
+    k = 5
 
-svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1)
+    svae, mem, learnRepresentation!, learnAnomaly!, classify = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1)
 
-batchSize = 100
-numBatches = 10000
+    batchSize = 100
+    numBatches = 10000
 
-# Plots.display(plotmemory(mem))
+    # Plots.display(plotmemory(mem))
 
-opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
-FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
+    opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
+    FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2]), batchSize, numBatches), ()->(), 100)
 
-z = Flux.Tracker.data(zfromx(svae, train[1]))
-p = Plots.plot(Plots.scatter(z[1, train[2] .== 1], z[2, train[2] .== 1]), Plots.scatter(z[1, train[2] .== 2], z[2, train[2] .== 2]))
-Plots.title!(d)
-Plots.display(p)
-end
+    z = Flux.Tracker.data(zfromx(svae, train[1]))
+    p = Plots.plot(Plots.scatter(z[1, train[2] .== 1], z[2, train[2] .== 1]), Plots.scatter(z[1, train[2] .== 2], z[2, train[2] .== 2]))
+    Plots.title!(d)
+    Plots.display(p)
+# end
 
 # Plots.display(plotmemory(mem))
 #

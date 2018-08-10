@@ -108,7 +108,6 @@ normalizeQuery(q) = hcat((normalize.([q[:, i] for i in 1:size(q, 2)]))...)
     memoryUpdate!(memory, q, v, nearestNeighbourID)
 It computes the appropriate update of the memory after a key-value pair was lookedup in it for the key `q` and expected label `v`.
 """
-
 function memoryUpdate!(memory::KNNmemory{T}, q::Vector{T}, v::Integer, nearestNeighbourID::Integer) where {T}
     # If the memory return the correct value for the given key, update the centroid
     if memory.V[nearestNeighbourID] == v
