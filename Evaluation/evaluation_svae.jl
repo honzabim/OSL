@@ -5,13 +5,12 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "/home/jan/dev/"
+folderpath = "D:/dev/julia/"
+# folderpath = "~/dev/julia/"
 # folderpath = "D:/dev/"
-push!(LOAD_PATH, folderpath * "OSL/KNNmemory", folderpath * "FluxExtensions.jl/src", folderpath * "anomaly detection/anomaly_detection/src", folderpath * "EvalCurves.jl/src", folderpath)
+push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
 using FluxExtensions
-using AnomalyDetection
-using EvalCurves
 using ADatasets
 using NearestNeighbors
 using StatsBase
@@ -111,7 +110,8 @@ end
 outputFolder = folderpath * "OSL/experiments/SVAEkNN/"
 mkpath(outputFolder)
 
-datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
+# datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
+datasets = ["breast-cancer-wisconsin", "sonar", "waveform-1"]
 difficulties = ["easy", "easy", "easy", "easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
