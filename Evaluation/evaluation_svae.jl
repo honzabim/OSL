@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "~/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -78,7 +78,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     rstst = Flux.Tracker.data(rscore(model, test[1]))
 
     balltree = BallTree(Flux.Tracker.data(zfromx(model, train[1])), Euclidean(); reorder = false)
-    idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(model, test[1])), 5, false)
+    idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(model, test[1])), 3, false)
     knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
     knnauc = pyauc(test[2] .- 1, knnscores)
     knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i])) - 1, idxs))
@@ -107,17 +107,22 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAEkNN/"
+outputFolder = folderpath * "OSL/experiments/SVAEkNNmemtest/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 datasets = ["breast-cancer-wisconsin", "sonar", "waveform-1"]
-difficulties = ["easy", "easy", "easy", "easy"]
+difficulties = ["easy", "easy", "easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
 iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
+
+if length(ARGS) != 0
+    datasets = [ARGS[1]]
+    difficulties = ["easy"]
+end
 
 for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
@@ -126,7 +131,7 @@ for (dn, df) in zip(datasets, difficulties)
     println("Running svae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [32], [2 4 8], [3], ["relu"], ["Dense"], [1024], [16], [1], [0.01 0.05 0.1])
+    results = gridSearch(evaluateOneConfig, [32], [2], [3], ["relu"], ["Dense"], [16 32 64 128 256], [16 32], [1], [0.01 0.05 0.1])
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end
