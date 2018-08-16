@@ -7,8 +7,8 @@ using CSV
 # const dataFolder = "d:/dev/data/loda/public/datasets/numerical/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/firstVae/"
-# const dataFolder = "/home/jan/dev/OSL/experiments/WSVAE/"
-const dataFolder = "D:/dev/julia/OSL/experiments/WSVAE/"
+const dataFolder = "/home/jan/dev/OSL/experiments/SVAEkNN/"
+# const dataFolder = "D:/dev/julia/OSL/experiments/WSVAE/"
 # const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 const models = ["svae"]
@@ -20,7 +20,7 @@ loadExperiment(filePath) = load(filePath)["results"]
 # params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
 params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :knnauc, :knnprec, :knnrecall, :model, :dataset]
 # types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
-types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Float64, Int, Float64, Float64, Float64, Float64, Float64, Float64, Float64, String, String]
+types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Float64, Float64, Float64, String, String]
 const anomalycount = 5
 function processFile!(dataframe, model, dataset)
     println("Processing $model $dataset")
@@ -68,7 +68,7 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 #     processFile!(allData, models[1], datasets[1] * ".$i")
 # end
 
-# CSV.write(dataFolder * "results.csv", allData)
+CSV.write(dataFolder * "results.csv", allData)
 #
 # showall(ranks(allData, :f1))
 # println()
