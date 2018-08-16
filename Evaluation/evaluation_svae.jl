@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -68,7 +68,7 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000)
     (model, learnRepresentation!, learnAnomaly!, classify) = createModel()
     opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-    cb = Flux.throttle(() -> @show(learnRepresentation!(train[1], zeros(train[2]) + 2)), 5)
+    cb = Flux.throttle(() -> println("$datasetName : $(learnRepresentation!(train[1], zeros(train[2]) + 2))"), 5)
     Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2]) + 2), batchSize, numBatches), opt, cb = cb)
     # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 
