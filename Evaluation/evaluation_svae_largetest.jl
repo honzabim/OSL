@@ -99,6 +99,8 @@ function runExperiment(datasetName, trainall, testall, createModel, anomalyCount
             if ac <= size(anomalies, 2)
                 l = learnAnomaly!(anomalies[:, ac], [1])
             else
+                println("Not enough anomalies $ac, $(size(anomalies))")
+                println("Counts: $(counts(train[2]))")
                 break;
             end
 
@@ -120,7 +122,7 @@ outputFolder = folderpath * "OSL/experiments/WSVAElarge/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
-datasets = ["breast-cancer-wisconsin", "sonar", "waveform-1"]
+datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 difficulties = ["easy", "easy", "easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -137,10 +139,12 @@ for (dn, df) in zip(datasets, difficulties)
     train, test, clusterdness = loadData(dn, df)
 
     println("$dn")
+    println("$(size(train[2]))")
+    println("$(counts(train[2]))")
     println("Running svae...")
 
     evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-    results = gridSearch(evaluateOneConfig, [32], [2], [3], ["relu"], ["Dense"], [32 64 128 512], [16 32], [1], [0.05])
+    results = gridSearch(evaluateOneConfig, [32], [2], [3], ["relu"], ["Dense"], [32 64 128], [8 16 32], [1], [0.05])
     results = reshape(results, length(results), 1)
     save(outputFolder * dn * "-svae.jld2", "results", results)
 end
