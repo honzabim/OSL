@@ -74,7 +74,8 @@ function runExperiment(datasetName, trainall, testall, createModel, anomalyCount
     results = []
     for ar in anomalyRatios
         train = ADatasets.subsampleanomalous(trainall, ar)
-        test = ADatasets.subsampleanomalous(testall, ar)
+        subtest = ADatasets.subsampleanomalous(testall, ar)
+        test = testall
         (model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
@@ -86,13 +87,24 @@ function runExperiment(datasetName, trainall, testall, createModel, anomalyCount
         rstrn = Flux.Tracker.data(rscore(model, train[1]))
         rstst = Flux.Tracker.data(rscore(model, test[1]))
 
+        # Train KNN
         balltree = BallTree(Flux.Tracker.data(zfromx(model, train[1])), Euclidean(); reorder = false)
+
+        # Test on all test samples
         idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(model, test[1])), 3, false)
         knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
         knnauc = pyauc(test[2] .- 1, knnscores)
         knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i])) - 1, idxs))
         knnprec = precision(knnroc)
         knnrecall = recall(knnroc)
+
+        # Test on subsampled test set
+        idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(model, test[1])), 3, false)
+        knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
+        subknnauc = pyauc(test[2] .- 1, knnscores)
+        knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i])) - 1, idxs))
+        subknnprec = precision(knnroc)
+        subknnrecall = recall(knnroc)
 
         anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
         for ac in anomalyCounts
@@ -104,15 +116,28 @@ function runExperiment(datasetName, trainall, testall, createModel, anomalyCount
                 break;
             end
 
+            # Test on all test samples
             values, probScore = classify(test[1])
-            values = Flux.Tracker.data(values)
-            probScore = Flux.Tracker.data(probScore)
+            # values = Flux.Tracker.data(values)
+            # probScore = Flux.Tracker.data(probScore)
 
             rocData = roc(test[2] .- 1, values)
             f1 = f1score(rocData)
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar))
+
+            # Test on subsampled test set
+            values, probScore = classify(test[1])
+            # values = Flux.Tracker.data(values)
+            # probScore = Flux.Tracker.data(probScore)
+
+            rocData = roc(test[2] .- 1, values)
+            subf1 = f1score(rocData)
+            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+            subauc = pyauc(test[2] .- 1, probScore)
+
+            # push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar))
+            push!(results, (ac, f1, auc, subauc, nothing, nothing, rstrn, rstst, knnauc, knnprec, knnrecall, subknnauc, subknnprec, subknnrecall, ar))
         end
     end
     return results
@@ -126,7 +151,7 @@ datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 difficulties = ["easy", "easy", "easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 

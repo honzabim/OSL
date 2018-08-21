@@ -27,10 +27,10 @@ function processFile!(dataframe, model, dataset)
     results = loadExperiment(dataFolder * dataset * "-" * model * ".jld2")
 
     for i in 1:length(results)
-        for ac in 1:anomalycount
+        for j in 1:length(results[1][2])
             pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
             # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
-            push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., results[i][2][ac][6:11]..., model, dataset))
+            push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][6:11]..., model, dataset))
         end
     end
 end
