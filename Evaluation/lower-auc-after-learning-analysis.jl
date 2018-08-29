@@ -68,13 +68,13 @@ end
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
-d = "waveform-2"
+d = "pendigits"
 trainall, test, clusterdness = loadData(d, "easy")
 
 idim = size(trainall[1], 1)
-hdim = 32
+hdim = 64
 zdim = 3
-numLayers = 3
+numLayers = 8
 nonlinearity = "relu"
 layerType = "Dense"
 memorySize = 32
@@ -84,10 +84,15 @@ svae, mem, learnRepresentation!, learnAnomaly!, classify, justTrain! = createSVA
 
 batchSize = 100
 numBatches = 10000
-ar = 0.05
+ar = 0.005
 train = ADatasets.subsampleanomalous(trainall, ar)
 
 plotly()
+
+function rscore(m::SVAE, x)
+    xgivenz = m.g(zfromx(m, x))
+    return Flux.mse(x, xgivenz)
+end
 
 # Plots.display(plotmemory(mem))
 
@@ -108,17 +113,23 @@ Plots.title!("Test")
 Plots.display(p2)
 
 balltree = BallTree(Flux.Tracker.data(zfromx(svae, train[1])), Euclidean(); reorder = false)
-idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(svae, test[1])), 3, false)
+idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(svae, test[1])), 1, false)
 knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
 knnauc, _, _ = pyauc(test[2] .- 1, knnscores)
-knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i])) - 1, idxs))
+knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i], 2)) - 1, idxs))
 knnprec = precision(knnroc)
 knnrecall = recall(knnroc)
+println("kNN tp: $(true_positive(knnroc)) fp: $(false_positive(knnroc)) tn: $(true_negative(knnroc)) fn: $(false_negative(knnroc))")
 
 println("kNN AUC: $knnauc")
 learnRepresentation!(train[1], zeros(collect(train[2])))
 
 anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
+anomalies = anomalies[:, randperm(size(anomalies, 2))]
+
+println("rscore of train: $(rscore(svae, train[1]))")
+println("rscore of anomalies: $(rscore(svae, anomalies))")
+
 anomalyCounts = 1:5
 aucp = Plots.plot()
 for ac in anomalyCounts
