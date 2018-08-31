@@ -15,7 +15,6 @@ using ADatasets
 using NearestNeighbors
 using StatsBase
 using Plots
-
 using PyCall
 @pyimport sklearn.metrics as sm
 
@@ -68,13 +67,13 @@ end
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
-d = "pendigits"
+d = "breast-cancer-wisconsin"
 trainall, test, clusterdness = loadData(d, "easy")
 
 idim = size(trainall[1], 1)
-hdim = 64
+hdim = 32
 zdim = 3
-numLayers = 8
+numLayers = 3
 nonlinearity = "relu"
 layerType = "Dense"
 memorySize = 32
