@@ -110,7 +110,7 @@ It computes the appropriate update of the memory after a key-value pair was look
 """
 function memoryUpdate!(memory::KNNmemory{T}, q::Vector{T}, v::Integer, nearestNeighbourID::Integer) where {T}
     # If the memory return the correct value for the given key, update the centroid
-    if memory.V[nearestNeighbourID] == v
+    if memory.V[nearestNeighbourID] != 1 && memory.V[nearestNeighbourID] == v # TODO: This is a hack to not move anomalies - should be done in a better way!
         memory.M[nearestNeighbourID, :] = normalize(q + memory.M[nearestNeighbourID, :])
         memory.A[nearestNeighbourID] = 0
 
