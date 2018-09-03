@@ -67,7 +67,7 @@ end
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
-d = "breast-cancer-wisconsin"
+d = "musk-2"
 trainall, test, clusterdness = loadData(d, "easy")
 
 idim = size(trainall[1], 1)

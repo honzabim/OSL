@@ -123,9 +123,9 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         anomalies = anomalies[:, randperm(size(anomalies, 2))]
 
         println("set size: $(size(train[1]))")
-        println("set size: $(size(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:5])))")
+        println("set size: $(size(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:min(5, size(anomalies, 2))])))")
 
-        knn5anom = kNN.KNNAnomaly(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:5]) , :gamma)
+        knn5anom = kNN.KNNAnomaly(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:min(5, size(anomalies, 2))]) , :gamma)
         knn5a3auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 3))
         knn5a5auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 5))
         knn5a9auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 9))
@@ -159,12 +159,12 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeTest/"
+outputFolder = folderpath * "OSL/experiments/WSVAElargeknnTest/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["pendigits"]
+datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
