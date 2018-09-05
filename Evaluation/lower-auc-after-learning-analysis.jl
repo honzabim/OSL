@@ -67,22 +67,22 @@ end
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
-d = "musk-2"
+d = "pendigits"
 trainall, test, clusterdness = loadData(d, "easy")
 
 idim = size(trainall[1], 1)
-hdim = 32
-zdim = 3
-numLayers = 3
+hdim = 128
+zdim = 8
+numLayers = 4
 nonlinearity = "relu"
 layerType = "Dense"
-memorySize = 32
-k = 5
+memorySize = 128
+k = 32
 
 svae, mem, learnRepresentation!, learnAnomaly!, classify, justTrain! = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1, 0.05)
 
 batchSize = 100
-numBatches = 10000
+numBatches = 20000
 ar = 0.005
 train = ADatasets.subsampleanomalous(trainall, ar)
 
@@ -123,7 +123,7 @@ println("kNN tp: $(true_positive(knnroc)) fp: $(false_positive(knnroc)) tn: $(tr
 println("kNN AUC: $knnauc")
 learnRepresentation!(train[1], zeros(collect(train[2])))
 
-anomalies = train[1][:, train[2] .- 1 .== 1] # TODO needs to be shuffled!!!
+anomalies = train[1][:, train[2] .- 1 .== 1]
 anomalies = anomalies[:, randperm(size(anomalies, 2))]
 
 println("rscore of train: $(rscore(svae, train[1]))")

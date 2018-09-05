@@ -8,11 +8,11 @@ using CSV
 # const dataFolder = "/home/jan/dev/OSL/experiments/findingBestAEWith2LatentConsistency/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/firstVae/"
 # const dataFolder = "/home/jan/dev/OSL/experiments/WSVAElarge/"
-const dataFolder = "D:/dev/julia/OSL/experiments/WSVAElarge/"
+const dataFolder = "D:/dev/julia/OSL/experiments/WSVAElargekNN/"
 # const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1", "yeast"]
 # const datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # const datasets = ["breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "ionosphere", "musk-2", "page-blocks", "pendigits", "pima-indians", "sonar", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
-const datasets = ["breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "ionosphere", "page-blocks", "pendigits", "pima-indians", "sonar", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
+const datasets = ["breast-cancer-wisconsin", "ecoli", "glass", "ionosphere", "pendigits", "pima-indians", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
 const models = ["svae"]
 const anomalycount = 5
 
