@@ -135,10 +135,12 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("knn5a 3 auc: $knn5a3auc")
         println("knn5a 15 auc: $knn5asqrtauc")
 
+        anomids = selectperm(StatsBase.predict(knnanom, train[1], 9), 1:10, rev = true)
+        anomalies = train[1][:, anomids]
 
         for ac in anomalyCounts
             if ac <= size(anomalies, 2)
-                l = learnAnomaly!(anomalies[:, ac], [1])
+                l = learnAnomaly!(anomalies[:, ac], train[2][anomids[ac]])
             else
                 println("Not enough anomalies $ac, $(size(anomalies))")
                 println("Counts: $(counts(train[2]))")
@@ -159,11 +161,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-<<<<<<< HEAD
-outputFolder = folderpath * "OSL/experiments/WSVAElargekNN/"
-=======
-outputFolder = folderpath * "OSL/experiments/WSVAElargeknnTest/"
->>>>>>> 018f06c0f16e8882f4acbccaa1cc7fcd5d576562
+outputFolder = folderpath * "OSL/experiments/WSVAElarge10anomaloustest/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -172,7 +170,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 10
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -190,8 +188,8 @@ for i in 1:10
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-	    results = gridSearch(evaluateOneConfig, [64], [8], [3], ["relu"], ["Dense"], [32 128 1024], [16 32], [1], [0.1])
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 1024], [16], [1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
