@@ -135,7 +135,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("knn5a 3 auc: $knn5a3auc")
         println("knn5a 15 auc: $knn5asqrtauc")
 
-        anomids = selectperm(StatsBase.predict(knnanom, train[1], 9), 1:10, rev = true)
+        anomids = selectperm(StatsBase.predict(knnanom, train[1], 9), 1:10, rev = false)
         anomalies = train[1][:, anomids]
 
         for ac in anomalyCounts
@@ -181,6 +181,7 @@ end
 
 for i in 1:10
 	for (dn, df) in zip(datasets, difficulties)
+
 	    train, test, clusterdness = loadData(dn, df)
 
 	    println("$dn")
