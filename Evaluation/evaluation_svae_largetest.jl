@@ -159,11 +159,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-<<<<<<< HEAD
 outputFolder = folderpath * "OSL/experiments/WSVAElargekNN/"
-=======
-outputFolder = folderpath * "OSL/experiments/WSVAElargeknnTest/"
->>>>>>> 018f06c0f16e8882f4acbccaa1cc7fcd5d576562
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
