@@ -82,7 +82,7 @@ k = 32
 svae, mem, learnRepresentation!, learnAnomaly!, classify, justTrain! = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1, 0.1)
 
 batchSize = 100
-numBatches = 8000
+numBatches = 10000
 ar = 0.05
 train = ADatasets.subsampleanomalous(trainall, ar)
 
@@ -97,14 +97,15 @@ end
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 cb = Flux.throttle(() -> println("$d AR=$ar : $(justTrain!(train[1], []))"), 5)
-Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
 
+println("prior μ is: $(svae.priorμ) κ is: $(svae.priorκ)")
+Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
 println("prior μ is: $(svae.priorμ) κ is: $(svae.priorκ)")
 
 z = Flux.Tracker.data(zfromx(svae, train[1]))
 p1 = Plots.scatter3d(z[1, train[2] .== 1], z[2, train[2] .== 1], z[3, train[2] .== 1])
 p2 = Plots.scatter3d!(z[1, train[2] .== 2], z[2, train[2] .== 2], z[3, train[2] .== 2])
-μend = 1.3 * svae.priorμ
+μend = 1.3 * Flux.Tracker.data(svae.priorμ)
 p2 = Plots.plot!([0, μend[1]], [0, μend[2]], [0, μend[3]], color = "red", linewidth = "3")
 Plots.title!("Train")
 Plots.display(p2)
@@ -154,7 +155,6 @@ for ac in anomalyCounts
     auc, fp, tp = pyauc(test[2] .- 1, probScore)
 	# Plots.plot!(aucp, fp, tp)
     println("mem AUC: $auc")
-	println("mem tp: $(true_positive(rocData)) fp: $(false_positive(rocData)) tn: $(true_negative(rocData)) fn: $(false_negative(rocData))")
     # Plots.display(plotmemory(mem))
     # Plots.title!("After $ac anomalies")
 end

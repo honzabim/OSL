@@ -36,7 +36,9 @@ mutable struct SVAE
 	SVAE(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
 	"""
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Flux.param(Adapt.adapt(T, [1.])))
-	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Flux.param(Adapt.adapt(T, [1.])))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, normalize(randn(3)))), Flux.param(Adapt.adapt(T, [1.])))
+	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Flux.param(Adapt.adapt(T, [1.])))
+	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Adapt.adapt(T, [1.]))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Adapt.adapt(T, [1.]))
 end
 
@@ -88,20 +90,17 @@ function samplehsuniform(size...)
 	v = normalizecolumns(v)
 end
 
-k_imq(x,y,c) = sum( c./ (c .+ pairwisecos(x,y)))/(size(x,2) * size(y,2))
-k_imq(x::T,c) where {T<:AbstractMatrix} = sum(c ./(c .+ pairwisecos(x)))/(size(x,2) * (size(x,2) -1 ))
+k_imq(x,y,c) = sum( c./ (c .+ pairwisecos(x,y))) / (size(x,2) * size(y,2))
+k_imq(x::T,c) where {T<:AbstractMatrix} = sum(c ./ (c .+ pairwisecos(x)))/(size(x,2) * (size(x,2) -1 ))
 k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
 
 mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
 
 function wloss(m::SVAE, x, β, d)
 	(μz, κz) = zparams(m, x)
-	κz = min.(κz, 10000.)
 	z = samplez(m, μz, κz)
 	# zp = samplehsuniform(size(z))
-	m.priorμ = normalize(m.priorμ)
-	m.priorκ = min.(m.priorκ, 10000.)
-	prior = samplez(m, ones(size(μz)) .* m.priorμ, ones(size(κz)) .* m.priorκ)
+	prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.priorμ), ones(size(κz)) .* m.priorκ)
 	Ω = d(z, prior)
 	xgivenz = m.g(z)
 	return Flux.mse(x, xgivenz) + β * Ω

@@ -153,7 +153,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
             f1 = f1score(rocData)
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, i, mpwmutualinf, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc))
+            println("mem AUC: $auc")
+            # push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, i, mpwmutualinf, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc))
         end
     end
     return results
@@ -187,7 +188,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations)
-	    results = gridSearch(evaluateOneConfig, [64], [8], [3], ["relu"], ["Dense"], [32 128 1024], [16 32], [1], [0.1])
+	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [32 128 1024], [16 32], [1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
