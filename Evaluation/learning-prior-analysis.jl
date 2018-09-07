@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -24,7 +24,7 @@ function pyauc(labels, ascores)
 	return pyauc, pyfpr, pytpr
 end
 
-include(folderpath * "OSL/SVAE/svae2.jl")
+include(folderpath * "OSL/SVAE/svae.jl")
 
 function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
@@ -82,7 +82,7 @@ k = 32
 svae, mem, learnRepresentation!, learnAnomaly!, classify, justTrain! = createSVAEWithMem(idim, hdim, zdim, numLayers, nonlinearity, layerType, memorySize, k, 1, 0.1)
 
 batchSize = 100
-numBatches = 8000
+numBatches = 5000
 ar = 0.05
 train = ADatasets.subsampleanomalous(trainall, ar)
 
@@ -99,15 +99,15 @@ opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
 cb = Flux.throttle(() -> println("$d AR=$ar : $(justTrain!(train[1], []))"), 5)
 Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
 
-println("prior μ is: $(svae.priorμ) κ is: $(svae.priorκ)")
-
-z = Flux.Tracker.data(zfromx(svae, train[1]))
-p1 = Plots.scatter3d(z[1, train[2] .== 1], z[2, train[2] .== 1], z[3, train[2] .== 1])
-p2 = Plots.scatter3d!(z[1, train[2] .== 2], z[2, train[2] .== 2], z[3, train[2] .== 2])
-μend = 1.3 * svae.priorμ
-p2 = Plots.plot!([0, μend[1]], [0, μend[2]], [0, μend[3]], color = "red", linewidth = "3")
-Plots.title!("Train")
-Plots.display(p2)
+# println("prior μ is: $(svae.priorμ) κ is: $(svae.priorκ)")
+#
+# z = Flux.Tracker.data(zfromx(svae, train[1]))
+# p1 = Plots.scatter3d(z[1, train[2] .== 1], z[2, train[2] .== 1], z[3, train[2] .== 1])
+# p2 = Plots.scatter3d!(z[1, train[2] .== 2], z[2, train[2] .== 2], z[3, train[2] .== 2])
+# μend = 1.3 * svae.priorμ
+# p2 = Plots.plot!([0, μend[1]], [0, μend[2]], [0, μend[3]], color = "red", linewidth = "3")
+# Plots.title!("Train")
+# Plots.display(p2)
 
 # z = Flux.Tracker.data(zfromx(svae, test[1]))
 # p1 = Plots.scatter3d(z[1, test[2] .== 1], z[2, test[2] .== 1], z[3, test[2] .== 1])

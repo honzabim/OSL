@@ -92,7 +92,6 @@ mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
 
 function wloss(m::SVAE, x, β, d)
 	(μz, κz) = zparams(m, x)
-	κz = max.(κz, 10000.)
 	z = samplez(m, μz, κz)
 	zp = samplehsuniform(size(z))
 	Ω = d(z, zp)
