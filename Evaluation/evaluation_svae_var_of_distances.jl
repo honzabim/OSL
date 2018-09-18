@@ -81,19 +81,20 @@ function rscore(m::SVAE, x)
     return Flux.mse(x, xgivenz)
 end
 
-function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, i = 1)
+function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
     anomalyRatios = [0.05, 0.01, 0.005]
     results = []
     for ar in anomalyRatios
-        println("Running $datasetName with ar: $ar iteration: $i")
+        println("Running $datasetName with ar: $ar iteration: $it")
         train = ADatasets.subsampleanomalous(trainall, ar)
         (model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
-		println("Finished learning $datasetName with ar: $ar iteration: $i")
+		println("Finished learning $datasetName with ar: $ar iteration: $it")
         mpwmutualinf = meanpairwisemutualinf(Flux.Tracker.data(zfromx(model, train[1])))
+
         println("Mean pairwise mutualinf: $mpwmutualinf")
 
         learnRepresentation!(train[1], zeros(train[2]))
@@ -122,6 +123,18 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         anomalies = train[1][:, train[2] .- 1 .== 1]
         anomalies = anomalies[:, randperm(size(anomalies, 2))]
 
+        distances = Array{Float64}(0)
+        for i in 1:size(anomalies, 2)
+            for j in 1:size(anomalies, 2)
+                if i != j
+                    push!(distances, Flux.Tracker.data(anomalies[:, i]' * anomalies[:, j]))
+                end
+            end
+        end
+        distancesvariance = var(distances)
+
+        println("The variance of distances of anomalies is $distancesvariance")
+
         println("set size: $(size(train[1]))")
         println("set size: $(size(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:min(5, size(anomalies, 2))])))")
 
@@ -135,17 +148,9 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("knn5a 3 auc: $knn5a3auc")
         println("knn5a 15 auc: $knn5asqrtauc")
 
-        scores = StatsBase.predict(knnanom, train[1], 9)
-        anomids = selectperm(scores, 1:10, rev = true)
-        println(scores[anomids])
-        anomalies = train[1][:, anomids]
-        labels = train[2][anomids]
-
-        println(labels)
-
         for ac in anomalyCounts
             if ac <= size(anomalies, 2)
-                l = learnAnomaly!(anomalies[:, ac], labels[ac] .- 1)
+                l = learnAnomaly!(anomalies[:, ac], [1])
             else
                 println("Not enough anomalies $ac, $(size(anomalies))")
                 println("Counts: $(counts(train[2]))")
@@ -161,13 +166,13 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
             println("mem AUC: $auc")
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, i, mpwmutualinf, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc))
+            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc))
         end
     end
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElarge10anomalous/"
+outputFolder = folderpath * "OSL/experiments/WSVAElargeVarOfDistances/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
