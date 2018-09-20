@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem

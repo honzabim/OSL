@@ -36,7 +36,7 @@ mutable struct SVAE
 	SVAE(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
 	"""
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Flux.param(Adapt.adapt(T, [1.])))
-	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, normalize(randn(3)))), Flux.param(Adapt.adapt(T, [1.])))
+	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, normalize(randn(zdim)))), Flux.param(Adapt.adapt(T, [1.])))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Flux.param(Adapt.adapt(T, [1.])))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Adapt.adapt(T, [1.]))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Adapt.adapt(T, [1.]))
@@ -95,6 +95,29 @@ k_imq(x::T,c) where {T<:AbstractMatrix} = sum(c ./ (c .+ pairwisecos(x)))/(size(
 k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
 
 mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
+
+log_vmf(x, N, μ, κ) = κ * μ' * vec(sum(x, 2)) + N * log(κ) - N * log(2π * (exp(κ) - exp(-κ)))
+log_vmf(x, μ, κ) = log_vmf(x, size(x, 2), μ, κ)
+
+
+function px(m::SVAE, x::Matrix, k::Int = 100)
+	x = [x[:, i] for i in 1:size(x, 2)]
+	return map(a -> px(m, a, k), x)
+end
+
+function px(m::SVAE, x::Vector, k::Int = 100)
+	μz, κz = zparams(m, x)
+	μz = repmat(μz, 1, k)
+	κz = repmat(κz, 1, k)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	pxgivenz = sum(.- sum((x .- xgivenz) .^ 2, 1), 2)[1, 1]
+	pz = log_vmf(z, m.priorμ, m.priorκ[1])
+	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
+
+	return Flux.Tracker.data(pxgivenz + pz - qzgivenx)
+end
 
 function wloss(m::SVAE, x, β, d)
 	(μz, κz) = zparams(m, x)
