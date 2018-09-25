@@ -168,12 +168,16 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
             values = Flux.Tracker.data(values)
             probScore = Flux.Tracker.data(probScore)
 
+			ranks = map(x -> count(probScore .< x), classify(anomalies[:, 1:ac])[2])
+			# println("Ranks: $ranks")
+			# println("out of $(length(test[2])) with $(count(test[2] .== 2)) anomalies.")
+
             rocData = roc(test[2] .- 1, values)
             f1 = f1score(rocData)
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
             println("mem AUC: $auc")
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc, pxauc))
+            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc, pxauc, "$ranks", length(test[2]), count(test[2] .== 2)))
         end
     end
     return results
@@ -207,7 +211,7 @@ for i in 1:10
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
 	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 1024], [16], [1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
