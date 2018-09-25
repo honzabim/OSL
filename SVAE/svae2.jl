@@ -96,9 +96,15 @@ k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
 
 mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
 
-log_vmf(x, N, μ, κ) = κ * μ' * vec(sum(x, 2)) + N * log(κ) - N * log(2π * (exp(κ) - exp(-κ)))
-log_vmf(x, μ, κ) = log_vmf(x, size(x, 2), μ, κ)
+log_normal(x) = - sum((@. x ^ 2), 1) / 2 - size(x, 1) * log(2π) / 2
+log_normal(x, μ) = log_normal(x - μ)
 
+# Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
+# normalizing constant for density function of VMF
+c(p, κ) = κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
+
+# log likelihood of one sample under the VMF dist with given parameters
+log_vmf(x, μ, κ) = κ * μ' * x .+ log(c(length(μ), κ))
 
 function px(m::SVAE, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
@@ -112,11 +118,35 @@ function px(m::SVAE, x::Vector, k::Int = 100)
 	z = samplez(m, μz, κz)
 	xgivenz = m.g(z)
 
-	pxgivenz = sum(.- sum((x .- xgivenz) .^ 2, 1), 2)[1, 1]
+	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
 	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
 
-	return Flux.Tracker.data(pxgivenz + pz - qzgivenx)
+	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))))
+end
+
+function px2(m::SVAE, x::Matrix, k::Int = 100)
+	x = [x[:, i] for i in 1:size(x, 2)]
+	return map(a -> px2(m, a, k), x)
+end
+
+function px2(m::SVAE, x::Vector, k::Int = 100)
+	μz, κz = zparams(m, x)
+	μz = repmat(μz, 1, k)
+	κz = repmat(κz, 1, k)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
+	pz = log_vmf(z, m.priorμ, m.priorκ[1])
+	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
+
+	return sum(exp.(Flux.Tracker.data(qzgivenx)) .* (Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx)))
+end
+
+function pxvita(m::SVAE, x)
+	xgivenz = infer(m, x)
+	Flux.Tracker.data(log_normal(xgivenz, x))
 end
 
 function wloss(m::SVAE, x, β, d)

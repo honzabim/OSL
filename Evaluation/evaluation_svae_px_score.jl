@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -124,8 +124,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         anomalies = anomalies[:, randperm(size(anomalies, 2))]
 
         distances = Array{Float64}(0)
-        for i in 1:size(anomalies, 2)
-            for j in 1:size(anomalies, 2)
+        for i in 1:min(length(anomalyCounts), size(anomalies, 2))
+            for j in 1:min(length(anomalyCounts), size(anomalies, 2))
                 if i != j
                     push!(distances, Flux.Tracker.data(anomalies[:, i]' * anomalies[:, j]))
                 end
@@ -149,8 +149,11 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("knn5a 15 auc: $knn5asqrtauc")
 
         pxauc = pyauc(test[2] .- 1, .- px(model, test[1]))
-
         println("P(x) auc: $pxauc")
+		px2auc = pyauc(test[2] .- 1, px2(model, test[1]))
+        println("P(x)2 auc: $px2auc")
+		pxvitaauc = pyauc(test[2] .- 1, .- vec(pxvita(model, test[1])))
+		println("P(x) vita auc: $pxvitaauc")
 
         for ac in anomalyCounts
             if ac <= size(anomalies, 2)
