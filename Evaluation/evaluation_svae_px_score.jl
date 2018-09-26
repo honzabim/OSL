@@ -194,7 +194,7 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["musk-2"]
+datasets = ["ecoli"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -207,7 +207,7 @@ if length(ARGS) != 0
     difficulties = ["easy"]
 end
 
-for i in 1:1
+for i in 1:5
 	for (dn, df) in zip(datasets, difficulties)
 
 	    train, test, clusterdness = loadData(dn, df)
