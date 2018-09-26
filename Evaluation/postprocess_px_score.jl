@@ -15,7 +15,7 @@ const dataFolder = "D:/dev/julia/OSL/experiments/WSVAElargeNewPxScore/"
 # const datasets = ["cardiotocography", "ecoli", "glass", "statlog-segment", "yeast"]
 # const datasets = ["cardiotocography", "ecoli", "glass", "pendigits", "pima-indians", "statlog-satimage", "statlog-segment", "waveform-1"]
 # const datasets = ["breast-cancer-wisconsin", "ecoli", "glass", "ionosphere", "pendigits", "pima-indians", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
-const datasets = ["breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "musk-2", "ionosphere", "page-blocks", "pendigits", "pima-indians", "sonar", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
+const datasets = ["breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "musk-2", "ionosphere", "pendigits", "pima-indians", "sonar", "statlog-satimage", "waveform-1", "waveform-2", "yeast"]
 const models = ["svae"]
 const anomalycount = 5
 

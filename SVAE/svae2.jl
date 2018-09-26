@@ -144,8 +144,66 @@ function px2(m::SVAE, x::Vector, k::Int = 100)
 	return sum(exp.(Flux.Tracker.data(qzgivenx)) .* (Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx)))
 end
 
+function px3(m::SVAE, x::Matrix, k::Int = 100)
+	x = [x[:, i] for i in 1:size(x, 2)]
+	return map(a -> px3(m, a, k), x)
+end
+
+function px3(m::SVAE, x::Vector, k::Int = 100)
+	μz, κz = zparams(m, x)
+	μz = repmat(μz, 1, k)
+	κz = repmat(κz, 1, k)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
+	pz = log_vmf(z, m.priorμ, m.priorκ[1])
+	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
+
+	return sum(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))
+end
+
+function px4(m::SVAE, x::Matrix, k::Int = 100)
+	x = [x[:, i] for i in 1:size(x, 2)]
+	return map(a -> px4(m, a, k), x)
+end
+
+function px4(m::SVAE, x::Vector, k::Int = 100)
+	μz, κz = zparams(m, x)
+	μz = repmat(μz, 1, k)
+	κz = repmat(κz, 1, k)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
+	pz = log_vmf(z, m.priorμ, m.priorκ[1])
+	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
+
+	return sum(Flux.Tracker.data(pxgivenz .+ pz))
+end
+
+function px5(m::SVAE, x::Matrix, k::Int = 100)
+	x = [x[:, i] for i in 1:size(x, 2)]
+	return map(a -> px5(m, a, k), x)
+end
+
+function px5(m::SVAE, x::Vector, k::Int = 100)
+	μz, κz = zparams(m, x)
+	μz = repmat(μz, 1, k)
+	κz = repmat(κz, 1, k)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
+	pz = log_vmf(z, m.priorμ, m.priorκ[1])
+	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
+
+	return sum(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))
+end
+
 function pxvita(m::SVAE, x)
-	xgivenz = infer(m, x)
+	μz, κz = zparams(m, x)
+	xgivenz = m.g(μz)
 	Flux.Tracker.data(log_normal(xgivenz, x))
 end
 

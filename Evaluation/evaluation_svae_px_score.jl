@@ -152,6 +152,12 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("P(x) auc: $pxauc")
 		px2auc = pyauc(test[2] .- 1, px2(model, test[1]))
         println("P(x)2 auc: $px2auc")
+		px3auc = pyauc(test[2] .- 1, px3(model, test[1]))
+        println("P(x)3 auc: $px3auc")
+		px4auc = pyauc(test[2] .- 1, px4(model, test[1]))
+        println("P(x)4 auc: $px4auc")
+		px5auc = pyauc(test[2] .- 1, px5(model, test[1]))
+        println("P(x)5 auc: $px5auc")
 		pxvitaauc = pyauc(test[2] .- 1, .- vec(pxvita(model, test[1])))
 		println("P(x) vita auc: $pxvitaauc")
 
@@ -177,7 +183,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
             println("mem AUC: $auc")
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc, pxauc, "$ranks", length(test[2]), count(test[2] .== 2)))
+            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc, pxauc, px2auc, px3auc, px4auc, px5auc, pxvitaauc, "$ranks", length(test[2]), count(test[2] .== 2)))
         end
     end
     return results
@@ -188,7 +194,7 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["breast-cancer-wisconsin"]
+datasets = ["musk-2"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -201,7 +207,7 @@ if length(ARGS) != 0
     difficulties = ["easy"]
 end
 
-for i in 1:10
+for i in 1:1
 	for (dn, df) in zip(datasets, difficulties)
 
 	    train, test, clusterdness = loadData(dn, df)
