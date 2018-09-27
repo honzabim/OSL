@@ -22,12 +22,12 @@ const anomalycount = 5
 loadExperiment(filePath) = load(filePath)["results"]
 
 # params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :anomaliesSeen, :f1, :auc, :model, :dataset]
-params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :knnauc, :knnprec, :knnrecall, :ar, :i, :model, :dataset, :mpwmutualinf, :varOfDists, :knn5auc, :knn9auc, :knn15auc, :knnsqrtauc, :knn5a3auc, :knn5a5auc, :knn5a9auc, :knn5asqrtauc, :pxauc, :aranks, :total, :acount]
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :f1, :auc, :rsTrn, :rsTst, :knnauc, :knnprec, :knnrecall, :ar, :i, :model, :dataset, :mpwmutualinf, :varOfDists, :knn5auc, :knn9auc, :knn15auc, :knnsqrtauc, :knn5a3auc, :knn5a5auc, :knn5a9auc, :knn5asqrtauc, :pxauc, :px2auc, :px3auc, :px4auc, :px5auc, :pxvitaauc, :aranks, :total, :acount]
 # types = [Int, Int, Int, String, String, Union{Int, Missings.Missing}, Union{Int, Missings.Missing}, Int, Float64, Float64, String, String]
-types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Int, String, String, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, String, Int, Int]
+types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Int, String, String, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, String, Int, Int]
 const anomalycount = 5
 function processFile!(dataframe, model, dataset)
-    for i in 1:10
+    for i in 1:5
         println("Processing $model $dataset $i")
         results = loadExperiment(dataFolder * dataset * "-$i-" * model * ".jld2")
 
@@ -35,7 +35,7 @@ function processFile!(dataframe, model, dataset)
             for j in 1:length(results[1][2])
                 pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
                 # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
-                push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][6:12]..., model, dataset, results[i][2][j][13:26]...))
+                push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][6:12]..., model, dataset, results[i][2][j][13:31]...))
             end
         end
     end

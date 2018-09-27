@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -148,7 +148,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("knn5a 3 auc: $knn5a3auc")
         println("knn5a 15 auc: $knn5asqrtauc")
 
-        pxauc = pyauc(test[2] .- 1, .- px(model, test[1]))
+		println(typeof(px(model, test[1])))
+        pxauc = pyauc(test[2] .- 1, px(model, test[1]))
         println("P(x) auc: $pxauc")
 		px2auc = pyauc(test[2] .- 1, px2(model, test[1]))
         println("P(x)2 auc: $px2auc")
@@ -158,7 +159,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("P(x)4 auc: $px4auc")
 		px5auc = pyauc(test[2] .- 1, px5(model, test[1]))
         println("P(x)5 auc: $px5auc")
-		pxvitaauc = pyauc(test[2] .- 1, .- vec(pxvita(model, test[1])))
+		pxvitaauc = pyauc(test[2] .- 1, vec(pxvita(model, test[1])))
 		println("P(x) vita auc: $pxvitaauc")
 
         for ac in anomalyCounts
@@ -194,11 +195,11 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["ecoli"]
+datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 

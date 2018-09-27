@@ -11,7 +11,7 @@ using Adapt
 
 		Original paper: https://arxiv.org/abs/1804.00891
 
-		SVAE(q,g,zdim,hue,μzfromhidden,κzfromhidden)
+		SVAE2(q,g,zdim,hue,μzfromhidden,κzfromhidden)
 
 		q --- encoder - in this case encoder only encodes from input to a hidden
 						layer which is then transformed into parameters for the latent
@@ -22,7 +22,7 @@ using Adapt
 		μzfromhidden --- function that transforms the hidden layer to μ parameter of the latent layer by normalization
 		κzfromhidden --- transforms hidden layer to κ parameter of the latent layer using softplus since κ is a positive scalar
 """
-mutable struct SVAE
+mutable struct SVAE2
 	q
 	g
 	zdim
@@ -33,16 +33,16 @@ mutable struct SVAE
 	priorκ
 
 	"""
-	SVAE(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
+	SVAE2(q, g, hdim, zdim, T) Constructor of the S-VAE where `zdim > 3` and T determines the floating point type (default Float32)
 	"""
-	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Flux.param(Adapt.adapt(T, [1.])))
-	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, normalize(randn(zdim)))), Flux.param(Adapt.adapt(T, [1.])))
+	# SVAE2(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Flux.param(Adapt.adapt(T, [1.])))
+	SVAE2(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, normalize(randn(zdim)))), Flux.param(Adapt.adapt(T, [1.])))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Flux.param(Adapt.adapt(T, [1.])))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Adapt.adapt(T, vcat(1., zeros(zdim - 1)...)), Adapt.adapt(T, [1.]))
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Adapt.adapt(T, [1.]))
 end
 
-Flux.treelike(SVAE)
+Flux.treelike(SVAE2)
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
@@ -61,18 +61,18 @@ vmfentropy(m, κ) = .-κ .* besselix(m / 2, κ) ./ besselix(m / 2 - 1, κ) .- ((
 huentropy(m) = m / 2 * log(π) + log(2) - lgamma(m / 2)
 
 """
-	kldiv(model::SVAE, κ)
+	kldiv(model::SVAE2, κ)
 
 	KL divergence between Von Mises-Fisher and Hyperspherical Uniform distributions
 """
-kldiv(model::SVAE, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
+kldiv(model::SVAE2, κ) = .- vmfentropy(model.zdim, κ) .+ model.hue
 
 """
-	loss(m::SVAE, x)
+	loss(m::SVAE2, x)
 
 	Loss function of the S-VAE combining reconstruction error and the KL divergence
 """
-function loss(m::SVAE, x, β)
+function loss(m::SVAE2, x, β)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
 	xgivenz = m.g(z)
@@ -106,12 +106,15 @@ c(p, κ) = κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
 # log likelihood of one sample under the VMF dist with given parameters
 log_vmf(x, μ, κ) = κ * μ' * x .+ log(c(length(μ), κ))
 
-function px(m::SVAE, x::Matrix, k::Int = 100)
+# Effective sample size
+neff(weights) = sum(weights) ^ 2 / (sum(weights .^ 2))
+
+function px(m::SVAE2, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
 	return map(a -> px(m, a, k), x)
 end
 
-function px(m::SVAE, x::Vector, k::Int = 100)
+function px(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
 	μz = repmat(μz, 1, k)
 	κz = repmat(κz, 1, k)
@@ -122,15 +125,17 @@ function px(m::SVAE, x::Vector, k::Int = 100)
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
 	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
 
-	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))))
+	ess = neff(exp.(pz .- qzgivenx))
+
+	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx)))), ess
 end
 
-function px2(m::SVAE, x::Matrix, k::Int = 100)
+function px2(m::SVAE2, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
 	return map(a -> px2(m, a, k), x)
 end
 
-function px2(m::SVAE, x::Vector, k::Int = 100)
+function px2(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
 	μz = repmat(μz, 1, k)
 	κz = repmat(κz, 1, k)
@@ -144,12 +149,12 @@ function px2(m::SVAE, x::Vector, k::Int = 100)
 	return sum(exp.(Flux.Tracker.data(qzgivenx)) .* (Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx)))
 end
 
-function px3(m::SVAE, x::Matrix, k::Int = 100)
+function px3(m::SVAE2, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
 	return map(a -> px3(m, a, k), x)
 end
 
-function px3(m::SVAE, x::Vector, k::Int = 100)
+function px3(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
 	μz = repmat(μz, 1, k)
 	κz = repmat(κz, 1, k)
@@ -163,12 +168,12 @@ function px3(m::SVAE, x::Vector, k::Int = 100)
 	return sum(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))
 end
 
-function px4(m::SVAE, x::Matrix, k::Int = 100)
+function px4(m::SVAE2, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
 	return map(a -> px4(m, a, k), x)
 end
 
-function px4(m::SVAE, x::Vector, k::Int = 100)
+function px4(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
 	μz = repmat(μz, 1, k)
 	κz = repmat(κz, 1, k)
@@ -182,12 +187,12 @@ function px4(m::SVAE, x::Vector, k::Int = 100)
 	return sum(Flux.Tracker.data(pxgivenz .+ pz))
 end
 
-function px5(m::SVAE, x::Matrix, k::Int = 100)
+function px5(m::SVAE2, x::Matrix, k::Int = 100)
 	x = [x[:, i] for i in 1:size(x, 2)]
 	return map(a -> px5(m, a, k), x)
 end
 
-function px5(m::SVAE, x::Vector, k::Int = 100)
+function px5(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
 	μz = repmat(μz, 1, k)
 	κz = repmat(κz, 1, k)
@@ -201,13 +206,13 @@ function px5(m::SVAE, x::Vector, k::Int = 100)
 	return sum(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))
 end
 
-function pxvita(m::SVAE, x)
+function pxvita(m::SVAE2, x)
 	μz, κz = zparams(m, x)
 	xgivenz = m.g(μz)
 	Flux.Tracker.data(log_normal(xgivenz, x))
 end
 
-function wloss(m::SVAE, x, β, d)
+function wloss(m::SVAE2, x, β, d)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
 	# zp = samplehsuniform(size(z))
@@ -218,11 +223,11 @@ function wloss(m::SVAE, x, β, d)
 end
 
 """
-	infer(m::SVAE, x)
+	infer(m::SVAE2, x)
 
 	infer latent variables and sample output x
 """
-function infer(m::SVAE, x)
+function infer(m::SVAE2, x)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
 	xgivenz = m.g(z)
@@ -230,28 +235,28 @@ function infer(m::SVAE, x)
 end
 
 """
-	zparams(model::SVAE, x)
+	zparams(model::SVAE2, x)
 
 	Computes μ and κ from the hidden layer
 """
-function zparams(model::SVAE, x)
+function zparams(model::SVAE2, x)
 	hidden = model.q(x)
 	return model.μzfromhidden(hidden), model.κzfromhidden(hidden)
 end
 
 """
-	zfromx(m::SVAE, x)
+	zfromx(m::SVAE2, x)
 
 	convenience function that returns latent layer based on the input `x`
 """
-zfromx(m::SVAE, x) = samplez(m, zparams(m, x)...)
+zfromx(m::SVAE2, x) = samplez(m, zparams(m, x)...)
 
 """
-	samplez(m::SVAE, μz, κz)
+	samplez(m::SVAE2, μz, κz)
 
 	samples z layer based on its parameters
 """
-function samplez(m::SVAE, μz, κz)
+function samplez(m::SVAE2, μz, κz)
 	ω = sampleω(m, κz)
 	normal = Normal()
 	v = Adapt.adapt(eltype(Flux.Tracker.data(κz)), rand(normal, size(μz, 1) - 1, size(μz, 2)))
@@ -273,7 +278,7 @@ function householderrotation(zprime, μ)
 	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
 end
 
-function sampleω(model::SVAE, κ)
+function sampleω(model::SVAE2, κ)
 	m = model.zdim
 	c = @. sqrt(4κ ^ 2 + (m - 1) ^ 2)
 	b = @. (-2κ + c) / (m - 1)
