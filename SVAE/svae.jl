@@ -36,7 +36,7 @@ struct SVAE
 	SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)))
 end
 
-Flux.treelike(SVAE)
+Flux.@treelike(SVAE)
 
 normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
 
@@ -175,7 +175,7 @@ function rejectionsampling(m, a, b, d)
 		mask = .! accepted
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
 		u[mask] = Adapt.adapt(T, rand(sum(mask)))
-		accepted[mask] .= isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		accepted[mask] = isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 	end
 	return @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 end

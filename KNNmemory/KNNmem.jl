@@ -6,6 +6,8 @@ module KNNmem
 
 using Flux
 using Juno
+using Random
+using LinearAlgebra
 
 export KNNmemory, query, trainQuery!, augmentModelWithMemory
 
@@ -140,7 +142,7 @@ function query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
     values = memory.V[Flux.argmax(similarity)]
 
     function probScorePerQ(index)
-        kLargestIDs = selectperm(similarity[:, index], 1:memory.k, rev = true)
+        kLargestIDs = collect(partialsortperm(similarity[:, index], 1:memory.k, rev = true))
         probsOfNearestKeys = softmax(similarity[kLargestIDs, index])
         nearestValues = memory.V[kLargestIDs]
         return sum(probsOfNearestKeys[nearestValues .== 1])
@@ -166,7 +168,7 @@ function trainQuery!(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, v::Ve
     nearestNeighbourIDs = zeros(Integer, batchSize)
 
     for i in 1:batchSize
-        kLargestIDs = selectperm(similarity[:, i], 1:memory.k, rev = true)
+        kLargestIDs = collect(partialsortperm(similarity[:, i], 1:memory.k, rev = true))
         nearestNeighbourIDs[i] = kLargestIDs[1];
         loss += memoryLoss(memory, q[:, i], findNearestPositiveAndNegative(memory, kLargestIDs, v[i]))
     end

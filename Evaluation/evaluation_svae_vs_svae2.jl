@@ -4,18 +4,17 @@ using MLBase: roc, f1score, precision, recall
 using MLDataPattern
 using JLD2
 using FileIO
+using FluxExtensions
+using ADatasets
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
-using FluxExtensions
-using ADatasets
 using NearestNeighbors
 using StatsBase
 using InformationMeasures
-using kNN
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -156,16 +155,16 @@ function runExperiment(datasetName, trainall, test, createModel, createModel2, a
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeVarOfDistances/"
+outputFolder = folderpath * "OSL/experiments/WSVAElargeSVAEvsSVAE2/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["breast-cancer-wisconsin"]
+datasets = ["abalone"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 

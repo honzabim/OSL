@@ -5,6 +5,8 @@ using NNlib
 using Distributions
 using SpecialFunctions
 using Adapt
+using Random
+using LinearAlgebra
 
 """
 		Implementation of Hyperspherical Variational Auto-Encoders
@@ -42,9 +44,9 @@ mutable struct SVAE2
 	# SVAE(q, g, hdim::Integer, zdim::Integer, T = Float32) = new(q, g, zdim, convert(T, huentropy(zdim)), Adapt.adapt(T, Chain(Dense(hdim, zdim), x -> normalizecolumns(x))), Adapt.adapt(T, Dense(hdim, 1, softplus)), Flux.param(Adapt.adapt(T, vcat(1., zeros(zdim - 1)...))), Adapt.adapt(T, [1.]))
 end
 
-Flux.treelike(SVAE2)
+Flux.@treelike(SVAE2)
 
-normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
+normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, dims = 1) .+ eps(eltype(Flux.Tracker.data(m))))
 
 """
 	vmfentropy(m, κ)
@@ -116,18 +118,19 @@ end
 
 function px(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
-	μz = repmat(μz, 1, k)
-	κz = repmat(κz, 1, k)
-	z = samplez(m, μz, κz)
-	xgivenz = m.g(z)
+	μz = repmat(Flux.Tracker.data(μz), 1, k)
+	κz = repmat(Flux.Tracker.data(κz), 1, k)
+	z = Flux.Tracker.data(samplez(m, μz, κz))
+	xgivenz = Flux.Tracker.data(m.g(z))
 
 	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
 	qzgivenx = log_vmf(z, μz[:, 1], κz[1])
 
 	ess = neff(exp.(pz .- qzgivenx))
+	println("Effective sample size: $ess")
 
-	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx)))), ess
+	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))))
 end
 
 function px2(m::SVAE2, x::Matrix, k::Int = 100)
@@ -137,10 +140,10 @@ end
 
 function px2(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
-	μz = repmat(μz, 1, k)
-	κz = repmat(κz, 1, k)
+	μz = repmat(Flux.Tracker.data(μz), 1, k)
+	κz = repmat(Flux.Tracker.data(κz), 1, k)
 	z = samplez(m, μz, κz)
-	xgivenz = m.g(z)
+	xgivenz = Flux.Tracker.data(m.g(z))
 
 	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
@@ -156,10 +159,10 @@ end
 
 function px3(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
-	μz = repmat(μz, 1, k)
-	κz = repmat(κz, 1, k)
+	μz = repmat(Flux.Tracker.data(μz), 1, k)
+	κz = repmat(Flux.Tracker.data(κz), 1, k)
 	z = samplez(m, μz, κz)
-	xgivenz = m.g(z)
+	xgivenz = Flux.Tracker.data(m.g(z))
 
 	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
@@ -175,10 +178,10 @@ end
 
 function px4(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
-	μz = repmat(μz, 1, k)
-	κz = repmat(κz, 1, k)
+	μz = repmat(Flux.Tracker.data(μz), 1, k)
+	κz = repmat(Flux.Tracker.data(κz), 1, k)
 	z = samplez(m, μz, κz)
-	xgivenz = m.g(z)
+	xgivenz = Flux.Tracker.data(m.g(z))
 
 	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
@@ -194,10 +197,10 @@ end
 
 function px5(m::SVAE2, x::Vector, k::Int = 100)
 	μz, κz = zparams(m, x)
-	μz = repmat(μz, 1, k)
-	κz = repmat(κz, 1, k)
+	μz = repmat(Flux.Tracker.data(μz), 1, k)
+	κz = repmat(Flux.Tracker.data(κz), 1, k)
 	z = samplez(m, μz, κz)
-	xgivenz = m.g(z)
+	xgivenz = Flux.Tracker.data(m.g(z))
 
 	pxgivenz = log_normal(xgivenz, repmat(x, 1, k))
 	pz = log_vmf(z, m.priorμ, m.priorκ[1])
@@ -275,7 +278,7 @@ function householderrotation(zprime, μ)
 	e1[1, :] .= 1
 	u = e1 .- μ
 	normalizedu = normalizecolumns(u)
-	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
+	return zprime .- 2 .* sum(zprime .* normalizedu, dims = 1) .* normalizedu
 end
 
 function sampleω(model::SVAE2, κ)
@@ -298,7 +301,8 @@ function rejectionsampling(m, a, b, d)
 		mask = .! accepted
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
 		u[mask] = Adapt.adapt(T, rand(sum(mask)))
-		accepted[mask] .= isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		ia = isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
+		accepted[mask] = ia
 	end
 	return @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
 end

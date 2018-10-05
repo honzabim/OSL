@@ -4,14 +4,14 @@ using MLBase: roc, f1score, precision, recall
 using MLDataPattern
 using JLD2
 using FileIO
+using FluxExtensions
+using ADatasets
 
 folderpath = "D:/dev/julia/"
 # folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
-using FluxExtensions
-using ADatasets
 using NearestNeighbors
 using StatsBase
 using InformationMeasures
@@ -50,11 +50,11 @@ function meanpairwisemutualinf(x)
     return mutualinf / (dim * (dim - 1) / 2)
 end
 
-function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
+function createSVAE2WithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
-    svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
+    svae = SVAE2(encoder, decoder, hiddenDim, latentDim, T)
     train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
@@ -70,13 +70,13 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     function learnAnomaly!(data, labels)
         trainOnLatent!(zfromx(svae, data), labels)
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
-        # return loss(svae, data, β)
+        # return loss(SVAE2, data, β)
     end
 
     return svae, learnRepresentation!, learnAnomaly!, classify, justTrain!
 end
 
-function rscore(m::SVAE, x)
+function rscore(m::SVAE2, x)
     xgivenz = m.g(zfromx(m, x))
     return Flux.mse(x, xgivenz)
 end
@@ -199,7 +199,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 100
+iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -216,11 +216,11 @@ for i in 1:5
 	    println("$dn")
 	    println("$(size(train[2]))")
 	    println("$(counts(train[2]))")
-	    println("Running svae...")
+	    println("Running SVAE2...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE2WithMem(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
 	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 1024], [16], [1], [0.1])
 	    results = reshape(results, length(results), 1)
-	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
+	    save(outputFolder * dn *  "-$i-SVAE2.jld2", "results", results)
 	end
 end
