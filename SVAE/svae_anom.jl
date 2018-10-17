@@ -131,7 +131,7 @@ end
 
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)
 	μz, _ = zparams(m, anomaly)
-	κz = 1000
+	κz = 100
 	m.anom_priorμ = μz
 	m.anom_priorκ = κz
 end

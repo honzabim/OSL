@@ -48,14 +48,14 @@ function meanpairwisemutualinf(x)
     return mutualinf / (dim * (dim - 1) / 2)
 end
 
-function createSVAE_anomWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
+function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
     svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, T)
 
-    learnRepresentation!(data) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
-    learnAnomaly!(anomaly) = set_anomalous_hypersphere(anomaly)
+    learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+    learnAnomaly!(anomaly) = set_anomalous_hypersphere(svae, anomaly)
 	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
 	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
 
@@ -71,8 +71,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         (model, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createModel()
 
 		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1]))"), 5)
-        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
+        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
+        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
         a_ids = find(train[2] .- 1 .== 1)
         a_ids = a_ids[:, randperm(size(a_ids, 2))]
@@ -92,13 +92,14 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 					Flux.train!(learnWithAnomaliesLkh!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
 				end
             else
-                println("Not enough anomalies $ac, $(size(anomalies))")
+                println("Not enough anomalies $ac, $(size(a_ids))")
                 println("Counts: $(counts(train[2]))")
                 break;
             end
 
+			println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
             ascore = Flux.Tracker.data(score(model, test[1]))
-            auc = pyauc(test[2] .- 1, ascore)
+            auc = pyauc(test[2] .- 1, ascore')
             println("AUC: $auc")
 
             push!(results, (ac, auc, ascore, ar, it))
@@ -112,11 +113,11 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["abalone"]
+datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 100
+iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -135,8 +136,8 @@ for i in 1:30
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), () -> createSVAE2WithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 1024], [16], [1], [0.1])
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
+	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [128 1024], [16], [1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
