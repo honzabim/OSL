@@ -168,7 +168,7 @@ function wloss_anom_wass(m::SVAE_anom, x, y, β, d)
 	return (1 .- y) .* (Flux.mse(x, xgivenz) + β * Ω) .+ y .* β .* Ωanom
 end
 
-score(m::SVAE_anom, x) = -log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
+score(m::SVAE_anom, x) = log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
 
 """
 	infer(m::SVAE_anom, x)
