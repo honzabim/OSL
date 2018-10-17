@@ -56,8 +56,8 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
 
     learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     learnAnomaly!(anomaly) = set_anomalous_hypersphere(svae, anomaly)
-	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
-	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
+	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
     return svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
 end
@@ -81,14 +81,14 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 		numBatches = 3000
 
         for ac in anomalyCounts
-            if ac <= size(a_ids, 2)
+            if ac <= length(a_ids)
 				if ac == 1
                 	l = learnAnomaly!(train[1][:, a_ids[ac]])
 				else
 					newlabels = zeros(train[2])
 					newlabels[a_ids[1:ac]] .= 1
 					opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-					cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithAnomaliesLkh!(train[1], newlabels))"), 5)
+					cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithAnomaliesWass!(train[1], newlabels)) Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)"), 5)
 					Flux.train!(learnWithAnomaliesLkh!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
 				end
             else
@@ -117,7 +117,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 1000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -126,7 +126,7 @@ if length(ARGS) != 0
     difficulties = ["easy"]
 end
 
-for i in 1:30
+for i in 1:10
 	for (dn, df) in zip(datasets, difficulties)
 
 	    train, test, clusterdness = loadData(dn, df)
