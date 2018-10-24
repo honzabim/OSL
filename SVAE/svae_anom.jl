@@ -99,10 +99,17 @@ log_normal(x, μ) = log_normal(x - μ)
 
 # Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
 # normalizing constant for density function of VMF
+# it uses the trick of besseli(m, k) = exp(-k) * besselix(m, k)
+# c(p, κ) = @. κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * exp(-κ) * besselix(p / 2 - 1, κ))
 c(p, κ) = @. κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
 
+# logc(p, κ) = (p / 2 - 1) * log(κ) - (p / 2) * log(2π) - log(besseli(p / 2 - 1, κ))
+logc(p, κ) = (p ./ 2 .- 1) .* log.(κ) .- (p ./ 2) .* log(2π) .- κ .- log.(besselix(p / 2 - 1, κ))
+
+
 # log likelihood of one sample under the VMF dist with given parameters
-log_vmf(x, μ, κ) = κ * μ' * x .+ log.(c(length(μ), κ))
+# log_vmf(x, μ, κ) = κ * μ' * x .+ log.(c(length(μ), κ))
+log_vmf(x, μ, κ) = κ * μ' * x .+ logc(length(μ), κ)
 
 # Effective sample size
 neff(weights) = sum(weights) ^ 2 / (sum(weights .^ 2))
@@ -131,9 +138,9 @@ end
 
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)
 	μz, _ = zparams(m, anomaly)
-	κz = 100
+	κz = 100.
 	T = eltype(m.hue)
-	m.anom_priorμ = Flux.param(Adapt.adapt(T, μz))
+	m.anom_priorμ = Flux.param(Adapt.adapt(T, Flux.Tracker.data(μz)))
 	m.anom_priorκ = Flux.param(Adapt.adapt(T, [κz]))
 end
 
@@ -150,23 +157,39 @@ end
 function wloss_anom_lkh(m::SVAE_anom, x, y, β, d)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
-	zp = samplehsuniform(size(z[:, y .== 0]))
-	Ω = d(z[:, y .== 0], zp)
-	xgivenz = m.g(z)
-	println("log vmf: $(log_vmf(z[:, y .== 1], m.anom_priorμ, m.anom_priorκ))")
-	println("κ: $(m.anom_priorκ)")
-	return Flux.mse(x, xgivenz) + β * Ω + 0.01 * mean(-log_vmf(z[:, y .== 1], m.anom_priorμ, m.anom_priorκ))
+	if count(y .== 1) > 0
+		zp = samplehsuniform(size(z[:, y .== 0]))
+		Ω = d(z[:, y .== 0], zp)
+		xgivenz = m.g(z)
+		return Flux.mse(x, xgivenz) + β * Ω + 0.01 * mean(-log_vmf(z[:, y .== 1], m.anom_priorμ, m.anom_priorκ))
+	else
+		zp = samplehsuniform(size(z))
+		Ω = d(z, zp)
+		xgivenz = m.g(z)
+		return Flux.mse(x, xgivenz) + β * Ω
+	end
 end
 
 function wloss_anom_wass(m::SVAE_anom, x, y, β, d)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
-	zp = samplehsuniform(size(z[:, y .== 0]))
-	anom_prior = samplez(m, ones(size(μz[:, y .== 1])) .* normalizecolumns(m.anom_priorμ), ones(size(κz[y .== 1])) .* m.anom_priorκ)
-	Ω = d(z[:, y .== 0], zp)
-	Ωanom = d(z[:, y .== 1], anom_prior)
-	xgivenz = m.g(z)
-	return Flux.mse(x, xgivenz) + β * Ω .+ β .* Ωanom
+	if count(y .== 1) > 0
+		zp = samplehsuniform(size(z[:, y .== 0]))
+		anom_ids = findall(y .== 1)
+		μzanom = μz[:, anom_ids[rand(1:length(anom_ids), length(y))]]
+		κzanom = κz[anom_ids[rand(1:length(anom_ids), length(y))]]
+		zanom = samplez(m, μzanom, collect(κzanom'))
+		anom_prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+		Ω = d(z[:, y .== 0], zp)
+		Ωanom = d(zanom, anom_prior)
+		xgivenz = m.g(z)
+		return Flux.mse(x, xgivenz) + β * Ω .+ β .* Ωanom
+	else
+		zp = samplehsuniform(size(z))
+		Ω = d(z, zp)
+		xgivenz = m.g(z)
+		return Flux.mse(x, xgivenz) + β * Ω
+	end
 end
 
 score(m::SVAE_anom, x) = log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
