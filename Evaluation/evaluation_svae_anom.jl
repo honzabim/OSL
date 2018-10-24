@@ -116,7 +116,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeSVAEanomTest/"
+outputFolder = folderpath * "OSL/experiments/WSVAElargeSVAEanom/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
