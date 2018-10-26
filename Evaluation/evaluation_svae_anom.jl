@@ -94,7 +94,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 					else
 						newlabels = zeros(train[2])
 						newlabels[a_ids[1:ac]] .= 1
-						opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
+						opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
 						cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithA!(train[1], newlabels))"), 3)
 						Flux.train!(learnWithA!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
 					end
@@ -144,7 +144,7 @@ for i in 1:10
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
 	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
