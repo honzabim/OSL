@@ -64,15 +64,15 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			learnWithA! = learnWithAnomaliesLkh!
 		end
 
-		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
         cb = Flux.throttle(() -> println("SVAE $datasetName : $(learnRepresentation!(train[1], []))"), 5)
-		println(RandomBatches((train[1], zeros(train[2])), batchSize, numBatches))
-		println(model.q)
-		println(model.g)
         Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+
 
 		ascore = Flux.Tracker.data(pxvita(model, test[1]))
         auc = pyauc(test[2], ascore')
+		println(size(ascore))
+		println(size(test[2]))
         println("AUC svae: $auc")
 
 		push!(results, (method, ac, auc, ascore, it))
@@ -85,15 +85,14 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
 			model = VAE(encoder, decoder, 0.1, :unit)
 
-			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
 	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
-			println(RandomBatches((train[1], zeros(train[2])), batchSize, numBatches))
-			println(model.q)
-			println(model.g)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 			ascore = Flux.Tracker.data(pxvita(model, test[1]))
             auc = pyauc(test[2], ascore')
+			println(size(ascore))
+			println(size(test[2]))
             println("AUC m1: $auc")
 
 			push!(results, (method, ac, auc, ascore, it))
@@ -140,7 +139,7 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 dataset = "breast-cancer-wisconsin"
-dataset = "iris"
+# dataset = "glass"
 batchSize = 100
 iterations = 10000
 
