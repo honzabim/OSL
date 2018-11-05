@@ -136,6 +136,12 @@ function px(m::SVAE_anom, x::Vector, k::Int = 100)
 	return log(sum(exp.(Flux.Tracker.data(pxgivenz .+ pz .- qzgivenx))))
 end
 
+function pxvita(m::SVAE_anom, x)
+	μz, κz = zparams(m, x)
+	xgivenz = m.g(μz)
+	Flux.Tracker.data(log_normal(xgivenz, x))
+end
+
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)
 	μz, _ = zparams(m, anomaly)
 	κz = 100.
