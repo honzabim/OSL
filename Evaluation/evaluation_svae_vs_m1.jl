@@ -134,12 +134,13 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAEvsM1test/"
+outputFolder = folderpath * "OSL/experiments/SVAEvsM1/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 dataset = "breast-cancer-wisconsin"
+dataset = "iris"
 batchSize = 100
 iterations = 10000
 
