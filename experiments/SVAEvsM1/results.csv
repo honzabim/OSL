@@ -1,0 +1,451 @@
+hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,dataset
+32,3,3,relu,Dense,0.1,lklh,0,0.47513366286694236,1,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.47467054281338555,1,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.48630700732738463,1,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.47595443999156295,2,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.47451578734994454,2,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.47856350247150203,2,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.46979402620984384,3,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4764141210348211,3,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4999977073264676,3,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4802428858340288,4,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.47779087149106314,4,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4686465431068477,4,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4697458800656622,5,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.47543858844675957,5,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4779479196280367,5,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.48586452133561997,6,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4908212815127977,6,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.49445402272498007,6,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4989912236457177,7,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4806120062727548,7,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4641609273405904,7,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.47274125803582073,8,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.47513480920370865,8,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.48272241225938395,8,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4671608906578139,9,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4890444595251415,9,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4817961721522702,9,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4712040204323065,10,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.48327150757040804,10,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.47220935777629014,10,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.7688486010633662,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.7611784188965396,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7609169354135796,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.75647171620326,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.4994334524535867,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7664952497167261,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7528981086028067,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5814521049420378,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7741654318835526,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7620500305064063,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5017868038002266,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7609169354135796,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.760568290769633,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.7617013858624596,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7596095179987798,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7630088032772596,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5344722391702257,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7559487492373399,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7619628693454198,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.44696243353961473,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7673668613265929,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7690229233853395,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.7619628693454196,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7642290595310729,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7601324849646998,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5188703913536128,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7662337662337662,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.7558615880763532,10,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.48531334437374707,10,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7668438943606729,10,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.8176671932596103,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.42647446024223273,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8360321221695629,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.9019220642443391,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8729594523433386,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8702606635071088,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8740126382306477,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.024552395997893627,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8952738283307002,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8959978936282254,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.03442601369141654,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8320826750921538,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8630200105318588,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.020405476566614008,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.9046866771985255,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8518957345971564,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8755265929436545,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8928383359662979,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.809768299104792,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.020997893628225385,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8599921011058451,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8680226434965771,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.04186413902053712,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8908636124275935,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8753949447077409,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.3772380200105319,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8615060558188521,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8661795681937863,10,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8792785676671933,10,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8702606635071091,10,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.20639680159920037,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.18090954522738628,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.34557721139430286,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.2055222388805597,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.17691154422788608,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.09770114942528735,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.21076961519240378,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.14430284857571213,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.3002248875562219,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.20164917541229385,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.17466266866566718,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.2606196901549226,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.16004497751124436,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.1303098450774613,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.20777111444277857,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.27386306846576713,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.1909045477261369,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.11444277861069466,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.4017991004497751,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.14280359820089955,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.17553723138430782,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.291104447776112,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.25087456271864067,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.1316841579210395,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.19565217391304346,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.23013493253373318,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.2245127436281859,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.19440279860069964,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.27023988005997,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.10844577711144429,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.6249480681346073,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.37531159119235563,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.556060448691317,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6320886996260905,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7887152056501869,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.7844308267552971,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.5382997507270462,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7223722476111342,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.5839478604071457,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6136528874117158,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.750337557125052,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.8159794349813043,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.5757945575405069,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.37300062318238475,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.5501921479019527,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.68630556709597,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7683579144162858,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.5268487744079767,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.468321562110511,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7836258828417116,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6228967594515995,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6634815122559202,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.3644578313253012,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6064343581221437,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6951599501454093,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7380556709597009,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6245066472787701,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6768799335272122,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.776770876609888,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.5119962609056917,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.5513213019658395,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9923461166612955,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.5937802126973897,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.7525781501772478,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.5663067998710924,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.40831453432162423,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9720431840154689,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9689010634869482,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9453754431195617,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9060586529165324,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9863841443764099,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9712375120850789,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.8028520786335804,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9680953915565582,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.6621817595874959,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.7769900096680632,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9372381566226232,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.8912342893973573,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9942797292942315,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9307122139864646,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9363519174991943,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.8785852400902352,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.956090879793748,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.7860941024814696,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.8201740251369642,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.956171446986787,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.8049468256525942,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9614083145343216,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9435223976796648,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.691266516274573,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.2675476982321022,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.28106949063539294,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.18969893225975842,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.2346402940661649,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.29949238578680204,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.26137755995098894,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.24776824785576756,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.2750306318921757,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.3334062664099422,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.25468230351829163,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.18908629441624364,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.22908279362856643,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.15272186241904426,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.312532819884474,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.2545510239803956,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.26194643794853845,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.2511815158410643,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.3651321547348153,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.2820759670925958,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.17346402940661648,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.25862068965517243,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.25577629966742516,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.40276562226500956,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.2602398039558901,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.2693856117626465,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.2801505338701208,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.25822685104148435,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.24260458603185717,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.24991248030806928,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.2602398039558901,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.6153872468527641,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7819854953475643,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.5262383689107827,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.569376026272578,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7941297208538588,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.49415024630541865,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.616447728516694,3,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.34294608648056923,3,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.6134373289545704,3,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.5897988505747126,4,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7832854406130269,4,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.612000547345375,4,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.5310618500273672,5,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.8218048713738368,5,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.5474480021893815,5,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.4803981937602627,6,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.8234126984126984,6,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.6882868089764641,6,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.8071291735084839,7,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.8622400109469075,7,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.4279898741105638,7,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.6461754241926656,8,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.34465654077723046,8,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.8219417077175699,8,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.5210727969348659,9,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7873221127531473,9,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.5766625615763548,9,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.5047550629447181,10,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7275246305418719,10,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.29922687465790915,10,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.3631914511494253,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.4127155172413793,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.3114448635057471,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.4125134698275862,2,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.41255836925287354,2,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.33445581896551724,2,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.49261404454022995,3,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.5224497126436782,3,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.4481187140804597,3,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.3471848060344829,4,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.40422952586206895,4,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.38714529454022995,4,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.3486664870689655,5,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.40508261494252873,5,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.33230064655172414,5,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.46825610632183906,6,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.3900862068965517,6,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.4467268318965517,6,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.38481052442528735,7,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.39168013649425293,7,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.3761000359195402,7,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.3485991379310345,8,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.3797817887931034,8,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.32264727011494254,8,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.5036817528735632,9,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.4033539870689655,9,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.3510237068965517,9,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.3200880028735632,10,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.5180495689655173,10,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.42582614942528735,10,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.5065061808718283,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.48389720234222516,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5287898503578399,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5022771633051399,2,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.5300910865322056,2,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.47983083929733245,2,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5541639557579701,3,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.47527651268705273,3,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5123617436564737,3,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5047169811320755,4,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.6065387117761873,4,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5283018867924529,4,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5292778139232271,5,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.5471698113207547,5,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.47852960312296683,5,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5297657774886142,6,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.49316851008458035,6,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.6481782693558882,6,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.5325309043591412,7,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.5372478854912167,7,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.49349381912817175,7,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.4634027325959662,8,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.47999349381912815,8,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5718932986337021,8,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.46161353285621337,9,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.49056603773584906,9,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.4897527651268705,9,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.47283669486011715,10,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.5502602472348732,10,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5045543266102798,10,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.22629310344827586,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.3591954022988506,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.22904693486590036,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.22329980842911873,2,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.3320162835249042,2,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.23718869731800762,2,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.21096743295019157,3,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.18821839080459773,3,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.21563697318007663,3,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.18845785440613028,4,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.2928639846743295,4,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.22844827586206895,4,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.2021072796934866,5,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.33441091954022995,5,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.23108237547892718,5,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.21815134099616856,6,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.40924329501915707,6,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.26340996168582376,6,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.21336206896551724,7,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.39415708812260536,7,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.22066570881226052,7,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.13984674329501917,8,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.2971743295019157,8,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.2150383141762452,8,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.21467911877394635,9,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.29477969348659006,9,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.2209051724137931,9,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.21156609195402298,10,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.4422892720306513,10,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.1977969348659004,10,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.4013409961685824,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.6106853980417198,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.3499361430395913,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.41145168156662404,2,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.612281822051937,2,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.3717539378458919,2,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.3720732226479353,3,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.5332056194125159,3,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.3982545764154959,3,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.27575564069816944,4,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.24180502341421878,4,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.39303959131545335,4,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.5058535547041294,5,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.566411238825032,5,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.4107066836951894,5,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.37260536398467436,6,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.37452107279693486,6,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.3558961260110685,6,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.360046828437633,7,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.6151553852703278,7,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.3834610472541507,7,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.3815453384418902,8,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.23265219242230734,8,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.40187313750532144,8,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.5801404853128991,9,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.6121753937845892,9,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.4287994891443167,9,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.3888888888888889,10,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.30757769263516394,10,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.5202213707960834,10,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.9664128974473802,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9583519928347515,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9704433497536946,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.1276309896999552,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9695476936856247,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9708911777877295,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9664128974473802,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9695476936856247,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.006717420510523961,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9637259292431706,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9525302283922974,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.1276309896999552,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9646215853112405,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9619346171070309,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.1262875055978504,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9708911777877295,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.007165248544558891,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9695476936856247,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9619346171070309,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9690998656515898,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9650694133452755,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.020600089565606806,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9659650694133453,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,2,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.12068965517241381,2,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,2,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,3,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,3,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,3,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,4,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.12068965517241381,4,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,4,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,5,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.3448275862068966,5,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,5,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.5,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,7,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,7,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,7,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,8,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,8,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,8,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,9,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9655172413793103,9,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,9,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,10,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,10,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,10,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,1.0,1,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.06896551724137934,1,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,1,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,2,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.4137931034482759,2,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,2,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,3,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,3,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,3,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,4,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,4,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,4,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,5,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,5,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,5,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,6,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,6,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,6,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,7,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,7,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,7,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,8,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,8,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,8,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,9,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,9,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,9,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,1.0,10,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,10,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,10,svae,ecoli cp-imL
