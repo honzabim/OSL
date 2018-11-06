@@ -3,6 +3,7 @@ using FileIO
 using DataFrames
 using CSV
 using UCI
+using Statistics
 
 const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1/"
 
@@ -46,3 +47,19 @@ for d in datasets
 end
 
 CSV.write(dataFolder * "results.csv", allData)
+
+global averaged = DataFrame(types, params, 0)
+for (m, d) in Base.product(unique(allData[:method]), unique(allData[:dataset]))
+    newrow = allData[(allData[:method] .== m) .& (allData[:dataset] .== d) .& (allData[:i] .== 1), :]
+    newrow[:auc] = mean(allData[(allData[:method] .== m) .& (allData[:dataset] .== d), :][:auc])
+    averaged = vcat(averaged, newrow)
+end
+CSV.write(dataFolder * "results-avg.csv", averaged)
+
+sumr = []
+for d in unique(allData[:dataset])
+    push!(sumr, DataFrame(dataset = d, m1auc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "m1"), :][:auc],
+        lklhauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "lklh"), :][:auc],
+        wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
+end
+sumr = vcat(sumr...)

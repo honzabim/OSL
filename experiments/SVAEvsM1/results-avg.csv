@@ -1,0 +1,46 @@
+hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,dataset
+32,3,3,relu,Dense,0.1,lklh,0,0.47668328090753187,1,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4797713975220785,1,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.48068055721137526,1,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.7610825416194544,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5853133443737469,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.7642726401115663,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.8623880989994733,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.3573723012111638,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8713796735123749,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.23412043978010993,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.1892053973013493,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.19665167416291854,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.617493248857499,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.6441005400914,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6183293518903199,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.8416290686432484,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9205768611021592,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.769078311311634,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.24691493085944338,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.2714685804305969,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.2670575879572904,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.5881602353585113,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7069307608100711,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.560738232074439,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.39896057830459775,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,m1,0,0.42399874281609196,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,wass,0,0.3735789331896552,1,svae,cardiotocography 2-1
+32,3,3,relu,Dense,0.1,lklh,0,0.5057091737150292,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,m1,0,0.5194209499024074,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,wass,0,0.5235686402081978,1,svae,cardiotocography 2-3
+32,3,3,relu,Dense,0.1,lklh,0,0.20487308429118772,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,m1,0,0.3344348659003832,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,wass,0,0.22592193486590037,1,svae,cardiotocography 2-5
+32,3,3,relu,Dense,0.1,lklh,0,0.4049702000851426,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,m1,0,0.4706470838654746,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,wass,0,0.4013942103022563,1,svae,cardiotocography 2-4
+32,3,3,relu,Dense,0.1,lklh,0,0.9656963725929242,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.3422749664128974,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9663233318405732,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9586206896551724,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.4051724137931035,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.953448275862069,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,1.0,1,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.7586206896551724,1,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,wass,0,1.0,1,svae,ecoli cp-imL
