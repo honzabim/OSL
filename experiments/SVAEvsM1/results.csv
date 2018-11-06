@@ -1,25 +1,25 @@
 hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,dataset
-32,3,3,relu,Dense,0.1,lklh,0,0.47513366286694236,1,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.47467054281338555,1,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.48630700732738463,1,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.47595443999156295,2,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.47451578734994454,2,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.47856350247150203,2,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.46979402620984384,3,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.4764141210348211,3,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.4999977073264676,3,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.4802428858340288,4,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.47779087149106314,4,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.4686465431068477,4,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.4697458800656622,5,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.47543858844675957,5,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.4779479196280367,5,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.48586452133561997,6,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.4908212815127977,6,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.49445402272498007,6,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.4989912236457177,7,svae,abalone 
-32,3,3,relu,Dense,0.1,m1,0,0.4806120062727548,7,svae,abalone 
-32,3,3,relu,Dense,0.1,wass,0,0.4641609273405904,7,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4891086543840503,1,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.495067312894913,1,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.49557972542941775,1,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.49218427592784497,2,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.4923780068413378,2,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.476508120649652,2,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.48688132204726575,3,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.49079606210394067,3,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4880907073356382,3,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.48778463541905487,4,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.49273222490210283,4,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.48734329576405633,4,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4850655246095577,5,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.48943650669919203,5,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4938269765138524,5,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4744550315013344,6,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.48565359537063363,6,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.4962824298671167,6,svae,abalone 
+32,3,3,relu,Dense,0.1,lklh,0,0.4872630521904203,7,svae,abalone 
+32,3,3,relu,Dense,0.1,m1,0,0.48971277385985346,7,svae,abalone 
+32,3,3,relu,Dense,0.1,wass,0,0.49025957649734503,7,svae,abalone 
 32,3,3,relu,Dense,0.1,lklh,0,0.47274125803582073,8,svae,abalone 
 32,3,3,relu,Dense,0.1,m1,0,0.47513480920370865,8,svae,abalone 
 32,3,3,relu,Dense,0.1,wass,0,0.48272241225938395,8,svae,abalone 
@@ -29,192 +29,192 @@ hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,
 32,3,3,relu,Dense,0.1,lklh,0,0.4712040204323065,10,svae,abalone 
 32,3,3,relu,Dense,0.1,m1,0,0.48327150757040804,10,svae,abalone 
 32,3,3,relu,Dense,0.1,wass,0,0.47220935777629014,10,svae,abalone 
-32,3,3,relu,Dense,0.1,lklh,0,0.7688486010633662,1,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.7611784188965396,1,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7609169354135796,1,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.75647171620326,2,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.4994334524535867,2,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7664952497167261,2,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7528981086028067,3,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.5814521049420378,3,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7741654318835526,3,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7620500305064063,4,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.5017868038002266,4,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7609169354135796,4,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.760568290769633,5,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.7617013858624596,5,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7596095179987798,5,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7630088032772596,6,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.5344722391702257,6,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7559487492373399,6,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7619628693454198,7,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.44696243353961473,7,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7673668613265929,7,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7690229233853395,8,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.7619628693454196,8,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7642290595310729,8,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.7601324849646998,9,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,m1,0,0.5188703913536128,9,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,wass,0,0.7662337662337662,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.665039658328249,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.6664342369040356,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6732328074609955,1,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6667828815479823,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.62555565240129,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6657369476161423,2,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6658241087771289,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.6667828815479823,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6754989976466486,3,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6674801708358756,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5118974984746797,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6659984310991023,4,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6661727534210755,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5080624073912665,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6662599145820624,5,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.667654493157849,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.6110868996775038,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6836049856184085,6,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6747145471977687,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.6667828815479823,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6707051337923823,7,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6685261047677157,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.5832824893227577,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6646038525233157,8,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,lklh,0,0.6704436503094222,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,m1,0,0.4618669920683343,9,svae,blood-transfusion 
+32,3,3,relu,Dense,0.1,wass,0,0.6673930096748889,9,svae,blood-transfusion 
 32,3,3,relu,Dense,0.1,lklh,0,0.7558615880763532,10,svae,blood-transfusion 
 32,3,3,relu,Dense,0.1,m1,0,0.48531334437374707,10,svae,blood-transfusion 
 32,3,3,relu,Dense,0.1,wass,0,0.7668438943606729,10,svae,blood-transfusion 
-32,3,3,relu,Dense,0.1,lklh,0,0.8176671932596103,1,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.42647446024223273,1,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8360321221695629,1,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.9019220642443391,2,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.8729594523433386,2,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8702606635071088,2,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8740126382306477,3,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.024552395997893627,3,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8952738283307002,3,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8959978936282254,4,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.03442601369141654,4,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8320826750921538,4,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8630200105318588,5,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.020405476566614008,5,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.9046866771985255,5,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8518957345971564,6,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.8755265929436545,6,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8928383359662979,6,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.809768299104792,7,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.020997893628225385,7,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8599921011058451,7,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8680226434965771,8,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.04186413902053712,8,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8908636124275935,8,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.8753949447077409,9,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,m1,0,0.3772380200105319,9,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,wass,0,0.8615060558188521,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8484728804634016,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.03863875724065298,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8521590310689837,1,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8548578199052133,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.09195629278567667,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8703264876250657,2,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8850052659294365,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8724328593996841,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8484728804634017,3,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8907977883096366,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.32694839389152186,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8299104791995787,4,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8685492364402317,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.9814375987361769,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.9186413902053713,5,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8322143233280673,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.028436018957345974,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.865521327014218,6,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8414296998420221,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8676276987888362,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8455107951553449,7,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8385992627698787,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.023762506582411795,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8388625592417062,8,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,lklh,0,0.8245787256450764,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,m1,0,0.8715771458662454,9,svae,breast-cancer-wisconsin 
+32,3,3,relu,Dense,0.1,wass,0,0.8683517640863613,9,svae,breast-cancer-wisconsin 
 32,3,3,relu,Dense,0.1,lklh,0,0.8661795681937863,10,svae,breast-cancer-wisconsin 
 32,3,3,relu,Dense,0.1,m1,0,0.8792785676671933,10,svae,breast-cancer-wisconsin 
 32,3,3,relu,Dense,0.1,wass,0,0.8702606635071091,10,svae,breast-cancer-wisconsin 
-32,3,3,relu,Dense,0.1,lklh,0,0.20639680159920037,1,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.18090954522738628,1,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.34557721139430286,1,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.2055222388805597,2,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.17691154422788608,2,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.09770114942528735,2,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.21076961519240378,3,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.14430284857571213,3,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.3002248875562219,3,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.20164917541229385,4,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.17466266866566718,4,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.2606196901549226,4,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.16004497751124436,5,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.1303098450774613,5,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.20777111444277857,5,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.27386306846576713,6,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.1909045477261369,6,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.11444277861069466,6,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.4017991004497751,7,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.14280359820089955,7,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.17553723138430782,7,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.291104447776112,8,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.25087456271864067,8,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.1316841579210395,8,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.19565217391304346,9,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.23013493253373318,9,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.2245127436281859,9,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.19440279860069964,10,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,m1,0,0.27023988005997,10,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,wass,0,0.10844577711144429,10,svae,cardiotocography 2-9
-32,3,3,relu,Dense,0.1,lklh,0,0.6249480681346073,1,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.37531159119235563,1,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.556060448691317,1,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.6320886996260905,2,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.7887152056501869,2,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.7844308267552971,2,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.5382997507270462,3,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.7223722476111342,3,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.5839478604071457,3,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.6136528874117158,4,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.750337557125052,4,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.8159794349813043,4,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.5757945575405069,5,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.37300062318238475,5,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.5501921479019527,5,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.68630556709597,6,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.7683579144162858,6,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.5268487744079767,6,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.468321562110511,7,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.7836258828417116,7,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.6228967594515995,7,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.6634815122559202,8,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.3644578313253012,8,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.6064343581221437,8,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.6951599501454093,9,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.7380556709597009,9,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.6245066472787701,9,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.6768799335272122,10,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,m1,0,0.776770876609888,10,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,wass,0,0.5119962609056917,10,svae,cardiotocography 2-6
-32,3,3,relu,Dense,0.1,lklh,0,0.5513213019658395,1,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9923461166612955,1,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.5937802126973897,1,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.7525781501772478,2,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.5663067998710924,2,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.40831453432162423,2,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.9720431840154689,3,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9689010634869482,3,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.9453754431195617,3,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.9060586529165324,4,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9863841443764099,4,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.9712375120850789,4,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.8028520786335804,5,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9680953915565582,5,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.6621817595874959,5,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.7769900096680632,6,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9372381566226232,6,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.8912342893973573,6,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.9942797292942315,7,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9307122139864646,7,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.9363519174991943,7,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.8785852400902352,8,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.956090879793748,8,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.7860941024814696,8,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.8201740251369642,9,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.956171446986787,9,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.8049468256525942,9,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.9614083145343216,10,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,m1,0,0.9435223976796648,10,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,wass,0,0.691266516274573,10,svae,cardiotocography 2-8
-32,3,3,relu,Dense,0.1,lklh,0,0.2675476982321022,1,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.28106949063539294,1,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.18969893225975842,1,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.2346402940661649,2,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.29949238578680204,2,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.26137755995098894,2,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.24776824785576756,3,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.2750306318921757,3,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.3334062664099422,3,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.25468230351829163,4,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.18908629441624364,4,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.22908279362856643,4,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.15272186241904426,5,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.312532819884474,5,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.2545510239803956,5,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.26194643794853845,6,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.2511815158410643,6,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.3651321547348153,6,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.2820759670925958,7,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.17346402940661648,7,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.25862068965517243,7,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.25577629966742516,8,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.40276562226500956,8,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.2602398039558901,8,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.2693856117626465,9,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.2801505338701208,9,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.25822685104148435,9,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.24260458603185717,10,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,m1,0,0.24991248030806928,10,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,wass,0,0.2602398039558901,10,svae,cardiotocography 2-10
-32,3,3,relu,Dense,0.1,lklh,0,0.6153872468527641,1,svae,cardiotocography 2-7
-32,3,3,relu,Dense,0.1,m1,0,0.7819854953475643,1,svae,cardiotocography 2-7
-32,3,3,relu,Dense,0.1,wass,0,0.5262383689107827,1,svae,cardiotocography 2-7
-32,3,3,relu,Dense,0.1,lklh,0,0.569376026272578,2,svae,cardiotocography 2-7
-32,3,3,relu,Dense,0.1,m1,0,0.7941297208538588,2,svae,cardiotocography 2-7
-32,3,3,relu,Dense,0.1,wass,0,0.49415024630541865,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.18865567216391804,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.2021489255372314,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.11419290354822588,1,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.25462268865567217,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.18128435782108948,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.216391804097951,2,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.23763118440779607,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.247376311844078,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.4140429785107447,3,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.24737631184407796,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.20577211394302847,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.38518240879560217,4,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.11169415292353822,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.22563718140929537,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.2286356821589205,5,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.1672913543228386,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.27773613193403296,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.22713643178410792,6,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.15542228885557222,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.26286856571714146,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.12256371814092953,7,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.20752123938030984,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.538855572213893,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.21064467766116937,8,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.2405047476261869,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.27548725637181415,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.36106946526736633,9,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.23725637181409293,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,m1,0,0.21376811594202896,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,wass,0,0.1170664667666167,10,svae,cardiotocography 2-9
+32,3,3,relu,Dense,0.1,lklh,0,0.5865963855421688,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7986601578728708,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.7873390112172829,1,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6529133776485251,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.7824054840049854,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.7008984212712921,2,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.8215361445783133,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.837141670128791,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6606771915247196,3,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7605421686746988,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.8426464478604071,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.8183942667220606,4,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7306294142085583,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.45061279601163273,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6663637307852099,5,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.6583142916493561,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.8131491483174076,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.8020876609887827,6,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.5832727461570419,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.8167584129621935,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6685708350643955,7,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7355889073535521,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.8020616950560864,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.6829819277108434,8,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.5394162858329872,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.42996987951807225,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.7441836310760283,9,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7938564603240549,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,m1,0,0.760048815953469,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,wass,0,0.7414312422102202,10,svae,cardiotocography 2-6
+32,3,3,relu,Dense,0.1,lklh,0,0.9923461166612956,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.5825813728649694,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.4359490815339993,1,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9343377376732194,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9871092491137609,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.6237512085078956,2,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9928295198195294,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9726071543667418,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9875120850789558,3,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.852320335159523,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.5793586851434096,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.573235578472446,4,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9899291008701256,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9541572671608121,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.8992910087012569,5,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.9670480180470511,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.8870447953593297,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.6849017080244924,6,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.5621978730261037,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9584273283918787,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9592330003222689,7,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.8734289397357395,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.9623751208507896,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9874315178859169,8,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.987673219465034,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.8942152755398002,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.5996616177892362,9,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.955043506284241,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,m1,0,0.5836287463744763,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,wass,0,0.9520625201417983,10,svae,cardiotocography 2-8
+32,3,3,relu,Dense,0.1,lklh,0,0.23958515666024857,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.3793103448275862,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.17197619464379488,1,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.15053387012077718,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.22720112025205674,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.11893926133380012,2,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.2763871871171013,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.3166462454052162,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.20869070540871695,3,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.3395326448450901,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.23805356205146155,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.19249956240154037,4,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.20637143357255383,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.2998862244004901,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.20877822510064764,5,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.23367757745492734,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.18471030981970943,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.14983371258533168,6,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.20523367757745492,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.23800980220549625,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.10725538246105373,7,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.20168913005426223,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.21035357955539996,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.1970068265359706,8,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.20855942587082094,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.18177840014003152,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.2145107649221075,9,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.10883073691580605,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,m1,0,0.21061613863119202,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,wass,0,0.20772798879747945,10,svae,cardiotocography 2-10
+32,3,3,relu,Dense,0.1,lklh,0,0.5870963327859879,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.7688149972632732,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.5371852764094144,1,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,lklh,0,0.5604132457580733,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,m1,0,0.6617063492063492,2,svae,cardiotocography 2-7
+32,3,3,relu,Dense,0.1,wass,0,0.6154556650246307,2,svae,cardiotocography 2-7
 32,3,3,relu,Dense,0.1,lklh,0,0.616447728516694,3,svae,cardiotocography 2-7
 32,3,3,relu,Dense,0.1,m1,0,0.34294608648056923,3,svae,cardiotocography 2-7
 32,3,3,relu,Dense,0.1,wass,0,0.6134373289545704,3,svae,cardiotocography 2-7
@@ -359,71 +359,71 @@ hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,
 32,3,3,relu,Dense,0.1,lklh,0,0.3888888888888889,10,svae,cardiotocography 2-4
 32,3,3,relu,Dense,0.1,m1,0,0.30757769263516394,10,svae,cardiotocography 2-4
 32,3,3,relu,Dense,0.1,wass,0,0.5202213707960834,10,svae,cardiotocography 2-4
-32,3,3,relu,Dense,0.1,lklh,0,0.9664128974473802,1,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,1,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9583519928347515,1,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9704433497536946,2,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.1276309896999552,2,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9695476936856247,2,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9708911777877295,3,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,3,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9664128974473802,3,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9695476936856247,4,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.006717420510523961,4,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9637259292431706,4,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9525302283922974,5,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.1276309896999552,5,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9646215853112405,5,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9619346171070309,6,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.1262875055978504,6,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9708911777877295,6,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,7,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.007165248544558891,7,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9695476936856247,7,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.9619346171070309,8,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.967756381549485,8,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9690998656515898,8,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,9,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,9,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9650694133452755,9,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,lklh,0,0.967756381549485,10,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,m1,0,0.020600089565606806,10,svae,ecoli cp-im
-32,3,3,relu,Dense,0.1,wass,0,0.9659650694133453,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.979847738468428,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.10613524406627854,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9767129422301837,1,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9726824899238693,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.027765338110165686,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.974473802060009,2,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9735781459919391,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.9762651141961487,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9776085982982535,3,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.974921630094044,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.09359605911330049,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9793999104343932,4,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9789520824003581,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.9762651141961487,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9767129422301837,5,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9780564263322884,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.12404836542767576,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.974025974025974,6,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.975369458128079,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.12091356918943125,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9771607702642185,7,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.974473802060009,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.021495745633676663,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9762651141961487,8,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9780564263322884,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.018360949395432154,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9762651141961487,9,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,lklh,0,0.9735781459919391,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,m1,0,0.018808777429467086,10,svae,ecoli cp-im
+32,3,3,relu,Dense,0.1,wass,0,0.9726824899238693,10,svae,ecoli cp-im
 32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,1,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,1,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,1,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,1,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,2,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.12068965517241381,2,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,2,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,2,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,3,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,3,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,3,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,3,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,3,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,4,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.12068965517241381,4,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,4,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,4,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,5,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.3448275862068966,5,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,5,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,6,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.5,6,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,5,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,5,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,6,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,6,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,7,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,7,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,wass,0,0.9655172413793103,7,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,8,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.03448275862068967,8,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.5,7,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,7,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,8,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.5,8,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,8,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,lklh,0,0.9655172413793103,9,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.9655172413793103,9,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,9,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.12068965517241381,9,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,9,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,lklh,0,0.9482758620689655,10,svae,ecoli cp-imS
-32,3,3,relu,Dense,0.1,m1,0,0.9482758620689655,10,svae,ecoli cp-imS
+32,3,3,relu,Dense,0.1,m1,0,0.5,10,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,wass,0,0.9482758620689655,10,svae,ecoli cp-imS
 32,3,3,relu,Dense,0.1,lklh,0,1.0,1,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,m1,0,0.06896551724137934,1,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,1,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,2,svae,ecoli cp-imL
-32,3,3,relu,Dense,0.1,m1,0,0.4137931034482759,2,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,2,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,2,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,3,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,m1,0,1.0,3,svae,ecoli cp-imL
@@ -432,20 +432,779 @@ hidden,latent,layers,nonlinearity,layertype,β,method,anomaliesSeen,auc,i,model,
 32,3,3,relu,Dense,0.1,m1,0,1.0,4,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,4,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,5,svae,ecoli cp-imL
-32,3,3,relu,Dense,0.1,m1,0,1.0,5,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.24137931034482762,5,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,5,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,6,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,m1,0,1.0,6,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,6,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,7,svae,ecoli cp-imL
-32,3,3,relu,Dense,0.1,m1,0,1.0,7,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,7,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,7,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,8,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,m1,0,1.0,8,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,8,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,9,svae,ecoli cp-imL
-32,3,3,relu,Dense,0.1,m1,0,1.0,9,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,9,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,9,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,lklh,0,1.0,10,svae,ecoli cp-imL
-32,3,3,relu,Dense,0.1,m1,0,0.10344827586206895,10,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,m1,0,1.0,10,svae,ecoli cp-imL
 32,3,3,relu,Dense,0.1,wass,0,1.0,10,svae,ecoli cp-imL
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,1,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.002955665024630541,1,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9753694581280788,1,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,2,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9763546798029556,2,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,2,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,3,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9763546798029556,3,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,3,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9793103448275862,4,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.0561576354679803,4,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,4,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,5,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9763546798029556,5,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,5,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,6,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.02857142857142857,6,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9773399014778325,6,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,7,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9635467980295566,7,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,7,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9763546798029556,8,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.0561576354679803,8,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,8,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9773399014778325,9,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9763546798029556,9,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,9,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.8896551724137931,10,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,m1,0,0.9763546798029556,10,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,wass,0,0.9763546798029556,10,svae,ecoli cp-imU
+32,3,3,relu,Dense,0.1,lklh,0,0.9827586206896551,1,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,m1,0,0.5137931034482759,1,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,wass,0,0.9327586206896551,1,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,lklh,0,0.8913793103448275,2,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,m1,0,0.0017241379310344808,2,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,wass,0,0.996551724137931,2,svae,ecoli cp-om
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.10083333333333333,7,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.40155555555555555,10,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,isolet 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,1,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,1,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,1,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,2,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,2,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,2,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,3,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,3,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,3,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,4,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,4,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,4,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,5,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.003666666666666667,5,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,5,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,6,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,6,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,6,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,7,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,7,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,7,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,8,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,8,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,8,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,9,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,9,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,9,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.00022222222222222218,10,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.00022222222222222218,10,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.00022222222222222218,10,svae,isolet 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.012555555555555594,1,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.14283333333333334,1,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013888888888888933,1,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013777777777777821,2,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.013333333333333376,2,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.012722222222222261,2,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013888888888888933,3,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.013611111111111154,3,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013611111111111154,3,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0140555555555556,4,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.012888888888888929,4,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.012888888888888929,4,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013444444444444486,5,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.013333333333333376,5,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013722222222222266,5,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013500000000000043,6,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.013500000000000043,6,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013777777777777821,6,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013444444444444486,7,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.11572222222222223,7,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013222222222222264,7,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.012888888888888929,8,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.013277777777777819,8,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013666666666666709,8,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0140555555555556,9,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.11883333333333336,9,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013222222222222264,9,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.013777777777777821,10,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.2288888888888889,10,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.013777777777777821,10,svae,isolet 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.012388888888888927,1,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012333333333333371,1,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012388888888888927,1,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012388888888888927,2,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012888888888888929,2,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,2,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012388888888888927,3,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,3,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,3,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012444444444444484,4,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.0765555555555556,4,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012333333333333371,4,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012333333333333371,5,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,5,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,5,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012388888888888927,6,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,6,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,6,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012444444444444484,7,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,7,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012388888888888927,7,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012444444444444484,8,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,8,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012388888888888927,8,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012444444444444484,9,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012333333333333371,9,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,9,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.012388888888888927,10,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.012388888888888927,10,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.012444444444444484,10,svae,isolet 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,isolet 1-6
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,isolet 1-6
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,isolet 1-6
+32,3,3,relu,Dense,0.1,lklh,0,0.050983444831519606,1,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.19191817985633688,1,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.08533464870364095,1,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.041935135801707935,2,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.09465271140980983,2,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.10200542590251874,2,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.17160187440268831,3,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.13750500971113233,3,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.1262061842957117,3,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.16266917409131548,4,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.18951351851280945,4,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.06434010543515123,4,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.061873786108456424,5,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.29771557172364893,5,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.044378333384715,5,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.2361269537873416,6,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.1833091839565928,6,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.14109658723063168,6,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.14790979437062618,7,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.18058081820143662,7,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.07761969355982368,7,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.06129574251626231,8,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.15734346579523384,8,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.14118136695748684,8,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.1798409224034282,9,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.1892283503406604,9,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.07121497055831308,9,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.16599099793445757,10,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,m1,0,0.17546320559854486,10,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,wass,0,0.07170823442365201,10,svae,letter-recognition U-T
+32,3,3,relu,Dense,0.1,lklh,0,0.1781253808962743,1,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.16894324137650832,1,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.19381627595173279,1,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.17926299110226301,2,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.23810994190062162,2,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.16874822248405313,2,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.19373501807987648,3,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.1882582375167594,3,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.19518140819891927,3,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.21590216552228497,4,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.3284280664689392,4,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.16846381993255596,4,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.12304879535204973,5,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.14016982895217972,5,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.19761101856742372,5,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.11846585137935237,6,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.4601389509608743,6,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.22731889651810022,6,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.21872993946288544,7,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.4693698452037541,7,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.19570145857879984,7,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.16623735424369238,8,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.15240726445374395,8,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.36202819648153406,8,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.17519197172226061,9,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.2523219436882948,9,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.12072482021695849,9,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.15757526510380693,10,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,m1,0,0.17360744322106203,10,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,wass,0,0.1441514646731402,10,svae,letter-recognition U-I
+32,3,3,relu,Dense,0.1,lklh,0,0.37824181686544983,1,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.6549327439698205,1,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.2971078001752848,1,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.2659833098350036,2,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.439073276683306,2,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.36249666577754064,2,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.4630568151507069,3,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.4731013984681629,3,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.44593224859962655,3,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.2913538848454826,4,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.6482185725717334,4,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.26602903631444574,4,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.39213504553595246,5,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.5864954464047556,5,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.5855123270967495,5,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.2173989254277331,6,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.4602446366650154,6,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.46394848149982854,6,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.2785352284418702,7,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.3994665244065084,7,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.6092367488473116,7,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.21467057882101898,8,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.4421064664863011,8,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.30035438021567656,8,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.39013832260031245,9,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.4082612506192127,9,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.6746865830888237,9,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.3726936706931372,10,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,m1,0,0.5712075601112677,10,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,wass,0,0.3475441069999619,10,svae,letter-recognition U-D
+32,3,3,relu,Dense,0.1,lklh,0,0.349826450101466,1,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.6468592561251754,1,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.2495122581858355,1,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.6004513080882872,2,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.6428241230441357,2,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.3329729136794929,2,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.4815911744196068,3,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.5051908265362888,3,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.43831731032915716,3,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.5416245524136364,4,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.477618723017496,4,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.39420507878303523,4,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.24836048233551938,5,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.5113336310713081,5,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.4239945466939332,5,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.3162055645660469,6,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.5725422905452522,6,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.18128325067186923,6,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.31916727389543126,7,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.5158780527936442,7,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.6458406788425829,7,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.5523901307696527,8,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,m1,0,0.46262213133378777,8,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,wass,0,0.23890338402714117,8,svae,letter-recognition U-N
+32,3,3,relu,Dense,0.1,lklh,0,0.32499999999999996,1,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.4666666666666667,1,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.32499999999999996,1,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.32499999999999996,2,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,2,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.32499999999999996,2,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,3,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,3,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.32499999999999996,3,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,4,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,4,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.32499999999999996,4,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,5,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,5,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.3416666666666666,5,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.32499999999999996,6,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,6,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.3416666666666666,6,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,7,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.5083333333333333,7,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.3416666666666666,7,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,8,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,8,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.32499999999999996,8,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.32499999999999996,9,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.3416666666666666,9,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.3416666666666666,9,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.3416666666666666,10,svae,libras 1-2
+32,3,3,relu,Dense,0.1,m1,0,0.55,10,svae,libras 1-2
+32,3,3,relu,Dense,0.1,wass,0,0.3416666666666666,10,svae,libras 1-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.19166666666666662,1,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.8333333333333334,2,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.9833333333333334,3,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.8,5,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.19166666666666662,6,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.19166666666666662,7,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.5166666666666666,8,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.8,9,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,libras 1-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,libras 1-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,libras 1-3
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,1,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.8,1,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,1,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,2,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.7666666666666667,2,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,2,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,3,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.7666666666666667,3,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,3,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,4,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,1.0,4,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,4,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,5,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.7666666666666667,5,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,5,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,6,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.9666666666666667,6,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,6,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,7,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.19999999999999996,7,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,7,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,8,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.9666666666666667,8,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,8,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,9,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.7666666666666667,9,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,9,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,10,svae,libras 1-4
+32,3,3,relu,Dense,0.1,m1,0,0.8,10,svae,libras 1-4
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,10,svae,libras 1-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,2,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,4,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,5,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,6,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,9,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,libras 1-5
+32,3,3,relu,Dense,0.1,m1,0,0.4,10,svae,libras 1-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,libras 1-5
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,1,svae,libras 1-6
+32,3,3,relu,Dense,0.1,m1,0,0.19999999999999996,1,svae,libras 1-6
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,1,svae,libras 1-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,2,svae,libras 1-6
+32,3,3,relu,Dense,0.1,m1,0,0.19999999999999996,2,svae,libras 1-6
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,2,svae,libras 1-6
+32,3,3,relu,Dense,0.1,lklh,0,0.7666666666666667,3,svae,libras 1-6
+32,3,3,relu,Dense,0.1,m1,0,0.9833333333333334,3,svae,libras 1-6
+32,3,3,relu,Dense,0.1,wass,0,0.7666666666666667,3,svae,libras 1-6
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,multiple-features 0-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,multiple-features 0-2
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,multiple-features 0-3
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,multiple-features 0-4
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,multiple-features 0-5
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,multiple-features 0-5
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,multiple-features 0-5
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.009429003083673091,1,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,7,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,7,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,7,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,8,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,8,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,8,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,9,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,9,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,9,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.0,10,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,m1,0,0.0,10,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,wass,0,0.0,10,svae,pendigits 4-8
+32,3,3,relu,Dense,0.1,lklh,0,0.00033527183923508344,1,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.08472857468076739,1,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.0009313106645418997,1,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.00033527183923508344,2,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.6171319770690618,2,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.0003311326807260083,2,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0003683851073076844,3,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.5759059583186739,3,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.000314576046689708,3,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0003062977296715579,4,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.0952544547693454,4,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.005223618038452787,4,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0004884207040708624,5,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.08014238705271218,5,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.00038494174134398487,5,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0008402491773422463,6,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.6127113557813697,6,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.00020695792545375531,6,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0003849417413439848,7,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.11874004014983755,7,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.0003311326807260083,7,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.00040977669239843545,8,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.13076015646019162,8,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.0004884207040708624,8,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0012789999793042088,9,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.08909538690784163,9,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.00032699352221693325,9,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,0.0005960388253068151,10,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,m1,0,0.058817442413957255,10,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,wass,0,0.00038908089985305994,10,svae,pendigits 4-9
+32,3,3,relu,Dense,0.1,lklh,0,7.258917962765569e-5,1,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,4.202531452127436e-5,1,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.00027507478595743216,1,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,6.494821335106033e-5,2,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,4.202531452127436e-5,2,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.00020248560632977645,2,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.00024069043771275314,3,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,5.34867639361674e-5,3,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.00023304947143615778,3,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0002979976847872182,4,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,0.001119401559521217,4,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.00023686995457445546,4,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.00017192174122339512,5,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,5.730724707446507e-5,5,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.0002139470557446695,5,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0006533026166489013,6,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,4.202531452127436e-5,6,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.00025597237026594386,6,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.00010315304473403702,7,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,0.0011346834920744077,7,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.0002445109208510508,7,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.00025597237026594386,8,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,4.202531452127436e-5,8,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.0002292289882978601,8,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0002712543028191345,9,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,5.730724707446507e-5,9,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,0.0002445109208510508,9,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.00024069043771275314,10,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,m1,0,0.00014899884239360915,10,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,wass,0,5.730724707446508e-5,10,svae,pendigits 4-1
+32,3,3,relu,Dense,0.1,lklh,0,0.0,1,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,1,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,1,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.0,2,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,2,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,2,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.0,3,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,3,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,3,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.0,4,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,4,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,4,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.0,5,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,5,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,5,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.0,6,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,m1,0,0.0,6,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,wass,0,0.0,6,svae,pendigits 4-7
+32,3,3,relu,Dense,0.1,lklh,0,0.28269874845760623,1,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.54768200246783,1,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7592543627710204,1,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.6219372466067336,2,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.6673717609730302,2,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.5629737352370879,2,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.7604001410188612,3,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.7685087255420412,3,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7922615899876607,3,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.7813326282390269,4,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.660849638639168,4,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.6369645690111052,4,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.4633791644632469,5,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.6766701921381986,5,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7552000705094306,5,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.663493742288031,6,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.638859509959457,6,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7796580292614136,6,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.35928961748633875,7,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.6364357482813325,7,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7648510488277807,7,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.47122333862154064,8,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.7687731359069274,8,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.745637228979376,8,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.7742376167812446,9,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.6831923144720606,9,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7605323462013044,9,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.5139256125506787,10,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,m1,0,0.7688612726952229,10,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,wass,0,0.7809800810858453,10,svae,yeast CYT-MIT
+32,3,3,relu,Dense,0.1,lklh,0,0.4110835401157982,1,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.4020352407449182,1,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.5398651527683785,1,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.37569240795047243,2,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.42035742035742035,2,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.36869940095746545,2,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.39496704012833045,3,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.525854074241171,3,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.35230719101686847,3,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.39629546081158984,4,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.45890668471313634,4,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.35366067624132136,4,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.37827405569341055,5,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.4457227360453167,5,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.35250770734641707,5,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.4003308519437552,6,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.347043637366218,6,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.48326941875328966,6,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.4376268892397925,7,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.3738125673609545,7,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.3526580945935785,7,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.36509010702559086,8,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.37897586284683066,8,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.4002556583201744,8,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.4195052259568388,9,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.4757500563952177,9,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.3491991879088654,9,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.461688848785623,10,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,m1,0,0.4319121738476578,10,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,wass,0,0.3761435696919567,10,svae,yeast CYT-NUC
+32,3,3,relu,Dense,0.1,lklh,0,0.5711143695014662,1,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.05522971652003909,1,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.7074780058651026,1,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.85386119257087,2,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.08357771260997067,2,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.7744379276637341,2,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.28225806451612906,3,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.058895405669599214,3,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.9494134897360704,3,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.7028347996089932,4,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.07771260997067449,4,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.9894916911045943,4,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9682306940371457,5,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.11314760508308895,5,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.44330400782013685,5,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9726295210166178,6,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.9643206256109481,6,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.8609481915933529,6,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9941348973607038,7,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.12732160312805474,7,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.2470674486803519,7,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9938905180840665,8,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.07697947214076245,8,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.07966764418377321,8,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9303519061583577,9,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.16642228739002934,9,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.007575757575757574,9,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.8528836754643206,10,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,m1,0,0.03763440860215054,10,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,wass,0,0.4701857282502444,10,svae,yeast CYT-ME1
+32,3,3,relu,Dense,0.1,lklh,0,0.9394777265745008,1,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.10814132104454685,1,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.4786482334869432,1,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.9142857142857143,2,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.15821812596006146,2,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.8829493087557604,2,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.8706605222734255,3,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.11612903225806448,3,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.859600614439324,3,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.938863287250384,4,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.10384024577572963,4,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.8890937019969278,4,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.7889400921658987,5,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.10721966205837172,5,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.9029185867895545,5,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.6279569892473118,6,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.1142857142857143,6,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.1293394777265745,6,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.9403993855606758,7,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.9204301075268817,7,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.8439324116743472,7,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.943778801843318,8,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.10353302611367127,8,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.9443932411674347,8,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.7099846390168971,9,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.1926267281105991,9,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.706605222734255,9,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.9419354838709677,10,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,m1,0,0.13517665130568357,10,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,wass,0,0.5631336405529954,10,svae,yeast CYT-EXC
+32,3,3,relu,Dense,0.1,lklh,0,0.810246679316888,1,svae,yeast CYT-ME2
+32,3,3,relu,Dense,0.1,m1,0,0.17794644739616275,1,svae,yeast CYT-ME2
+32,3,3,relu,Dense,0.1,wass,0,0.8614800759013282,1,svae,yeast CYT-ME2
+32,3,3,relu,Dense,0.1,lklh,0,0.624920936116382,2,svae,yeast CYT-ME2
+32,3,3,relu,Dense,0.1,m1,0,0.2823107737718743,2,svae,yeast CYT-ME2
+32,3,3,relu,Dense,0.1,wass,0,0.7948555766392578,2,svae,yeast CYT-ME2

@@ -64,7 +64,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			learnWithA! = learnWithAnomaliesLkh!
 		end
 
-		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
+		opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
         cb = Flux.throttle(() -> println("SVAE $datasetName : $(learnRepresentation!(train[1], []))"), 5)
         Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
@@ -85,7 +85,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
 			model = VAE(encoder, decoder, 0.1, :unit)
 
-			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
+			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
 	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 

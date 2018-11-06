@@ -56,7 +56,7 @@ function printbest3(df)
         aucs = df[i, 2:4]
         p = ordinalrank(vec(convert(Array, aucs)))
         for c in 1:3
-            s = "$(aucs[c])"
+            s = "$(aucs[c][:])"
             print(crays[p[c]], s)
             print(defc, repeat(" ", collen - length(s)) * " | ")
         end
