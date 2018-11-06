@@ -4,6 +4,9 @@ using DataFrames
 using CSV
 using UCI
 using Statistics
+using Crayons
+using Crayons.Box
+using StatsBase
 
 const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1/"
 
@@ -31,6 +34,33 @@ function processFile!(dataframe, model, dataset)
                 end
             end
         end
+    end
+end
+
+function printbest3(df)
+    collen = 15
+    maxlen = maximum(length.(df[:dataset]))
+
+    metds = ["m1", "svae-lklh", "svae-wass"]
+    print(repeat(" ", maxlen) * " | ")
+    for i in 1:3
+        print(metds[i])
+        print(repeat(" ", collen - length(metds[i])) * " | ")
+    end
+    println()
+    crays = [Crayon(foreground = :red), Crayon(foreground = :yellow), Crayon(foreground = :green)]
+    defc = Crayon(reset = true)
+    for i in 1:size(df, 1)
+        print(defc, df[i, 1])
+        print(defc, repeat(" ", maxlen - length(df[i, 1])) * " | ")
+        aucs = df[i, 2:4]
+        p = ordinalrank(vec(convert(Array, aucs)))
+        for c in 1:3
+            s = "$(aucs[c])"
+            print(crays[p[c]], s)
+            print(defc, repeat(" ", collen - length(s)) * " | ")
+        end
+        println()
     end
 end
 
@@ -63,3 +93,4 @@ for d in unique(allData[:dataset])
         wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
 end
 sumr = vcat(sumr...)
+CSV.write(dataFolder * "results-auc-summary.csv", sumr)
