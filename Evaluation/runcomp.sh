@@ -17,9 +17,9 @@ julia evaluation_svae_vs_m1.jl wall-following-robot &
 julia evaluation_svae_vs_m1.jl waveform-1 &
 julia evaluation_svae_vs_m1.jl waveform-2 &
 julia evaluation_svae_vs_m1.jl wine &
-julia evaluation_svae_vs_m1.jl iris
+julia evaluation_svae_vs_m1.jl iris &
 
-julia evaluation_svae_vs_m1.jl abalone &
+julia evaluation_svae_vs_m1.jl abalone
 julia evaluation_svae_vs_m1.jl blood-transfusion &
 julia evaluation_svae_vs_m1.jl breast-cancer-wisconsin &
 julia evaluation_svae_vs_m1.jl gisette &

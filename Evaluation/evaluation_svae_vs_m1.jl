@@ -56,7 +56,7 @@ end
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
     results = []
 	ac = 0
-	for method in ["lklh", "wass"]
+	for method in ["lklh"] # ["lklh", "wass"]
         println("Running $datasetName with iteration: $it method: $method")
         (model, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createModel()
 		learnWithA! = learnWithAnomaliesWass!
@@ -69,7 +69,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
         Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 
-		ascore = Flux.Tracker.data(pxvita(model, test[1]))
+		ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
         auc = pyauc(test[2], ascore')
 		println(size(ascore))
 		println(size(test[2]))
@@ -89,7 +89,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
-			ascore = Flux.Tracker.data(pxvita(model, test[1]))
+			ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
             auc = pyauc(test[2], ascore')
 			println(size(ascore))
 			println(size(test[2]))
