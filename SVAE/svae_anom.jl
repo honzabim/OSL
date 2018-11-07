@@ -142,6 +142,11 @@ function pxvita(m::SVAE_anom, x)
 	Flux.Tracker.data(log_normal(xgivenz, x))
 end
 
+function pz(m::SVAE_anom, x) # this function is wrong, it uses the anom_prior as regular prior!!!
+	μz, _ = zparams(m, x)
+	return log_vmf(Flux.Tracker.data(μz), Flux.Tracker.data(.-m.anom_priorμ), Flux.Tracker.data(m.anom_priorκ[1]))
+end
+
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)
 	μz, _ = zparams(m, anomaly)
 	κz = 100.
@@ -156,6 +161,16 @@ function wloss(m::SVAE_anom, x, β, d)
 	zp = samplehsuniform(size(z))
 	#prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.priorμ), ones(size(κz)) .* m.priorκ)
 	Ω = d(z, zp)
+	xgivenz = m.g(z)
+	return Flux.mse(x, xgivenz) + β * Ω
+end
+
+function wlossprior(m::SVAE_anom, x, β, d) # this function is wrong, it uses the anom_prior as regular prior!!!
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	# zp = samplehsuniform(size(z))
+	prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+	Ω = d(z, prior)
 	xgivenz = m.g(z)
 	return Flux.mse(x, xgivenz) + β * Ω
 end

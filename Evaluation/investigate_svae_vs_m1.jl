@@ -7,8 +7,8 @@ using FileIO
 using FluxExtensions
 using UCI
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath)
 using NearestNeighbors
@@ -46,28 +46,28 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
     svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, T)
 
     learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
-	learnRepresentationWprior!(data, foo) = wlossprior(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     learnAnomaly!(anomaly) = set_anomalous_hypersphere(svae, anomaly)
 	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
-    return svae, learnRepresentation!, learnRepresentationWprior!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
+    return svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
 end
 
 function runExperiment(datasetName, train, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
     results = []
 	ac = 0
-	for method in ["wass"] # ["lklh", "wass"]
+	for method in ["lklh"] # ["lklh", "wass"]
         println("Running $datasetName with iteration: $it method: $method")
-        (model, learnRepresentation!, learnRepresentationWprior!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createModel()
-		learnrep! = learnRepresentation!
-		if (method == "wassprior")
-			learnrep! = learnRepresentationWprior!
+        (model, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createModel()
+		learnWithA! = learnWithAnomaliesWass!
+		if method == "lklh"
+			learnWithA! = learnWithAnomaliesLkh!
 		end
 
 		opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
         cb = Flux.throttle(() -> println("SVAE $datasetName : $(learnRepresentation!(train[1], []))"), 5)
-        Flux.train!(learnrep!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+
 
 		ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
         auc = pyauc(test[2], ascore')
@@ -77,23 +77,14 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
 		push!(results, (method, ac, auc, ascore, it))
 
-		if (method == "wassprior")
-			ascore = Flux.Tracker.data(pz(model, test[1]))
-	        auc = pyauc(test[2], ascore')
-			println(size(ascore))
-			println(size(test[2]))
-	        println("AUC svae pz: $auc")
-
-			push!(results, (method * " pz", ac, auc, ascore, it))
-		end
-
-		if method == "wass"
+		if method == "lklh"
 			method = "m1"
 
 			encoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(size(train[1], 1), 32, 4, 3, "relu", "", "Dense"))
 		    decoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(2, 32, size(train[1], 1), 3, "relu", "linear", "Dense"))
 
 			model = VAE(encoder, decoder, 0.1, :unit)
+
 			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
 	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
@@ -107,11 +98,6 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			push!(results, (method, ac, auc, ascore, it))
 
 		end
-
-		#		learnWithA! = learnWithAnomaliesWass!
-		# if method == "lklh"
-		# 	learnWithA! = learnWithAnomaliesLkh!
-		# end
 
         # a_ids = find(train[2] .== 1)
         # a_ids = a_ids[randperm(length(a_ids))]
@@ -152,8 +138,8 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-# dataset = "breast-cancer-wisconsin"
-dataset = "ecoli"
+dataset = "breast-cancer-wisconsin"
+# dataset = "glass"
 batchSize = 100
 iterations = 10000
 
@@ -172,7 +158,7 @@ for (subdata, class_label) in subdatasets
 	_X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdata, 0.8)
 	train = (_X_tr, _y_tr)
 	test = (_X_tst, _y_tst)
-	for i in 1:5
+	for i in 1:10
 		evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
 		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.1])
 		results = reshape(results, length(results), 1)
