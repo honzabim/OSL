@@ -43,7 +43,7 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
-    svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, T)
+    svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, β, T)
 
     learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
 	learnRepresentationWprior!(data, foo) = wlossprior(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
@@ -64,6 +64,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 		if (method == "wassprior")
 			learnrep! = learnRepresentationWprior!
 		end
+		β = model.β
 
 		opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
         cb = Flux.throttle(() -> println("SVAE $datasetName : $(learnRepresentation!(train[1], []))"), 5)
@@ -75,7 +76,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 		println(size(test[2]))
         println("AUC svae: $auc")
 
-		push!(results, (method, ac, auc, ascore, it))
+		push!(results, (method, ac, auc, ascore, it, β))
 
 		if (method == "wassprior")
 			ascore = Flux.Tracker.data(pz(model, test[1]))
@@ -84,7 +85,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			println(size(test[2]))
 	        println("AUC svae pz: $auc")
 
-			push!(results, (method * " pz", ac, auc, ascore, it))
+			push!(results, (method * " pz", ac, auc, ascore, it, β))
 		end
 
 		if method == "wass"
@@ -93,9 +94,9 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			encoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(size(train[1], 1), 32, 4, 3, "relu", "", "Dense"))
 		    decoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(2, 32, size(train[1], 1), 3, "relu", "linear", "Dense"))
 
-			model = VAE(encoder, decoder, 0.1, :unit)
+			model = VAE(encoder, decoder, β, :unit)
 			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
+	        cb = Flux.throttle(() -> println("M1 : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 			ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
@@ -104,7 +105,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			println(size(test[2]))
             println("AUC m1: $auc")
 
-			push!(results, (method, ac, auc, ascore, it))
+			push!(results, (method, ac, auc, ascore, it, β))
 
 		end
 
@@ -152,8 +153,9 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-# dataset = "breast-cancer-wisconsin"
-dataset = "ecoli"
+dataset = "breast-cancer-wisconsin"
+# dataset = "ecoli"
+# dataset = "abalone"
 batchSize = 100
 iterations = 10000
 
@@ -170,11 +172,15 @@ for (subdata, class_label) in subdatasets
 		println(field, ": ", size(getfield(subdata, field)))
 	end
 	_X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdata, 0.8)
+	_X_tr .-= minimum(_X_tr)
+	_X_tr ./= maximum(_X_tr)
+	_X_tst .-= minimum(_X_tst)
+	_X_tst ./= maximum(_X_tst)
 	train = (_X_tr, _y_tr)
 	test = (_X_tst, _y_tst)
-	for i in 1:5
+	for i in 1:3
 		evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.01 0.1 1. 10.])
 		results = reshape(results, length(results), 1)
 		save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
 	end
