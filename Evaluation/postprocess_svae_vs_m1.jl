@@ -64,6 +64,33 @@ function printbest3(df)
     end
 end
 
+function printbest2(df)
+    collen = 15
+    maxlen = maximum(vcat(length.(df[:dataset])..., 45))
+
+    metds = ["m1", "svae-wass"]
+    print(repeat(" ", maxlen) * " | ")
+    for i in 1:2
+        print(metds[i])
+        print(repeat(" ", collen - length(metds[i])) * " | ")
+    end
+    println()
+    crays = [Crayon(foreground = :red), Crayon(foreground = :green)]
+    defc = Crayon(reset = true)
+    for i in 1:size(df, 1)
+        print(defc, df[i, 1])
+        print(defc, repeat(" ", maxlen - length(df[i, 1])) * " | ")
+        aucs = df[i, 2:3]
+        p = ordinalrank(vec(convert(Array, aucs)))
+        for c in 1:2
+            s = "$(aucs[c])"
+            print(crays[p[c]], s)
+            print(defc, repeat(" ", collen - length(s)) * " | ")
+        end
+        println()
+    end
+end
+
 allData = DataFrame(types, params, 0)
 for d in datasets
     _, normal_labels, anomaly_labels = UCI.get_umap_data(d)
@@ -88,8 +115,10 @@ CSV.write(dataFolder * "results-avg.csv", averaged)
 
 sumr = []
 for d in unique(allData[:dataset])
+    # push!(sumr, DataFrame(dataset = d, m1auc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "m1"), :][:auc],
+    #    lklhauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "lklh"), :][:auc],
+    #    wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
     push!(sumr, DataFrame(dataset = d, m1auc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "m1"), :][:auc],
-        lklhauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "lklh"), :][:auc],
         wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
 end
 sumr = vcat(sumr...)
