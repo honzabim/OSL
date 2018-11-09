@@ -76,7 +76,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 		println(size(test[2]))
         println("AUC svae: $auc")
 
-		push!(results, (method, ac, auc, ascore, it, β))
+		push!(results, (method, ac, auc, ascore, it))
 
 		if (method == "wassprior")
 			ascore = Flux.Tracker.data(pz(model, test[1]))
@@ -85,7 +85,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			println(size(test[2]))
 	        println("AUC svae pz: $auc")
 
-			push!(results, (method * " pz", ac, auc, ascore, it, β))
+			push!(results, (method * " pz", ac, auc, ascore, it))
 		end
 
 		if method == "wass"
@@ -105,7 +105,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 			println(size(test[2]))
             println("AUC m1: $auc")
 
-			push!(results, (method, ac, auc, ascore, it, β))
+			push!(results, (method, ac, auc, ascore, it))
 
 		end
 

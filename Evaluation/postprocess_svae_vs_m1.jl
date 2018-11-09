@@ -19,7 +19,7 @@ params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :β, :method, :a
 types = [Int, Int, Int, String, String, Float64, String, Int, Float64, Int, String, String]
 
 function processFile!(dataframe, model, dataset)
-    for i in 1:10
+    for i in 1:3
         println("Processing $model $dataset $i")
         filename = dataFolder * dataset * "-$i-" * model * ".jld2"
         if !isfile(filename)
@@ -106,20 +106,34 @@ end
 CSV.write(dataFolder * "results.csv", allData)
 
 global averaged = DataFrame(types, params, 0)
-for (m, d) in Base.product(unique(allData[:method]), unique(allData[:dataset]))
-    newrow = allData[(allData[:method] .== m) .& (allData[:dataset] .== d) .& (allData[:i] .== 1), :]
-    newrow[:auc] = mean(allData[(allData[:method] .== m) .& (allData[:dataset] .== d), :][:auc])
+for (m, d, b) in Base.product(unique(allData[:method]), unique(allData[:dataset]), unique(allData[:β]))
+    newrow = allData[(allData[:method] .== m) .& (allData[:dataset] .== d) .& (allData[:β] .== b) .& (allData[:i] .== 1), :]
+    newrow[:auc] = mean(allData[(allData[:method] .== m) .& (allData[:dataset] .== d) .& (allData[:β] .== b), :][:auc])
     averaged = vcat(averaged, newrow)
 end
 CSV.write(dataFolder * "results-avg.csv", averaged)
+
+global maxed = DataFrame(types, params, 0)
+for (m, d) in Base.product(unique(allData[:method]), unique(allData[:dataset]))
+    newrow = allData[(allData[:method] .== m) .& (allData[:dataset] .== d) .& (allData[:β] .== 0.1) .& (allData[:i] .== 1), :]
+    newrow[:auc] = maximum(allData[(allData[:method] .== m) .& (allData[:dataset] .== d), :][:auc])
+    maxid = find(x -> x >= newrow[:auc][1], allData[(allData[:method] .== m) .& (allData[:dataset] .== d), :][:auc])
+    if length(maxid) > 1
+        newrow[:β] = -1
+    else
+        newrow[:β] = allData[(allData[:method] .== m) .& (allData[:dataset] .== d), :][maxid, :β]
+    end
+    maxed = vcat(maxed, newrow)
+end
+CSV.write(dataFolder * "results-max.csv", maxed)
 
 sumr = []
 for d in unique(allData[:dataset])
     # push!(sumr, DataFrame(dataset = d, m1auc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "m1"), :][:auc],
     #    lklhauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "lklh"), :][:auc],
     #    wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
-    push!(sumr, DataFrame(dataset = d, m1auc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "m1"), :][:auc],
-        wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
+    push!(sumr, DataFrame(dataset = d, m1auc = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "m1"), :][:auc],
+        wassauc = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "wass"), :][:auc]))
 end
 sumr = vcat(sumr...)
 CSV.write(dataFolder * "results-auc-summary.csv", sumr)
