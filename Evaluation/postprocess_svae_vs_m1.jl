@@ -74,7 +74,7 @@ function printbest2(df)
         print(metds[i])
         print(repeat(" ", collen - length(metds[i])) * " | ")
     end
-    println()
+    println("β M1 | β SVAE |")
     crays = [Crayon(foreground = :red), Crayon(foreground = :green)]
     defc = Crayon(reset = true)
     for i in 1:size(df, 1)
@@ -87,6 +87,10 @@ function printbest2(df)
             print(crays[p[c]], s)
             print(defc, repeat(" ", collen - length(s)) * " | ")
         end
+        print(df[i, 4])
+        print(defc, repeat(" ", 5 - length("$(df[i, 4])")) * " | ")
+        print(df[i, 5])
+        print(defc, repeat(" ", 7 - length("$(df[i, 5])")) * " | ")
         println()
     end
 end
@@ -133,7 +137,9 @@ for d in unique(allData[:dataset])
     #    lklhauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "lklh"), :][:auc],
     #    wassauc = averaged[(averaged[:dataset] .== d) .& (averaged[:method] .== "wass"), :][:auc]))
     push!(sumr, DataFrame(dataset = d, m1auc = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "m1"), :][:auc],
-        wassauc = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "wass"), :][:auc]))
+        wassauc = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "wass"), :][:auc],
+        βm1 = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "m1"), :][:β],
+        βsvae = maxed[(maxed[:dataset] .== d) .& (maxed[:method] .== "wass"), :][:β]))
 end
 sumr = vcat(sumr...)
 CSV.write(dataFolder * "results-auc-summary.csv", sumr)

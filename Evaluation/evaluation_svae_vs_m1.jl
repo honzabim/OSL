@@ -96,7 +96,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
 			model = VAE(encoder, decoder, β, :unit)
 			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-	        cb = Flux.throttle(() -> println("M1 : $(loss(model, train[1]))"), 5)
+	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 			ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
@@ -159,8 +159,11 @@ dataset = "breast-cancer-wisconsin"
 batchSize = 100
 iterations = 10000
 
+i = -1
+
 if length(ARGS) != 0
     dataset = ARGS[1]
+	i = parse(Int, ARGS[2])
 end
 
 data, normal_labels, anomaly_labels = UCI.get_umap_data(dataset)
@@ -178,7 +181,14 @@ for (subdata, class_label) in subdatasets
 	_X_tst ./= maximum(_X_tst)
 	train = (_X_tr, _y_tr)
 	test = (_X_tst, _y_tst)
-	for i in 1:3
+	if i == -1
+		for i in 1:3
+			evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
+			results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.01 0.1 0.5 1. 10.])
+			results = reshape(results, length(results), 1)
+			save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
+		end
+	else
 		evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
 		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.01 0.1 0.5 1. 10.])
 		results = reshape(results, length(results), 1)

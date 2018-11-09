@@ -69,13 +69,14 @@ nonlinearity = "relu"
 layerType = "Dense"
 batchSize = 100
 numBatches = 10000
-β = 0.1
+βsvae = 0.01
+βm1 = 0.5
 
-(svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, β)
+(svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
 
 encoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(inputDim, hiddenDim, 4, numLayers, nonlinearity, "", layerType))
 decoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(2, hiddenDim, inputDim, numLayers, nonlinearity, "linear", layerType))
-model = VAE(encoder, decoder, β, :unit)
+model = VAE(encoder, decoder, βm1, :unit)
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
 cb = Flux.throttle(() -> println("SVAE : $(learnRepresentation!(train[1], []))"), 5)
