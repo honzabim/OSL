@@ -55,7 +55,7 @@ end
 """
 struct VAE{T<:AbstractFloat,V<:Val}
 	q  # encoder (inference modul)
-	g 	# decoder (generator)
+	g  # decoder (generator)
 	β::T 	#penalization
 	variant::V
 end
