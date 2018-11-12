@@ -184,13 +184,13 @@ for (subdata, class_label) in subdatasets
 	if i == -1
 		for i in 1:3
 			evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-			results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.01 0.1 0.5 1. 10.])
+			results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [1e-5 1e-4 0.01 0.1 0.5 1. 10.])
 			results = reshape(results, length(results), 1)
 			save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
 		end
 	else
 		evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.01 0.1 0.5 1. 10.])
+		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [1e-5 1e-4 0.01 0.1 0.5 1. 10.])
 		results = reshape(results, length(results), 1)
 		save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
 	end
