@@ -70,7 +70,7 @@ layerType = "Dense"
 batchSize = 100
 numBatches = 10000
 βsvae = 0.01
-βm1 = 0.5
+βm1 = 0.00001
 
 (svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
 
@@ -80,7 +80,7 @@ model = VAE(encoder, decoder, βm1, :unit)
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
 cb = Flux.throttle(() -> println("SVAE : $(learnRepresentation!(train[1], []))"), 5)
-Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+# Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 ascore = Flux.Tracker.data(.-pxvita(svae, test[1]))
 auc = pyauc(test[2], ascore')
