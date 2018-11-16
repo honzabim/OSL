@@ -6,6 +6,7 @@ using JLD2
 using FileIO
 using FluxExtensions
 using UCI
+using DataFrames
 
 # folderpath = "D:/dev/julia/"
 folderpath = "/home/bimjan/dev/julia/"
@@ -15,6 +16,7 @@ using NearestNeighbors
 using StatsBase
 using InformationMeasures
 using Random
+using HypothesisTests
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -26,6 +28,35 @@ end
 
 include(folderpath * "OSL/SVAE/svae_anom.jl")
 include(folderpath * "OSL/SVAE/vae.jl")
+
+outputFolder = folderpath * "OSL/experiments/SVAEvsM1pval/"
+mkpath(outputFolder)
+
+const dataFolder = outputFolder
+
+loadExperiment(filePath) = load(filePath)["results"]
+
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :β, :method, :anomaliesSeen, :auc, :i, :model, :dataset]
+types = [Int, Int, Int, String, String, Float64, String, Int, Float64, Int, String, String]
+
+function processFile!(dataframe, model, dataset)
+    for i in 1:100
+        println("Processing $model $dataset $i")
+        filename = dataFolder * dataset * "-$i-" * model * ".jld2"
+        if !isfile(filename)
+            println("$filename not found.")
+        else
+            results = loadExperiment(filename)
+            for i in 1:length(results)
+                for j in 1:length(results[1][2])
+                    pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:6]...) : vcat(results[i][1]..., -1, -1)
+                    # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
+                    push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][5]..., model, dataset))
+                end
+            end
+        end
+    end
+end
 
 
 """
@@ -67,7 +98,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 		β = model.β
 
 		opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-        cb = Flux.throttle(() -> println("SVAE $datasetName : $(learnRepresentation!(train[1], []))"), 5)
+        cb = Flux.throttle(() -> println("SVAE $datasetName it $it : $(learnRepresentation!(train[1], []))"), 5)
         Flux.train!(learnrep!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 		ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
@@ -96,7 +127,7 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
 
 			model = VAE(encoder, decoder, β, :unit)
 			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-	        cb = Flux.throttle(() -> println("M1 $datasetName : $(loss(model, train[1]))"), 5)
+	        cb = Flux.throttle(() -> println("M1 $datasetName it $it : $(loss(model, train[1]))"), 5)
 	        Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 			ascore = Flux.Tracker.data(.-pxvita(model, test[1]))
@@ -148,50 +179,56 @@ function runExperiment(datasetName, train, test, createModel, anomalyCounts, bat
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/SVAEvsM1/"
-mkpath(outputFolder)
-
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 dataset = "breast-cancer-wisconsin"
 # dataset = "ecoli"
 # dataset = "abalone"
 batchSize = 100
-iterations = 10000
-
-i = -1
+iterations = 100
 
 if length(ARGS) != 0
     dataset = ARGS[1]
-	i = parse(Int, ARGS[2])
 end
 
 data, normal_labels, anomaly_labels = UCI.get_umap_data(dataset)
 
 subdatasets = UCI.create_multiclass(data, normal_labels, anomaly_labels)
 for (subdata, class_label) in subdatasets
-	println(dataset*" "*class_label)
-	for field in [:normal, :medium]
-		println(field, ": ", size(getfield(subdata, field)))
-	end
-	_X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdata, 0.8)
-	_X_tr .-= minimum(_X_tr)
-	_X_tr ./= maximum(_X_tr)
-	_X_tst .-= minimum(_X_tst)
-	_X_tst ./= maximum(_X_tst)
-	train = (_X_tr, _y_tr)
-	test = (_X_tst, _y_tst)
-	if i == -1
-		for i in 1:3
-			evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-			results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [1e-5 1e-4 0.01 0.1 0.5 1.])
-			results = reshape(results, length(results), 1)
-			save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
-		end
-	else
+	for i in 1:100
+		println(dataset*" "*class_label * " it: $i")
+
+		_X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdata, 0.8)
+		_X_tr .-= minimum(_X_tr)
+		_X_tr ./= maximum(_X_tr)
+		_X_tst .-= minimum(_X_tst)
+		_X_tst ./= maximum(_X_tst)
+		train = (_X_tr, _y_tr)
+		test = (_X_tst, _y_tst)
+
 		evaluateOneConfig = p -> runExperiment(dataset, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [1e-5 1e-4 0.01 0.1 0.5 1.])
+		results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [1e-3 0.01 0.1 0.5 1. 5])
 		results = reshape(results, length(results), 1)
 		save(outputFolder * dataset*" "*class_label *  "-$i-svae.jld2", "results", results)
+
+		allData = DataFrame(types, params, 0)
+		processFile!(allData, "svae", dataset * " " * class_label)
+
+		iters = maximum(allData[:i])
+		maxed = []
+
+		for i in 1:iters
+			maxm1 = maximum(allData[(allData[:method] .== "m1") .& (allData[:i] .== i), :][:auc])
+			maxwass = maximum(allData[(allData[:method] .== "wass") .& (allData[:i] .== i), :][:auc])
+			push!(maxed, [maxm1, maxwass])
+		end
+		maxed = hcat(maxed...)
+
+		pval = pvalue(SignedRankTest(maxed[1, :], maxed[2, :]))
+		println(dataset*" "*class_label * " it: $i pval = $pval")
+
+		if (i > 10) & (pval < 0.01)
+			break
+		end
 	end
 end

@@ -32,11 +32,12 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
     svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, T)
 
     learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+	learnPrintingRepresentation!(data, foo) = printingwloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     learnAnomaly!(anomaly) = set_anomalous_hypersphere(svae, anomaly)
 	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
-    return svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
+    return svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
 end
 
 
@@ -46,8 +47,8 @@ end
 # class_label = "1-6"
 # dataset = "letter-recognition"
 # class_label = "U-R"
-dataset = "cardiotocography"
-class_label = "2-8"
+dataset = "glass"
+class_label = "2-6"
 
 data, normal_labels, anomaly_labels = UCI.get_umap_data(dataset)
 subdatasets = UCI.create_multiclass(data, normal_labels, anomaly_labels)
@@ -69,18 +70,18 @@ nonlinearity = "relu"
 layerType = "Dense"
 batchSize = 100
 numBatches = 10000
-βsvae = 0.01
-βm1 = 0.00001
+βsvae = 1.
+βm1 = 0.01
 
-(svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
+(svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
 
 encoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(inputDim, hiddenDim, 4, numLayers, nonlinearity, "", layerType))
 decoder = Adapt.adapt(Float64, FluxExtensions.layerbuilder(2, hiddenDim, inputDim, numLayers, nonlinearity, "linear", layerType))
 model = VAE(encoder, decoder, βm1, :unit)
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
-cb = Flux.throttle(() -> println("SVAE : $(learnRepresentation!(train[1], []))"), 5)
-# Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+cb = Flux.throttle(() -> println("SVAE : $(learnPrintingRepresentation!(train[1], []))"), 5)
+Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 ascore = Flux.Tracker.data(.-pxvita(svae, test[1]))
 auc = pyauc(test[2], ascore')
@@ -89,7 +90,7 @@ println(size(test[2]))
 println("AUC svae: $auc")
 
 opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-cb = Flux.throttle(() -> println("M1 : $(loss(model, train[1]))"), 5)
+cb = Flux.throttle(() -> println("M1 : $(printingloss(model, train[1]))"), 5)
 Flux.train!((x, y) -> loss(model, x), RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
 ascore = Flux.Tracker.data(.-pxvita(model, test[1]))

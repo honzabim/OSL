@@ -104,6 +104,12 @@ function loss(m::VAE{T,V},x) where {T,V<:Val{:unit}}
 	-mean(log_normal(x,μx)) + m.β*mean(kldiv(μz,σ2z))
 end
 
+function printingloss(m::VAE{T,V},x) where {T,V<:Val{:unit}}
+	μz, σ2z, μx = infer(m,x)
+	println("MSE:$(-mean(log_normal(x,μx))) Flux.mse: $(Flux.mse(x, μx)) KL: $(mean(kldiv(μz,σ2z)))")
+	-mean(log_normal(x,μx)) + m.β*mean(kldiv(μz,σ2z))
+end
+
 """
 		function px(m::T,x,r::Int = 100) where {T<:Union{VAE,IPMAE}}
 

@@ -8,7 +8,7 @@ using Crayons
 using Crayons.Box
 using StatsBase
 
-const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1/"
+const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1big/"
 
 loadExperiment(filePath) = load(filePath)["results"]
 
@@ -19,7 +19,7 @@ params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :β, :method, :a
 types = [Int, Int, Int, String, String, Float64, String, Int, Float64, Int, String, String]
 
 function processFile!(dataframe, model, dataset)
-    for i in 1:3
+    for i in 1:20
         println("Processing $model $dataset $i")
         filename = dataFolder * dataset * "-$i-" * model * ".jld2"
         if !isfile(filename)

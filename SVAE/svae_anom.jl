@@ -166,6 +166,17 @@ function wloss(m::SVAE_anom, x, β, d)
 	return Flux.mse(x, xgivenz) + β * Ω
 end
 
+function printingwloss(m::SVAE_anom, x, β, d)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	zp = samplehsuniform(size(z))
+	#prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.priorμ), ones(size(κz)) .* m.priorκ)
+	Ω = d(z, zp)
+	xgivenz = m.g(z)
+	println("MSE: $(Flux.mse(x, xgivenz)) Ω: $Ω")
+	return Flux.mse(x, xgivenz) + β * Ω
+end
+
 function wlossprior(m::SVAE_anom, x, β, d) # this function is wrong, it uses the anom_prior as regular prior!!!
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
