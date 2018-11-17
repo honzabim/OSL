@@ -8,8 +8,8 @@ using FluxExtensions
 using UCI
 using DataFrames
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath)
 using NearestNeighbors
@@ -181,11 +181,11 @@ end
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-dataset = "breast-cancer-wisconsin"
-# dataset = "ecoli"
+# dataset = "breast-cancer-wisconsin"
+dataset = "ecoli"
 # dataset = "abalone"
 batchSize = 100
-iterations = 100
+iterations = 10000
 
 if length(ARGS) != 0
     dataset = ARGS[1]
