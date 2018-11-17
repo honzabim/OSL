@@ -8,8 +8,8 @@ using FluxExtensions
 using UCI
 using DataFrames
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath)
 using NearestNeighbors
