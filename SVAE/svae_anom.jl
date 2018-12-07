@@ -148,9 +148,16 @@ function pz(m::SVAE_anom, x) # this function is wrong, it uses the anom_prior as
 	return log_vmf(Flux.Tracker.data(μz), Flux.Tracker.data(.-m.anom_priorμ), Flux.Tracker.data(m.anom_priorκ[1]))
 end
 
+function set_anomalous_μ(m::SVAE_anom, μ)
+	κz = 100.
+	T = eltype(m.hue)
+	m.anom_priorμ = Flux.param(Adapt.adapt(T, Flux.Tracker.data(μ)))
+	m.anom_priorκ = Flux.param(Adapt.adapt(T, [κz]))
+end
+
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)
 	μz, _ = zparams(m, anomaly)
-	κz = 100.
+	κz = 10.
 	T = eltype(m.hue)
 	m.anom_priorμ = Flux.param(Adapt.adapt(T, Flux.Tracker.data(μz)))
 	m.anom_priorκ = Flux.param(Adapt.adapt(T, [κz]))
@@ -201,6 +208,58 @@ function wloss_anom_lkh(m::SVAE_anom, x, y, β, d)
 		xgivenz = m.g(z)
 		return Flux.mse(x, xgivenz) + β * Ω
 	end
+end
+
+function wloss_anom_vasek(m::SVAE_anom, x, y, β, d)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	xgivenz = m.g(z)
+
+	if count(y .== 1) > 0
+		anom_ids = findall(y .== 1)
+		μzanom = μz[:, anom_ids[rand(1:length(anom_ids), length(y))]]
+		κzanom = κz[anom_ids[rand(1:length(anom_ids), length(y))]]
+		zanom = samplez(m, μzanom, collect(κzanom'))
+
+		norm_ids = findall(y .== 0)
+		μznorm = μz[:, norm_ids[rand(1:length(norm_ids), length(y))]]
+		κznorm = κz[norm_ids[rand(1:length(norm_ids), length(y))]]
+		znorm = samplez(m, μznorm, collect(κznorm'))
+
+		anom_prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+		norm_prior = samplez(m, ones(size(μz)) .* normalizecolumns(.-m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+		Ωnorm = d(znorm, norm_prior)
+		Ωanom = d(zanom, anom_prior)
+		return Flux.mse(x, xgivenz) + β * (Ωnorm .+ Ωanom)
+	else
+
+		norm_prior = samplez(m, ones(size(μz)) .* normalizecolumns(.-m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+		Ωnorm = d(z, norm_prior)
+		return Flux.mse(x, xgivenz) + β * Ωnorm
+	end
+end
+
+function printing_wloss_anom_vasek(m::SVAE_anom, x, y, β, d)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+
+	anom_ids = findall(y .== 1)
+	μzanom = μz[:, anom_ids[rand(1:length(anom_ids), length(y))]]
+	κzanom = κz[anom_ids[rand(1:length(anom_ids), length(y))]]
+	zanom = samplez(m, μzanom, collect(κzanom'))
+
+	norm_ids = findall(y .== 0)
+	μznorm = μz[:, norm_ids[rand(1:length(norm_ids), length(y))]]
+	κznorm = κz[norm_ids[rand(1:length(norm_ids), length(y))]]
+	znorm = samplez(m, μznorm, collect(κznorm'))
+
+	anom_prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+	norm_prior = samplez(m, ones(size(μz)) .* normalizecolumns(.-m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
+	Ωnorm = d(znorm, norm_prior)
+	Ωanom = d(zanom, anom_prior)
+	xgivenz = m.g(z)
+	println("MSE: $(Flux.mse(x, xgivenz)) Ωnorm: $Ωnorm Ωanom: $Ωanom")
+	return Flux.mse(x, xgivenz) + β * Ωnorm .+ β .* Ωanom
 end
 
 function wloss_anom_wass(m::SVAE_anom, x, y, β, d)

@@ -105,7 +105,7 @@ plotly()
 fillc = true
 nlevels = 20
 
-x = y = 0:0.01:1
+x = y = -4:0.2:4
 svaescore = (x, y) -> -pxvita(svae, [x, y])[1]
 m1score = (x, y) -> Flux.Tracker.data(-pxvita(model, [x, y])[1])
 csvae = contour(x, y, svaescore, fill = fillc, levels = nlevels)
