@@ -8,6 +8,7 @@ using Crayons
 using Crayons.Box
 using StatsBase
 using HypothesisTests
+using Printf
 
 const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1pval/"
 
@@ -61,7 +62,7 @@ function printbest2(df)
             print(crays[p[c]], s)
             print(defc, repeat(" ", collen - length(s)) * " | ")
         end
-        println(df[i, 4])
+        println(@sprintf("%.6f",df[i, 4]))
     end
 end
 

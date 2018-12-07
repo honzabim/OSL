@@ -84,7 +84,7 @@ latentDim = 3
 nonlinearity = "relu"
 layerType = "Dense"
 batchSize = 100
-numBatches = 10000
+numBatches = 1000
 βsvae = 0.5
 βvamp = 0.5
 

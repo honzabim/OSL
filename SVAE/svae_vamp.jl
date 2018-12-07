@@ -174,7 +174,7 @@ function printingwloss(m::SVAE_vamp, x, β, d)
 	return Flux.mse(x, xgivenz) + β * Ω
 end
 
-score(m::SVAE_vamp, x) = log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
+# score(m::SVAE_vamp, x) = log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
 
 """
 	infer(m::SVAE_vamp, x)
