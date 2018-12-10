@@ -23,7 +23,7 @@ function pyauc(labels, ascores)
 end
 
 include(folderpath * "OSL/SVAE/svae_anom.jl")
-include(folderpath * "OSL/SVAE/svae_vamp.jl")
+include(folderpath * "OSL/SVAE/svae_vamp_mem.jl")
 
 function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
@@ -84,7 +84,7 @@ latentDim = 3
 nonlinearity = "relu"
 layerType = "Dense"
 batchSize = 100
-numBatches = 1000
+numBatches = 10000
 βsvae = 0.5
 βvamp = 0.5
 
@@ -110,6 +110,12 @@ auc = pyauc(test[2], ascore')
 println(size(ascore))
 println(size(test[2]))
 println("AUC vamp: $auc")
+
+ascore = Flux.Tracker.data(.-anom_prior_score(vamp, test[1]))
+auc = pyauc(test[2], ascore')
+println(size(ascore))
+println(size(test[2]))
+println("AUC vamp prior score: $auc")
 
 using Plots
 plotly()
