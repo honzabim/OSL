@@ -154,7 +154,11 @@ function var_posterior_lkh(m::SVAE_vamp, z, pseudo_inputs)
 end
 
 function add_anomaly(m::SVAE_vamp, anomaly::Vector)
-	push!(m.anom_priors, anomaly)
+	if length(m.anom_priors) > 0
+		m.anom_priors = hcat(m.anom_priors, anomaly)
+	else
+		m.anom_priors = anomaly
+	end
 end
 
 function anom_prior_score(m::SVAE_vamp, x)
@@ -166,7 +170,7 @@ function anom_prior_score(m::SVAE_vamp, x)
 		return var_posterior_lkh(m, z, m.anom_priors) ./ var_posterior_lkh(m, z, m.pseudo_inputs)
 	else
 		println(size(var_posterior_lkh(m, z, m.pseudo_inputs)))
-		return ones(size(z, 2))' ./ var_posterior_lkh(m, z, m.pseudo_inputs)
+		return ones(size(z, 2))' .- var_posterior_lkh(m, z, m.pseudo_inputs)
 	end
 end
 

@@ -93,7 +93,6 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
-        mpwmutualinf = meanpairwisemutualinf(Flux.Tracker.data(zfromx(model, train[1])))
 
         println("Mean pairwise mutualinf: $mpwmutualinf")
 
@@ -102,51 +101,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         rstrn = Flux.Tracker.data(rscore(model, train[1]))
         rstst = Flux.Tracker.data(rscore(model, test[1]))
 
-        balltree = BallTree(Flux.Tracker.data(zfromx(model, train[1])), Euclidean(); reorder = false)
-        idxs, dists = NearestNeighbors.knn(balltree, Flux.Tracker.data(zfromx(model, test[1])), 3, false)
-        knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
-        knnauc = pyauc(test[2] .- 1, knnscores)
-        knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i])) - 1, idxs))
-        knnprec = precision(knnroc)
-        knnrecall = recall(knnroc)
-
-        knnanom = kNN.KNNAnomaly(train[1], :gamma)
-        knn5auc = pyauc(test[2] .- 1, StatsBase.predict(knnanom, test[1], 5))
-        knn9auc = pyauc(test[2] .- 1, StatsBase.predict(knnanom, test[1], 9))
-        knn15auc = pyauc(test[2] .- 1, StatsBase.predict(knnanom, test[1], 15))
-        knnsqrtauc = pyauc(test[2] .- 1, StatsBase.predict(knnanom, test[1], round(Int, sqrt(size(train[1], 2)))))
-        println("knn 5 auc: $knn5auc")
-        println("knn 9 auc: $knn9auc")
-        println("knn 15 auc: $knn15auc")
-        println("knn 15 auc: $knnsqrtauc")
-
         anomalies = train[1][:, train[2] .- 1 .== 1]
         anomalies = anomalies[:, randperm(size(anomalies, 2))]
-
-        distances = Array{Float64}(0)
-        for i in 1:size(anomalies, 2)
-            for j in 1:size(anomalies, 2)
-                if i != j
-                    push!(distances, Flux.Tracker.data(anomalies[:, i]' * anomalies[:, j]))
-                end
-            end
-        end
-        distancesvariance = var(distances)
-
-        println("The variance of distances of anomalies is $distancesvariance")
-
-        println("set size: $(size(train[1]))")
-        println("set size: $(size(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:min(5, size(anomalies, 2))])))")
-
-        knn5anom = kNN.KNNAnomaly(hcat(train[1][:, train[2] .== 1], anomalies[:, 1:min(5, size(anomalies, 2))]) , :gamma)
-        knn5a3auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 3))
-        knn5a5auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 5))
-        knn5a9auc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], 9))
-        knn5asqrtauc = pyauc(test[2] .- 1, StatsBase.predict(knn5anom, test[1], round(Int, sqrt(size(train[1], 2)))))
-        println("knn5a 5 auc: $knn5a5auc")
-        println("knn5a 9 auc: $knn5a9auc")
-        println("knn5a 3 auc: $knn5a3auc")
-        println("knn5a 15 auc: $knn5asqrtauc")
 
         for ac in anomalyCounts
             if ac <= size(anomalies, 2)
@@ -166,13 +122,13 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
             # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
             auc = pyauc(test[2] .- 1, probScore)
             println("mem AUC: $auc")
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, knnauc, knnprec, knnrecall, ar, it, mpwmutualinf, distancesvariance, knn5auc, knn9auc, knn15auc, knnsqrtauc, knn5a3auc, knn5a5auc, knn5a9auc, knn5asqrtauc))
+            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, ar, it))
         end
     end
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeVarOfDistances/"
+outputFolder = folderpath * "OSL/experiments/WSVAElargeProbMem/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -181,7 +137,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 

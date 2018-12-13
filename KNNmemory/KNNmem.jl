@@ -105,6 +105,7 @@ end
 Normalizes all query keys in the matrix separately by converting it into an array of arrays.
 """
 normalizeQuery(q) = hcat((normalize.([q[:, i] for i in 1:size(q, 2)]))...)
+normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, dims = 1) .+ eps(eltype(Flux.Tracker.data(m))))
 
 """
     memoryUpdate!(memory, q, v, nearestNeighbourID)
@@ -151,6 +152,43 @@ function query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
     return values, map(probScorePerQ, 1:size(q, 2)) # basicaly returns the nearest value in the memory + sum of probs of anomalies that are in the k-nearest
 end
 
+vmf_mix_lkh(x, μs) = vmf_mix_lkh(x, μs, size(μs, 2))
+function vmf_mix_lkh(x, μs, μlength::Integer)
+    κs = ones(μlength) .* 3 # This is quite arbitrary as we don't really know what to use for kappa but it shouldn't matter if it is the same
+	l = 0
+	for K in 1:μlength
+		l += exp.(log_vmf(x, μs[:, K], κs[K]))
+	end
+	l /= μlength
+	return l
+end
+
+"""
+    prob_query(memory, q)
+Returns the nearest neighbour's value and its confidence level for a given key `q` but does not modify the memory itself.
+"""
+function prob_query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
+    normq = normalizecolumns(Flux.Tracker.data(q))
+    similarity = memory.M * normq
+    values = memory.V[Flux.argmax(similarity)]
+
+    function probScorePerQ(index)
+        kLargestIDs = collect(partialsortperm(similarity[:, index], 1:memory.k, rev = true))
+		nearestAnoms = memory.M[kLargestIDs][memory.V[kLargestIDs] .== 1]
+		if length(nearestAnoms) == 0
+			return 0
+		elseif size(nearestAnoms, 2) == memory.k
+			return 1
+		end
+		nearestAnoms = memory.M[kLargestIDs][memory.V[kLargestIDs] .== 0]
+		pxgivena = vmf_mix_lkh(normq, nearestAnoms)
+		pxgivenn = vmf_mix_lkh(normq, nearestNormal)
+		return pxgivena / (pxgivena + pxgivenn)
+    end
+
+    return values, map(probScorePerQ, 1:size(q, 2)) # basicaly returns the nearest value in the memory + sum of probs of anomalies that are in the k-nearest
+end
+
 
 
 """
@@ -191,6 +229,14 @@ function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 
     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
     trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
     testQ(data) = query(memory, model(data))
+    return trainQ!, testQ, trainQOnLatent!
+end
+
+function augmentModelWithMemoryProb(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
+    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
+    trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
+    trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
+    testQ(data) = prob_query(memory, model(data))
     return trainQ!, testQ, trainQOnLatent!
 end
 

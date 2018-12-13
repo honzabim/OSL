@@ -16,6 +16,7 @@ const dataFolder = "D:/dev/julia/OSL/experiments/WSVAElargeVarOfDistances/"
 # const datasets = ["cardiotocography", "ecoli", "glass", "pendigits", "pima-indians", "statlog-satimage", "statlog-segment", "waveform-1"]
 # const datasets = ["breast-cancer-wisconsin", "ecoli", "glass", "ionosphere", "pendigits", "pima-indians", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
 const datasets = ["breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "musk-2", "ionosphere", "page-blocks", "pendigits", "pima-indians", "sonar", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
+# const datasets = ["cardiotocography", "ecoli", "glass", "musk-2", "ionosphere", "page-blocks", "pendigits", "pima-indians", "sonar", "statlog-satimage", "statlog-segment", "waveform-1", "waveform-2", "yeast"]
 const models = ["svae"]
 const anomalycount = 5
 
@@ -35,6 +36,7 @@ function processFile!(dataframe, model, dataset)
             for j in 1:length(results[1][2])
                 pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
                 # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
+                println(length(results[1][2][j]))
                 push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][6:12]..., model, dataset, results[i][2][j][13:22]...))
             end
         end
@@ -50,3 +52,25 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 # end
 
 CSV.write(dataFolder * "results.csv", allData)
+
+function getbestknn(df)
+	maxknn = []
+	for d in unique(df[:dataset])
+		dfknn = df[(df[:dataset] .== d) .& (df[:ar] .== 0.05), :][23:26]
+		best = maximum(convert(Array, dfknn))
+		push!(maxknn, DataFrame(dataset = d, bestknn = best))
+	end
+	return vcat(maxknn...)
+end
+
+function compare(df)
+	compdf = []
+	for (ar, d) in Base.product(unique(df[:ar]), unique(df[:dataset]))
+		dfda = df[(df[:dataset] .== d) .& (df[:ar] .== ar), :]
+		bestknn = maximum(convert(Array, dfda[23:26]))
+		bestknna5 = maximum(convert(Array, dfda[27:30]))
+		bestsvaemem = maximum(convert(Array, dfda[:auc]))
+		push!(compdf, DataFrame(dataset = d, anom_ratio = ar, svae_mem = bestsvaemem, knn = bestknn, knn5a = bestknna5))
+	end
+	return vcat(compdf...)
+end

@@ -13,6 +13,7 @@ using NearestNeighbors
 using StatsBase
 using InformationMeasures
 using Random
+using ADatasets
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -55,27 +56,41 @@ function createSVAE_vamp(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
     return svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
 end
 
+# OLD DATASETS
 
-# dataset = "breast-cancer-wisconsin"
-# class_label = ""
-# dataset = "libras"
-# class_label = "1-6"
-# dataset = "letter-recognition"
-# class_label = "U-R"
-dataset = "glass"
-class_label = "2-6"
+# datasets = ["abalone"]
+datasets = ["breast-cancer-wisconsin"]
+difficulties = ["easy"]
+const dataPath = folderpath * "data/loda/public/datasets/numerical"
+loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
+trainall, test, clusterdness = loadData(datasets[1], difficulties[1])
+train = (trainall[1][:, trainall[2] .- 1 .== 0], trainall[2][trainall[2] .- 1 .== 0])
+anoms = trainall[1][:, trainall[2] .- 1 .== 1]
+train[2] .-= 1
+test[2] .-= 1
 
-data, normal_labels, anomaly_labels = UCI.get_umap_data(dataset)
-subdatasets = UCI.create_multiclass(data, normal_labels, anomaly_labels)
-dataid = find(x -> x[2] == class_label, subdatasets)
-subdataset = subdatasets[dataid]
-_X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdataset[1][1], 0.8)
-_X_tr .-= minimum(_X_tr)
-_X_tr ./= maximum(_X_tr)
-_X_tst .-= minimum(_X_tst)
-_X_tst ./= maximum(_X_tst)
-train = (_X_tr, _y_tr)
-test = (_X_tst, _y_tst)
+# NEW DATASETS
+
+# # dataset = "breast-cancer-wisconsin"
+# # class_label = ""
+# # dataset = "libras"
+# # class_label = "1-6"
+# # dataset = "letter-recognition"
+# # class_label = "U-R"
+# dataset = "glass"
+# class_label = "2-6"
+#
+# data, normal_labels, anomaly_labels = UCI.get_umap_data(dataset)
+# subdatasets = UCI.create_multiclass(data, normal_labels, anomaly_labels)
+# dataid = find(x -> x[2] == class_label, subdatasets)
+# subdataset = subdatasets[dataid]
+# _X_tr, _y_tr, _X_tst, _y_tst = UCI.split_data(subdataset[1][1], 0.8)
+# _X_tr .-= minimum(_X_tr)
+# _X_tr ./= maximum(_X_tr)
+# _X_tst .-= minimum(_X_tst)
+# _X_tst ./= maximum(_X_tst)
+# train = (_X_tr, _y_tr)
+# test = (_X_tst, _y_tst)
 
 inputDim = size(train[1], 1)
 hiddenDim = 32
@@ -91,15 +106,15 @@ numBatches = 10000
 (svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
 (vamp, vlearnRepresentation!, vlearnPrintingRepresentation!, vlearnAnomaly!, vlearnWithAnomaliesLkh!, vlearnWithAnomaliesWass!) = createSVAE_vamp(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βvamp)
 
-opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
-cb = Flux.throttle(() -> println("SVAE : $(learnPrintingRepresentation!(train[1], []))"), 5)
-Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
-
-ascore = Flux.Tracker.data(.-pxvita(svae, test[1]))
-auc = pyauc(test[2], ascore')
-println(size(ascore))
-println(size(test[2]))
-println("AUC svae: $auc")
+# opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
+# cb = Flux.throttle(() -> println("SVAE : $(learnPrintingRepresentation!(train[1], []))"), 5)
+# Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+#
+# ascore = Flux.Tracker.data(.-pxvita(svae, test[1]))
+# auc = pyauc(test[2], ascore')
+# println(size(ascore))
+# println(size(test[2]))
+# println("AUC svae: $auc")
 
 opt = Flux.Optimise.ADAM(Flux.params(vamp), 3e-5)
 cb = Flux.throttle(() -> println("VAMP : $(vlearnPrintingRepresentation!(train[1], []))"), 5)
@@ -117,15 +132,24 @@ println(size(ascore))
 println(size(test[2]))
 println("AUC vamp prior score: $auc")
 
-using Plots
-plotly()
+for i in 1:10
+	add_anomaly(vamp, anoms[:, i])
+	ascore = Flux.Tracker.data(.-anom_prior_score(vamp, test[1]))
+	auc = pyauc(test[2], ascore')
+	println(size(ascore))
+	println(size(test[2]))
+	println("AUC vamp prior score for $i anomalies: $auc")
+end
 
-fillc = true
-nlevels = 20
+# using Plots
+# plotly()
+#
+# fillc = true
+# nlevels = 20
 
-x = y = -4:0.2:4
-svaescore = (x, y) -> -pxvita(svae, [x, y])[1]
-vampscore = (x, y) -> -pxvita(vamp, [x, y])[1]
-csvae = contour(x, y, svaescore, fill = fillc, levels = nlevels)
-cvamp = contour(x, y, vampscore, fill = fillc, levels = nlevels)
-display(plot(csvae, cvamp, layout = 2, title = ["SVAE" "VAMP"]))
+# x = y = -4:0.2:4
+# svaescore = (x, y) -> -pxvita(svae, [x, y])[1]
+# vampscore = (x, y) -> -pxvita(vamp, [x, y])[1]
+# csvae = contour(x, y, svaescore, fill = fillc, levels = nlevels)
+# cvamp = contour(x, y, vampscore, fill = fillc, levels = nlevels)
+# display(plot(csvae, cvamp, layout = 2, title = ["SVAE" "VAMP"]))
