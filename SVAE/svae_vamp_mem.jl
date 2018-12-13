@@ -165,7 +165,6 @@ function anom_prior_score(m::SVAE_vamp, x)
 
 	# TODO pridat mean pres treba 100 z !!! Tohle je jako pxvita
 	(z, _) = zparams(m, x)
-	println(size(z))
 	if (length(m.anom_priors) > 0)
 		return var_posterior_lkh(m, z, m.anom_priors) ./ var_posterior_lkh(m, z, m.pseudo_inputs)
 	else

@@ -55,7 +55,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
     svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
-    train!, classify, trainOnLatent! = augmentModelWithMemoryProb((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
+    train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(zfromx(svae, data), collect(labels)) # changes labels to zeros!
@@ -93,8 +93,6 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
-
-        println("Mean pairwise mutualinf: $mpwmutualinf")
 
         learnRepresentation!(train[1], zeros(train[2]))
 
@@ -137,7 +135,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 100
+iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -156,7 +154,7 @@ for i in 1:10
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations)
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [64 128], [32 64], [1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)

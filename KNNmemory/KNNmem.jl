@@ -8,6 +8,7 @@ using Flux
 using Juno
 using Random
 using LinearAlgebra
+using SpecialFunctions
 
 export KNNmemory, query, trainQuery!, augmentModelWithMemory
 
@@ -152,6 +153,14 @@ function query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
     return values, map(probScorePerQ, 1:size(q, 2)) # basicaly returns the nearest value in the memory + sum of probs of anomalies that are in the k-nearest
 end
 
+# logc(p, κ) = (p / 2 - 1) * log(κ) - (p / 2) * log(2π) - log(besseli(p / 2 - 1, κ))
+logc(p, κ) = (p ./ 2 .- 1) .* log.(κ) .- (p ./ 2) .* log(2π) .- κ .- log.(besselix(p / 2 - 1, κ))
+
+
+# log likelihood of one sample under the VMF dist with given parameters
+# log_vmf(x, μ, κ) = κ * μ' * x .+ log.(c(length(μ), κ))
+log_vmf(x, μ, κ) = κ * μ' * x .+ logc(length(μ), κ)
+
 vmf_mix_lkh(x, μs) = vmf_mix_lkh(x, μs, size(μs, 2))
 function vmf_mix_lkh(x, μs, μlength::Integer)
     κs = ones(μlength) .* 3 # This is quite arbitrary as we don't really know what to use for kappa but it shouldn't matter if it is the same
@@ -174,15 +183,15 @@ function prob_query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where 
 
     function probScorePerQ(index)
         kLargestIDs = collect(partialsortperm(similarity[:, index], 1:memory.k, rev = true))
-		nearestAnoms = memory.M[kLargestIDs][memory.V[kLargestIDs] .== 1]
+		nearestAnoms = collect(memory.M[kLargestIDs, :][memory.V[kLargestIDs] .== 1, :]')
 		if length(nearestAnoms) == 0
 			return 0
 		elseif size(nearestAnoms, 2) == memory.k
 			return 1
 		end
-		nearestAnoms = memory.M[kLargestIDs][memory.V[kLargestIDs] .== 0]
-		pxgivena = vmf_mix_lkh(normq, nearestAnoms)
-		pxgivenn = vmf_mix_lkh(normq, nearestNormal)
+		nearestNormal = collect(memory.M[kLargestIDs, :][memory.V[kLargestIDs] .== 0, :]')
+		pxgivena = vmf_mix_lkh(normq[:, index], nearestAnoms)
+		pxgivenn = vmf_mix_lkh(normq[:, index], nearestNormal)
 		return pxgivena / (pxgivena + pxgivenn)
     end
 
@@ -220,13 +229,13 @@ function trainQuery!(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, v::Ve
     return loss / batchSize
 end
 
-function augmentModelWithMemoryProb(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
-    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
-    trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
-    trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
-    testQ(data) = prob_query(memory, model(data))
-    return trainQ!, testQ, trainQOnLatent!
-end
+# function augmentModelWithMemoryProb(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
+#     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
+#     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
+#     trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
+#     testQ(data) = prob_query(memory, model(data))
+#     return trainQ!, testQ, trainQOnLatent!
+# end
 
 
 """
@@ -237,7 +246,7 @@ function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 
     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
     trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
-    testQ(data) = query(memory, model(data))
+    testQ(data) = prob_query(memory, model(data)) # TODO: this should be just query!
     return trainQ!, testQ, trainQOnLatent!
 end
 end
