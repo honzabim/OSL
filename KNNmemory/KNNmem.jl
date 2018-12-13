@@ -220,6 +220,15 @@ function trainQuery!(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, v::Ve
     return loss / batchSize
 end
 
+function augmentModelWithMemoryProb(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
+    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
+    trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
+    trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
+    testQ(data) = prob_query(memory, model(data))
+    return trainQ!, testQ, trainQOnLatent!
+end
+
+
 """
     augmentModelWithMemory(model, memorySize, keySize, k, labelCount, [α = 0.1,] [T = Float32])
 Creates a set of functions that allow for training and testing of a model whose outputs are used as keys to the memory.
@@ -231,13 +240,4 @@ function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 
     testQ(data) = query(memory, model(data))
     return trainQ!, testQ, trainQOnLatent!
 end
-
-function augmentModelWithMemoryProb(model, memorySize, keySize, k, labelCount, α = 0.1, T = Float32)
-    memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
-    trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
-    trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
-    testQ(data) = prob_query(memory, model(data))
-    return trainQ!, testQ, trainQOnLatent!
-end
-
 end
