@@ -50,12 +50,14 @@ function meanpairwisemutualinf(x)
     return mutualinf / (dim * (dim - 1) / 2)
 end
 
+
+
 function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
     svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
-    train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
+    mem, train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, memorySize, labelCount, α, T) # TODO the second memsize should be k !!!
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(zfromx(svae, data), collect(labels)) # changes labels to zeros!
@@ -73,12 +75,51 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
         # return loss(svae, data, β)
     end
 
-    return svae, learnRepresentation!, learnAnomaly!, classify, justTrain!
+    return mem, svae, learnRepresentation!, learnAnomaly!, classify, justTrain!
 end
 
-function rscore(m::SVAE, x)
-    xgivenz = m.g(zfromx(m, x))
-    return Flux.mse(x, xgivenz)
+log_normal(x) = - sum((@. x ^ 2), 1) / 2 - size(x, 1) * log(2π) / 2
+log_normal(x, μ) = log_normal(x - μ)
+
+# Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
+# normalizing constant for density function of VMF
+c(p, κ) = κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
+
+# log likelihood of one sample under the VMF dist with given parameters
+log_vmf(x, μ, κ) = κ * μ' * x .+ log(c(length(μ), κ))
+
+function pxvita(m::SVAE, x)
+	μz, κz = zparams(m, x)
+	xgivenz = m.g(μz)
+	Flux.Tracker.data(log_normal(xgivenz, x))
+end
+
+function f3score(memory::KNNmemory, model::SVAE, z::Vector, x::Vector, κ)
+	anomalies = memory.M[memory.V .== 1, :]
+	normalData = memory.M[memory.V .== 0, :]
+	xgivenzianom = Flux.Tracker.data(model.g(anomalies'))
+	xgivenzinormal = Flux.Tracker.data(model.g(normalData'))
+
+	sumanom = 0
+	for i in 1:size(anomalies, 1)
+		sumanom += exp(log_normal(xgivenzianom[:, i], x)[1] + log_vmf(anomalies[i, :], z, κ))
+	end
+	sumnormal = 0
+	for i in 1:size(normalData, 1)
+		sumnormal += exp(log_normal(xgivenzinormal[:, i], x)[1] + log_vmf(normalData[i, :], z, κ))
+	end
+
+	return sumanom / (sumnormal + sumanom)
+end
+
+function f3score(memory::KNNmemory, model::SVAE, x, κ)
+	(μz, _) = zparams(model, x)
+	μz = Flux.Tracker.data(μz)
+	score = []
+	for i in 1:size(x, 2)
+		push!(score, f3score(memory, model, μz[:, i], Flux.Tracker.data(x[:, i]), κ))
+	end
+	return score
 end
 
 function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
@@ -87,7 +128,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
         train = ADatasets.subsampleanomalous(trainall, ar)
-        (model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
+        (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
@@ -96,13 +137,15 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 
         learnRepresentation!(train[1], zeros(train[2]))
 
-        rstrn = Flux.Tracker.data(rscore(model, train[1]))
-        rstst = Flux.Tracker.data(rscore(model, test[1]))
+		pxv = collect(.-pxvita(model, test[1])')
+		auc_pxv = pyauc(test[2] .- 1, pxv)
+		println("P(X) Vita AUC = $auc_pxv on $datasetName with ar: $ar iteration: $it")
 
         anomalies = train[1][:, train[2] .- 1 .== 1]
         anomalies = anomalies[:, randperm(size(anomalies, 2))]
 
         for ac in anomalyCounts
+			println("Anomaly count $ac")
             if ac <= size(anomalies, 2)
                 l = learnAnomaly!(anomalies[:, ac], [1])
             else
@@ -111,16 +154,23 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
                 break;
             end
 
-            values, probScore = classify(test[1])
-            values = Flux.Tracker.data(values)
-            probScore = Flux.Tracker.data(probScore)
+			for κ in [0.5, 1, 3, 5, 10, 50]
+	            values, probScore = classify(test[1], κ)
+	            values = Flux.Tracker.data(values)
+	            probScore = Flux.Tracker.data(probScore)
 
-            rocData = roc(test[2] .- 1, values)
-            f1 = f1score(rocData)
-            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-            auc = pyauc(test[2] .- 1, probScore)
-            println("mem AUC: $auc")
-            push!(results, (ac, f1, auc, values, probScore, rstrn, rstst, ar, it))
+	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            f2auc = pyauc(test[2] .- 1, probScore)
+	            println("mem κ = $κ AUC f2: $f2auc")
+
+				probScore = f3score(mem, model, test[1], κ)
+
+	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            f3auc = pyauc(test[2] .- 1, probScore)
+	            println("mem κ = $κ AUC f3: $f3auc")
+
+	            push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ))
+			end
         end
     end
     return results
@@ -132,6 +182,7 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 datasets = ["breast-cancer-wisconsin"]
+# datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -155,7 +206,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [64 128], [32 64], [1], [0.1])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 0.1 1 10 100])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

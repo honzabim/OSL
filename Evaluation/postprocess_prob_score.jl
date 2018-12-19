@@ -51,3 +51,21 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 # end
 
 CSV.write(dataFolder * "results.csv", allData)
+
+function compare_to_varofdist(dfpm, dfvod)
+    compdf = []
+    for (ar, d) in Base.product(unique(dfpm[:ar]), unique(dfpm[:dataset]))
+        for ac in [1, 5, 10]
+            df1 = dfpm[(dfpm[:anomaliesSeen] .== ac) .& (dfpm[:ar] .== ar) .& (dfpm[:dataset] .== d), :]
+            df2 = dfvod[(dfvod[:anomaliesSeen] .== ac) .& (dfvod[:ar] .== ar) .& (dfvod[:dataset] .== d), :]
+            if (size(df1, 1) != 0) & (size(df2, 1) != 0)
+                bestdf1 = maximum(convert(Array, df1[:auc]))
+                meandf1 = mean(convert(Array, df1[:auc]))
+                bestdf2 = maximum(convert(Array, df2[:auc]))
+                meandf2 = mean(convert(Array, df2[:auc]))
+                push!(compdf, DataFrame(dataset = d, anom_ratio = ar, anom_count = ac, max_prob = bestdf1, max_mem = bestdf2, max = bestdf1 < bestdf2 ? "mem" : "prob", mean_prob = meandf1, mean_mem = meandf2, mean = meandf1 < meandf2 ? "mem" : "prob"))
+            end
+        end
+    end
+    return vcat(compdf...)
+end

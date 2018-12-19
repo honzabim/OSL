@@ -161,9 +161,9 @@ logc(p, κ) = (p ./ 2 .- 1) .* log.(κ) .- (p ./ 2) .* log(2π) .- κ .- log.(be
 # log_vmf(x, μ, κ) = κ * μ' * x .+ log.(c(length(μ), κ))
 log_vmf(x, μ, κ) = κ * μ' * x .+ logc(length(μ), κ)
 
-vmf_mix_lkh(x, μs) = vmf_mix_lkh(x, μs, size(μs, 2))
-function vmf_mix_lkh(x, μs, μlength::Integer)
-    κs = ones(μlength) .* 3 # This is quite arbitrary as we don't really know what to use for kappa but it shouldn't matter if it is the same
+vmf_mix_lkh(x, μs, κ) = vmf_mix_lkh(x, μs, κ, size(μs, 2))
+function vmf_mix_lkh(x, μs, κ, μlength::Integer)
+    κs = ones(μlength) .* κ # This is quite arbitrary as we don't really know what to use for kappa but it shouldn't matter if it is the same
 	l = 0
 	for K in 1:μlength
 		l += exp.(log_vmf(x, μs[:, K], κs[K]))
@@ -176,7 +176,7 @@ end
     prob_query(memory, q)
 Returns the nearest neighbour's value and its confidence level for a given key `q` but does not modify the memory itself.
 """
-function prob_query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where {T}
+function prob_query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N, κ) where {T}
     normq = normalizecolumns(Flux.Tracker.data(q))
     similarity = memory.M * normq
     values = memory.V[Flux.argmax(similarity)]
@@ -190,8 +190,8 @@ function prob_query(memory::KNNmemory{T}, q::AbstractArray{T, N} where N) where 
 			return 1
 		end
 		nearestNormal = collect(memory.M[kLargestIDs, :][memory.V[kLargestIDs] .== 0, :]')
-		pxgivena = vmf_mix_lkh(normq[:, index], nearestAnoms)
-		pxgivenn = vmf_mix_lkh(normq[:, index], nearestNormal)
+		pxgivena = vmf_mix_lkh(normq[:, index], nearestAnoms, κ)
+		pxgivenn = vmf_mix_lkh(normq[:, index], nearestNormal, κ)
 		return pxgivena / (pxgivena + pxgivenn)
     end
 
@@ -246,7 +246,7 @@ function augmentModelWithMemory(model, memorySize, keySize, k, labelCount, α = 
     memory = KNNmemory{T}(memorySize, keySize, k, labelCount, α)
     trainQ!(data, labels) = trainQuery!(memory, model(data), labels)
     trainQOnLatent!(latentData, labels) = trainQuery!(memory, latentData, labels)
-    testQ(data) = prob_query(memory, model(data)) # TODO: this should be just query!
-    return trainQ!, testQ, trainQOnLatent!
+    testQ(data, κ) = prob_query(memory, model(data), κ) # TODO: this should be just query!
+    return memory, trainQ!, testQ, trainQOnLatent!
 end
 end
