@@ -54,65 +54,63 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
 
     svae = SVAE_anom(encoder, decoder, hiddenDim, latentDim, T)
 
-    learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
-    learnAnomaly!(anomaly) = set_anomalous_hypersphere(svae, anomaly)
-	learnWithAnomaliesLkh!(data, labels) = wloss_anom_lkh(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
-	learnWithAnomaliesWass!(data, labels) = wloss_anom_wass(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
+	learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+	learnPrintingRepresentation!(data, foo) = printingwloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+    learnAnomaly!(μ) = set_anomalous_μ(svae, μ)
+	learnWithAnomaliesWass!(data, labels) = wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
+	learnWithAnomaliesPrintingWass!(data, labels) = printing_wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
-    return svae, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!
+    return svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!
 end
 
 function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
     anomalyRatios = [0.05, 0.01, 0.005]
     results = []
-	for method in ["lklh", "wass"]
-	    for ar in anomalyRatios
-	        println("Running $datasetName with ar: $ar iteration: $it method: $method")
-	        train = ADatasets.subsampleanomalous(trainall, ar)
-	        (model, learnRepresentation!, learnAnomaly!, learnWithAnomaliesLkh!, learnWithAnomaliesWass!) = createModel()
-			learnWithA! = learnWithAnomaliesWass!
-			if method == "lklh"
-				learnWithA! = learnWithAnomaliesLkh!
-			end
+    for ar in anomalyRatios
+        println("Running $datasetName with ar: $ar iteration: $it method: $method")
+        train = ADatasets.subsampleanomalous(trainall, ar)
+        (svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createModel()
+				numBatches = 10000
 
-			numBatches = 10000
+		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
+        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
-			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-	        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
-	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+        a_ids = find(train[2] .- 1 .== 1)
+        a_ids = a_ids[randperm(length(a_ids))]
 
-	        a_ids = find(train[2] .- 1 .== 1)
-	        a_ids = a_ids[randperm(length(a_ids))]
+		z = Flux.Tracker.data(zparams(svae, data)[1])
+		μnormal = normalize(vec(mean(z, dims = 2)))
+		learnAnomaly!(.-μnormal)
 
-			# Number of batches for learning with anomalies
-			numBatches = 5000
+		# Number of batches for learning with anomalies
+		numBatches = 3000
 
-	        for ac in anomalyCounts
-	            if ac <= length(a_ids)
-					if ac == 1
-	                	l = learnAnomaly!(train[1][:, a_ids[ac]])
-					else
-						newlabels = zeros(train[2])
-						newlabels[a_ids[1:ac]] .= 1
-						opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
-						cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithA!(train[1], newlabels))"), 3)
-						Flux.train!(learnWithA!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
-					end
-	            else
-	                println("Not enough anomalies $ac, $(size(a_ids))")
-	                println("Counts: $(counts(train[2]))")
-	                break;
-	            end
+        for ac in anomalyCounts
+            if ac <= length(a_ids)
+				if ac == 1
+                	l = learnAnomaly!(train[1][:, a_ids[ac]])
+				else
+					newlabels = zeros(train[2])
+					newlabels[a_ids[1:ac]] .= 1
+					opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
+					cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithA!(train[1], newlabels))"), 3)
+					Flux.train!(learnWithA!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
+				end
+            else
+                println("Not enough anomalies $ac, $(size(a_ids))")
+                println("Counts: $(counts(train[2]))")
+                break;
+            end
 
-				println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
-	            ascore = Flux.Tracker.data(score(model, test[1]))
-	            auc = pyauc(test[2] .- 1, ascore')
-	            println("AUC: $auc")
+			println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
+            ascore = Flux.Tracker.data(score(model, test[1]))
+            auc = pyauc(test[2] .- 1, ascore')
+            println("AUC: $auc")
 
-	            push!(results, (method, ac, auc, ascore, ar, it))
-	        end
-	    end
-	end
+            push!(results, (ac, auc, ascore, ar, it))
+        end
+    end
     return results
 end
 

@@ -88,7 +88,7 @@ end
     Base.normalize(v::Flux.Tracker.TrackedArray{T})
 Reimplementation of the inbuild function normalize() so that it works with tracked (Flux.Tracker) vectors.
 """
-Base.normalize(v::Flux.Tracker.TrackedArray{T}) where {T <: Real} = v ./ (sqrt(sum(v .^ 2) + eps(T)))
+LinearAlgebra.normalize(v::Flux.Tracker.TrackedArray{T}) where {T <: Real} = v ./ (sqrt(sum(v .^ 2) + eps(T)))
 
 """
     memoryLoss(memory, q, nearestPosAndNegIDs)
