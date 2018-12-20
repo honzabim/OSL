@@ -57,7 +57,7 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
 	learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
 	learnPrintingRepresentation!(data, foo) = printingwloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     learnAnomaly!(μ) = set_anomalous_μ(svae, μ)
-	learnWithAnomaliesWass!(data, labels) = wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
+	learnWithAnomaliesWass!(data, labels, a) = wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1), a)
 	learnWithAnomaliesPrintingWass!(data, labels) = printing_wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
     return svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!
@@ -67,54 +67,51 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     anomalyRatios = [0.05, 0.01, 0.005]
     results = []
     for ar in anomalyRatios
-        println("Running $datasetName with ar: $ar iteration: $it method: $method")
-        train = ADatasets.subsampleanomalous(trainall, ar)
-        (svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createModel()
-				numBatches = 10000
+		for α in [0.125 0.25 0.5 0.75 0.875]
+	        println("Running $datasetName with ar: $ar iteration: $it α: $α")
+	        train = ADatasets.subsampleanomalous(trainall, ar)
+	        (model, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createModel()
+			numBatches = 10000
 
-		opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
-        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+	        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
+	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
-        a_ids = find(train[2] .- 1 .== 1)
-        a_ids = a_ids[randperm(length(a_ids))]
+	        a_ids = find(train[2] .- 1 .== 1)
+	        a_ids = a_ids[randperm(length(a_ids))]
 
-		z = Flux.Tracker.data(zparams(svae, data)[1])
-		μnormal = normalize(vec(mean(z, dims = 2)))
-		learnAnomaly!(.-μnormal)
+			z = Flux.Tracker.data(zparams(model, train[1])[1])
+			μnormal = normalize(vec(mean(z, dims = 2)))
+			learnAnomaly!(.-μnormal)
 
-		# Number of batches for learning with anomalies
-		numBatches = 3000
+			# Number of batches for learning with anomalies
+			numBatches = 3000
 
-        for ac in anomalyCounts
-            if ac <= length(a_ids)
-				if ac == 1
-                	l = learnAnomaly!(train[1][:, a_ids[ac]])
-				else
+	        for ac in anomalyCounts
+	            if ac <= length(a_ids)
 					newlabels = zeros(train[2])
 					newlabels[a_ids[1:ac]] .= 1
 					opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
-					cb = Flux.throttle(() -> println("Learning with anomalies: $(learnWithA!(train[1], newlabels))"), 3)
-					Flux.train!(learnWithA!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
-				end
-            else
-                println("Not enough anomalies $ac, $(size(a_ids))")
-                println("Counts: $(counts(train[2]))")
-                break;
-            end
+					cb = Flux.throttle(() -> println("Learning with anomalies: $(((d, l) -> learnWithAnomaliesWass!(d, l, α))(train[1], newlabels))"), 3)
+					Flux.train!((d, l) -> learnWithAnomaliesWass!(d, l, α), RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
+				else
+	                println("Not enough anomalies $ac, $(size(a_ids))")
+	                println("Counts: $(counts(train[2]))")
+	                break;
+	            end
+				println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
+	            ascore = Flux.Tracker.data(score(model, test[1]))
+	            auc = pyauc(test[2] .- 1, ascore')
+	            println("AUC: $auc")
 
-			println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
-            ascore = Flux.Tracker.data(score(model, test[1]))
-            auc = pyauc(test[2] .- 1, ascore')
-            println("AUC: $auc")
-
-            push!(results, (ac, auc, ascore, ar, it))
-        end
+	            push!(results, (ac, auc, ascore, ar, it, α))
+	        end
+		end
     end
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeSVAEanom/"
+outputFolder = folderpath * "OSL/experiments/WSVAElongSVAEanom/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -123,7 +120,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -143,7 +140,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [0.1])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [0.01 0.1 1 10 100])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

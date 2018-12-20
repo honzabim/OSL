@@ -210,7 +210,7 @@ function wloss_anom_lkh(m::SVAE_anom, x, y, β, d)
 	end
 end
 
-function wloss_anom_vasek(m::SVAE_anom, x, y, β, d)
+function wloss_anom_vasek(m::SVAE_anom, x, y, β, d, α)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
 	xgivenz = m.g(z)
@@ -230,7 +230,7 @@ function wloss_anom_vasek(m::SVAE_anom, x, y, β, d)
 		norm_prior = samplez(m, ones(size(μz)) .* normalizecolumns(.-m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
 		Ωnorm = d(znorm, norm_prior)
 		Ωanom = d(zanom, anom_prior)
-		return Flux.mse(x, xgivenz) + β * (Ωnorm .+ Ωanom)
+		return Flux.mse(x, xgivenz) + β * (α .* Ωnorm .+ (1 - α) .* Ωanom)
 	else
 
 		norm_prior = samplez(m, ones(size(μz)) .* normalizecolumns(.-m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
@@ -284,7 +284,12 @@ function wloss_anom_wass(m::SVAE_anom, x, y, β, d)
 	end
 end
 
-score(m::SVAE_anom, x) = log_vmf(zfromx(m, x), m.anom_priorμ, m.anom_priorκ)
+function score(m::SVAE_anom, x)
+	println(size(x))
+	println(size(zparams(m, x)[1]))
+	println(size(m.anom_priorμ))
+	return log_vmf(zparams(m, x)[1], m.anom_priorμ, m.anom_priorκ)
+end
 
 """
 	infer(m::SVAE_anom, x)

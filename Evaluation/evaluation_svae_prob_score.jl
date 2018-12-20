@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -208,7 +208,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeProbMem/"
+outputFolder = folderpath * "OSL/experiments/WSVAElongProbMem/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
