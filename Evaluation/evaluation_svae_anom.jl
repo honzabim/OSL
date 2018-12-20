@@ -77,6 +77,10 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 	        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
 	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
 
+			pxv = collect(.-pxvita(model, test[1])')
+			auc_pxv = pyauc(test[2] .- 1, pxv)
+			println("P(X) Vita AUC = $auc_pxv on $datasetName with ar: $ar iteration: $it")
+
 	        a_ids = find(train[2] .- 1 .== 1)
 	        a_ids = a_ids[randperm(length(a_ids))]
 
@@ -104,7 +108,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 	            auc = pyauc(test[2] .- 1, ascore')
 	            println("AUC: $auc")
 
-	            push!(results, (ac, auc, ascore, ar, it, α))
+	            push!(results, (ac, auc, auc_pxv, ascore, ar, it, α))
 	        end
 		end
     end
