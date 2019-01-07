@@ -58,7 +58,7 @@ function createSVAE2WithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinear
     train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
-        trainOnLatent!(zfromx(svae, data), collect(labels)) # changes labels to zeros!
+        trainOnLatent!(zparams(svae, data)[1], collect(labels)) # changes labels to zeros!
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
         # return loss(svae, data, β)
     end
@@ -68,7 +68,7 @@ function createSVAE2WithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinear
     end
 
     function learnAnomaly!(data, labels)
-        trainOnLatent!(zfromx(svae, data), labels)
+        trainOnLatent!(zparams(svae, data)[1], labels)
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
         # return loss(SVAE2, data, β)
     end
@@ -90,14 +90,14 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         (model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
-        Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
+        Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
         mpwmutualinf = meanpairwisemutualinf(Flux.Tracker.data(zfromx(model, train[1])))
 
         println("Mean pairwise mutualinf: $mpwmutualinf")
 
-        learnRepresentation!(train[1], zeros(train[2]))
+        learnRepresentation!(train[1], zero(train[2]))
 
         rstrn = Flux.Tracker.data(rscore(model, train[1]))
         rstst = Flux.Tracker.data(rscore(model, test[1]))
@@ -190,7 +190,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElargeNewPxScore/"
+outputFolder = folderpath * "OSL/experiments/WSVAESmallNewPxScore/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
@@ -199,7 +199,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 1000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 

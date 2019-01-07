@@ -61,7 +61,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     mem, train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, memorySize, labelCount, α, T) # TODO the second memsize should be k !!!
 
     function learnRepresentation!(data, labels)
-        trainOnLatent!(zfromx(svae, data), collect(labels)) # changes labels to zeros!
+        trainOnLatent!(zparams(svae, data)[1], collect(labels)) # changes labels to zeros!
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
         # return loss(svae, data, β)
     end
@@ -71,7 +71,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     end
 
     function learnAnomaly!(data, labels)
-        trainOnLatent!(zfromx(svae, data), labels)
+        trainOnLatent!(zparams(svae, data)[1], labels)
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
         # return loss(svae, data, β)
     end
@@ -209,7 +209,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAElongProbMem/"
+outputFolder = folderpath * "OSL/experiments/WSVAEShortProbMem/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
