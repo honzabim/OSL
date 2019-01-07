@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -16,6 +16,7 @@ using NearestNeighbors
 using StatsBase
 using InformationMeasures
 using kNN
+using Random
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -78,7 +79,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     return mem, svae, learnRepresentation!, learnAnomaly!, classify, justTrain!
 end
 
-log_normal(x) = - sum((@. x ^ 2), 1) / 2 - size(x, 1) * log(2π) / 2
+log_normal(x) = - sum((x .^ 2), dims = 1) ./ 2 .- size(x, 1) .* log(2π) ./ 2
 log_normal(x, μ) = log_normal(x - μ)
 
 # Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
@@ -120,11 +121,11 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
-        Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
+        Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
 
-        learnRepresentation!(train[1], zeros(train[2]))
+        learnRepresentation!(train[1], zero(train[2]))
 
 		pxv = collect(.-pxvita(model, test[1])')
 		auc_pxv = pyauc(test[2] .- 1, pxv)
@@ -169,7 +170,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 			# reset the memory
 			mem.M = collect(normalizecolumns(randn(size(mem.M')))')
 			mem.V = zeros(Int, size(mem.V))
-			learnRepresentation!(train[1], zeros(train[2]))
+			learnRepresentation!(train[1], zero(train[2]))
 			for ac in anomalyCounts
 				println("Best Anomaly count $ac κ $κ")
 				if size(anomalies, 2) >= 1

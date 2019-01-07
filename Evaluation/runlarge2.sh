@@ -1,27 +1,27 @@
-julia evaluation_svae_anom.jl blood-transfusion &
+julia evaluation_svae_prob_score.jl blood-transfusion &
 sleep 40
-julia evaluation_svae_anom.jl breast-tissue &
+julia evaluation_svae_prob_score.jl breast-tissue &
 sleep 40
-julia evaluation_svae_anom.jl haberman &
+julia evaluation_svae_prob_score.jl haberman &
 sleep 40
-julia evaluation_svae_anom.jl iris &
+julia evaluation_svae_prob_score.jl iris &
 sleep 40
-julia evaluation_svae_anom.jl isolet &
+julia evaluation_svae_prob_score.jl isolet &
 sleep 40
-julia evaluation_svae_anom.jl miniboone &
+julia evaluation_svae_prob_score.jl miniboone &
 sleep 40
-julia evaluation_svae_anom.jl multiple-features &
+julia evaluation_svae_prob_score.jl multiple-features &
 sleep 40
-julia evaluation_svae_anom.jl parkinsons &
+julia evaluation_svae_prob_score.jl parkinsons &
 sleep 40
-julia evaluation_svae_anom.jl spect-heart &
+julia evaluation_svae_prob_score.jl spect-heart &
 sleep 40
-julia evaluation_svae_anom.jl statlog-shuttle &
+julia evaluation_svae_prob_score.jl statlog-shuttle &
 sleep 40
-julia evaluation_svae_anom.jl statlog-vehicle &
+julia evaluation_svae_prob_score.jl statlog-vehicle &
 sleep 40
-julia evaluation_svae_anom.jl synthetic-control-chart &
+julia evaluation_svae_prob_score.jl synthetic-control-chart &
 sleep 40
-julia evaluation_svae_anom.jl wall-following-robot &
+julia evaluation_svae_prob_score.jl wall-following-robot &
 sleep 40
-julia evaluation_svae_anom.jl wine &
+julia evaluation_svae_prob_score.jl wine &

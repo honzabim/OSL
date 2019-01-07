@@ -75,10 +75,10 @@ list
         we would need to randomize this selection (possible TODO) =#
 
     if nearestPositiveID == nothing
-        nearestPositiveID = indmax(memory.V .== v)
+        nearestPositiveID = argmax(memory.V .== v)
     end
     if nearestNegativeID == nothing
-        nearestNegativeID = indmax(memory.V .!= v)
+        nearestNegativeID = argmax(memory.V .!= v)
     end
 
     return nearestPositiveID, nearestNegativeID
@@ -120,7 +120,7 @@ function memoryUpdate!(memory::KNNmemory{T}, q::Vector{T}, v::Integer, nearestNe
 
     # If the memory did not return the correct value for the given key, store the key-value pair instead of the oldest element
     else
-        oldestElementID = indmax(memory.A + rand(1:5))
+        oldestElementID = argmax(memory.A .+ rand(1:5))
         memory.M[oldestElementID, :] = q
         memory.V[oldestElementID] = v
         memory.A[oldestElementID] = 0
@@ -132,7 +132,7 @@ end
 Update the age of all items
 """
 function increaseMemoryAge(memory::KNNmemory)
-    memory.A += 1;
+    memory.A .+= 1;
 end
 
 """

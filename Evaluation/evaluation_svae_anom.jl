@@ -7,8 +7,8 @@ using FileIO
 using FluxExtensions
 using ADatasets
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath)
 using NearestNeighbors
@@ -75,13 +75,13 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 
 			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
 	        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
-	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zeros(train[2])), batchSize, numBatches), opt, cb = cb)
+	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
 
 			pxv = collect(.-pxvita(model, test[1])')
 			auc_pxv = pyauc(test[2] .- 1, pxv)
 			println("P(X) Vita AUC = $auc_pxv on $datasetName with ar: $ar iteration: $it")
 
-	        a_ids = find(train[2] .- 1 .== 1)
+	        a_ids = findall(train[2] .- 1 .== 1)
 	        a_ids = a_ids[randperm(length(a_ids))]
 
 			z = Flux.Tracker.data(zparams(model, train[1])[1])
@@ -93,7 +93,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 
 	        for ac in anomalyCounts
 	            if ac <= length(a_ids)
-					newlabels = zeros(train[2])
+					newlabels = zero(train[2])
 					newlabels[a_ids[1:ac]] .= 1
 					opt = Flux.Optimise.ADAM(Flux.params(model), 1e-5)
 					cb = Flux.throttle(() -> println("Learning with anomalies: $(((d, l) -> learnWithAnomaliesWass!(d, l, α))(train[1], newlabels))"), 3)
@@ -104,8 +104,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 	                break;
 	            end
 				println("Anomaly HS params are μ: $(model.anom_priorμ) κ: $(model.anom_priorκ)")
-	            ascore = Flux.Tracker.data(score(model, test[1]))
-	            auc = pyauc(test[2] .- 1, ascore')
+	            ascore = collect(Flux.Tracker.data(score(model, test[1]))')
+	            auc = pyauc(test[2] .- 1, ascore)
 	            println("AUC: $auc")
 
 	            push!(results, (ac, auc, auc_pxv, ascore, ar, it, α))

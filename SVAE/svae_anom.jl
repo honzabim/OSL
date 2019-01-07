@@ -95,7 +95,7 @@ k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
 
 mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
 
-log_normal(x) = - sum((@. x ^ 2), 1) / 2 - size(x, 1) * log(2π) / 2
+log_normal(x) = - sum((x .^ 2), dims = 1) ./ 2 .- size(x, 1) .* log(2π) ./ 2
 log_normal(x, μ) = log_normal(x - μ)
 
 # Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
@@ -360,13 +360,13 @@ end
 function rejectionsampling(m, a, b, d)
 	beta = Beta((m - 1) / 2, (m - 1) / 2)
 	T = eltype(Flux.Tracker.data(a))
-	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(size(a)))
+	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(T, size(a)))
 
 	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
 	while !all(accepted)
 		mask = .! accepted
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
-		u[mask] = Adapt.adapt(T, rand(sum(mask)))
+		u[mask] = Adapt.adapt(T, rand(T, sum(mask)))
 		ia = isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 		accepted[mask] = ia
 	end

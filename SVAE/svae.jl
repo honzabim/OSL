@@ -38,7 +38,7 @@ end
 
 Flux.@treelike(SVAE)
 
-normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, 1) + eps(eltype(Flux.Tracker.data(m))))
+normalizecolumns(m) = m ./ sqrt.(sum(m .^ 2, dims = 1) .+ eps(eltype(Flux.Tracker.data(m))))
 
 """
 	vmfentropy(m, κ)
@@ -152,7 +152,7 @@ function householderrotation(zprime, μ)
 	e1[1, :] .= 1
 	u = e1 .- μ
 	normalizedu = normalizecolumns(u)
-	return zprime .- 2 .* sum(zprime .* normalizedu, 1) .* normalizedu
+	return zprime .- 2 .* sum(zprime .* normalizedu, dims = 1) .* normalizedu
 end
 
 function sampleω(model::SVAE, κ)
@@ -168,13 +168,13 @@ end
 function rejectionsampling(m, a, b, d)
 	beta = Beta((m - 1) / 2, (m - 1) / 2)
 	T = eltype(Flux.Tracker.data(a))
-	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(size(a)))
+	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(T, size(a)))
 
 	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
 	while !all(accepted)
 		mask = .! accepted
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
-		u[mask] = Adapt.adapt(T, rand(sum(mask)))
+		u[mask] = Adapt.adapt(T, rand(T, sum(mask)))
 		accepted[mask] = isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 	end
 	return @. (1 - (1 + b) * ϵ) / (1 - (1 - b) * ϵ)
