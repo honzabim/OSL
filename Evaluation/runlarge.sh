@@ -1,32 +1,32 @@
-julia evaluation_svae_prob_score.jl breast-cancer-wisconsin &
+julia evaluation_svae_anom.jl breast-cancer-wisconsin &
 sleep 40
-julia evaluation_svae_prob_score.jl cardiotocography &
+julia evaluation_svae_anom.jl cardiotocography &
 sleep 40
-julia evaluation_svae_prob_score.jl ecoli &
+julia evaluation_svae_anom.jl ecoli &
 sleep 40
-julia evaluation_svae_prob_score.jl glass &
+julia evaluation_svae_anom.jl glass &
 sleep 40
-julia evaluation_svae_prob_score.jl magic-telescope &
+julia evaluation_svae_anom.jl magic-telescope &
 sleep 40
-julia evaluation_svae_prob_score.jl musk-2 &
+julia evaluation_svae_anom.jl musk-2 &
 sleep 40
-julia evaluation_svae_prob_score.jl page-blocks &
+julia evaluation_svae_anom.jl page-blocks &
 sleep 40
-julia evaluation_svae_prob_score.jl pendigits &
+julia evaluation_svae_anom.jl pendigits &
 sleep 40
-julia evaluation_svae_prob_score.jl pima-indians &
+julia evaluation_svae_anom.jl pima-indians &
 sleep 40
-julia evaluation_svae_prob_score.jl sonar &
+julia evaluation_svae_anom.jl sonar &
 sleep 40
-julia evaluation_svae_prob_score.jl statlog-satimage &
+julia evaluation_svae_anom.jl statlog-satimage &
 sleep 40
-julia evaluation_svae_prob_score.jl statlog-segment &
+julia evaluation_svae_anom.jl statlog-segment &
 sleep 40
-julia evaluation_svae_prob_score.jl waveform-1 &
+julia evaluation_svae_anom.jl waveform-1 &
 sleep 40
-julia evaluation_svae_prob_score.jl waveform-2 &
+julia evaluation_svae_anom.jl waveform-2 &
 sleep 40
-julia evaluation_svae_prob_score.jl yeast &
+julia evaluation_svae_anom.jl yeast &
 sleep 40
-julia evaluation_svae_prob_score.jl ionosphere &
+julia evaluation_svae_anom.jl ionosphere &
 # sleep 40
