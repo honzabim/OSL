@@ -1,3 +1,5 @@
+julia evaluation_svae_anom.jl abalone &
+sleep 40
 julia evaluation_svae_anom.jl blood-transfusion &
 sleep 40
 julia evaluation_svae_anom.jl breast-tissue &

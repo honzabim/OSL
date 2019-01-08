@@ -1,10 +1,14 @@
 using JLD2
 using FileIO
 using DataFrames
+using Statistics
 using CSV
+using Crayons
+using Crayons.Box
+using StatsBase
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
-const datasets = ["blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
+const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
 const anomalycount = 10
 
@@ -44,16 +48,53 @@ CSV.write(dataFolder * "results.csv", allData)
 
 function aggr(df::DataFrame)
     dfagg = []
-    for (d, asel, ar, aseen) in Base.product(unique(df[:dataset]), unique(df[:anom_sel]), unique(df[:ar]), unique(df[:anomaliesSeen]))
-        dfall = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar) .& (df[:anomaliesSeen] .== aseen), :]
-        itermax = []
-        for i in 1:maximum(dfall[:i])
-            dfperi = dfall[df[:i] .== i, :]
-            push!(itermax, [maximum(dfperi[:aucpxv]), maximum(dfperi[:aucf2]), maximum(dfperi[:aucf3])])
+    for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
+        dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
+        for aseen in unique(dfaseen[:anomaliesSeen])
+            dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
+            itermax = []
+            for i in 1:maximum(dfall[:i])
+                dfperi = dfall[dfall[:i] .== i, :]
+                push!(itermax, [maximum(dfperi[:aucpxv]), maximum(dfperi[:aucf2]), maximum(dfperi[:aucf3])])
+            end
+            itermax = hcat(itermax...)
+            meanvals = mean(itermax, dims = 2)
+            push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
         end
-        itermax = hcat(itermax...)
-        meanvals = mean(itermax, dims = 1)
-        push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_rati1o = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
     end
     return vcat(dfagg...)
+end
+
+function printbest3(df)
+    collen = 20
+    maxlen = [maximum(vcat(length.(df[:dataset])..., 45))]
+    maxlen = vcat(maxlen, 10, 10, 10)
+    names = ["dataset", "anom_sel", "anom_ratio", "anom_seen"]
+    metds = ["pxvita", "f2", "f3"]
+
+    for i in 1:4
+        print(names[i])
+        print(repeat(" ", maxlen[i] - length(names[i])) * " | ")
+    end
+    for i in 1:3
+        print(metds[i])
+        print(repeat(" ", collen - length(metds[i])) * " | ")
+    end
+    println()
+    crays = [Crayon(foreground = :red), Crayon(foreground = :yellow), Crayon(foreground = :green)]
+    defc = Crayon(reset = true)
+    for i in 1:size(df, 1)
+        for j in 1:4
+            print(defc, df[i, j])
+            print(defc, repeat(" ", maxlen[j] - length("$(df[i, j])")) * " | ")
+        end
+        aucs = df[i, 5:7]
+        p = ordinalrank(vec(convert(Array, aucs)))
+        for c in 1:3
+            s = "$(aucs[c])"
+            print(crays[p[c]], s)
+            print(defc, repeat(" ", collen - length(s)) * " | ")
+        end
+        println()
+    end
 end

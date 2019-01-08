@@ -285,9 +285,6 @@ function wloss_anom_wass(m::SVAE_anom, x, y, β, d)
 end
 
 function score(m::SVAE_anom, x)
-	println(size(x))
-	println(size(zparams(m, x)[1]))
-	println(size(m.anom_priorμ))
 	return log_vmf(zparams(m, x)[1], m.anom_priorμ, m.anom_priorκ)
 end
 

@@ -67,7 +67,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
     anomalyRatios = [0.05, 0.01, 0.005]
     results = []
     for ar in anomalyRatios
-		for α in [0.125 0.25 0.5 0.75 0.875]
+		for α in [0.25 0.5 0.75]
 	        println("Running $datasetName with ar: $ar iteration: $it α: $α")
 	        train = ADatasets.subsampleanomalous(trainall, ar)
 	        (model, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createModel()
@@ -124,7 +124,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 100
+iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -144,7 +144,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [0.01 0.1 1 10 100])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [0.01 0.1 1 10])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
