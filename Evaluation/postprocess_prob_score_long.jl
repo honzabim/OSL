@@ -8,6 +8,7 @@ using Crayons.Box
 using StatsBase
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
+const knnfolder = "d:/dev/julia/data/knn/"
 const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
 const anomalycount = 10
@@ -97,4 +98,17 @@ function printbest3(df)
         end
         println()
     end
+end
+
+function loadknn()
+    df = []
+    for d in datasets
+        filename = knnfolder * d * "/knn_easy_0.05_low.csv"
+        if !isfile(filename)
+            println("$filename not found.")
+        else
+            push!(df, CSV.read(filename))
+        end
+    end
+    return vcat(df...)
 end

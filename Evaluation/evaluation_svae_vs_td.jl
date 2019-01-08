@@ -17,6 +17,7 @@ using StatsBase
 using InformationMeasures
 using kNN
 using Random
+using LinearAlgebra
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -25,6 +26,9 @@ function pyauc(labels, ascores)
 	pyfpr, pytpr, _ = sm.roc_curve(labels, ascores, drop_intermediate = true)
 	pyauc = sm.auc(pyfpr, pytpr)
 end
+
+using Plots
+plotly()
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
@@ -136,31 +140,40 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 			mem.M = collect(normalizecolumns(randn(size(mem.M')))')
 			mem.V = zeros(Int, size(mem.V))
 			learnRepresentation!(train[1], zero(train[2]))
+			anomalies_discovered = 0
 
 			for fc in feedbackCounts
-				println("Best Anomaly count $ac κ $κ")
+				println("Feedback count $fc κ $κ")
 
 				mostAnomalousId = -1
+				avgNormal = collect(normalize(vec(mean(zparams(model, train[1])[1], dims = 2)))')
 
 				if ! any(mem.V .== 1)
-					avgNormal = mean()
+					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, train[1])[1])))
+					println("Avg chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
+					# mostAnomalousId = argmax(vec(.-pxvita(model, test[1])))
+					# println("Pxvita chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
 				else
+					mostAnomalousId = argmax(vec(classify(train[1], κ)[2]))
 				end
 
-				if size(anomalies, 2) >= 1
-					anomid = -1
-	                if (ac == 1)
-						anomid = argmax(vec(collect(.-pxvita(model, anomalies)')))
-					else
-						anomid = argmax(vec(classify(anomalies, κ)[2]))
-					end
-					l = learnAnomaly!(anomalies[:, anomid], [1])
-					anomalies = hcat(anomalies[:, 1:(anomid - 1)], anomalies[:, (anomid + 1):end])
-	            else
-	                println("Not enough anomalies $ac, $(size(anomalies))")
-	                println("Counts: $(counts(train[2]))")
-	                break;
-	            end
+				data = Flux.Tracker.data(zparams(model, train[1])[1])
+				nrm = train[2] .== 1
+				anm = train[2] .== 2
+
+				scatter3d(data[1, nrm], data[2, nrm], data[3, nrm], label = "Normal")
+				scatter3d!(data[1, anm], data[2, anm], data[3, anm], label = "Anomalous")
+				scatter3d!(mem.M[mem.V .== 0, 1], mem.M[mem.V .== 0, 2], mem.M[mem.V .== 0, 3], label = "Memory normal")
+				scatter3d!(mem.M[mem.V .== 1, 1], mem.M[mem.V .== 1, 2], mem.M[mem.V .== 1, 3], label = "Memory anomalous")
+				plot!(size = (950, 900), title = "Dataset")
+				display(Plots.plot!([0, -avgNormal[1]], [0, -avgNormal[2]], [0, -avgNormal[3]], color = "red", linewidth = "5"))
+
+				println("We chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
+				l = learnAnomaly!(train[1][:, mostAnomalousId], train[2][mostAnomalousId] - 1)
+				if train[2][mostAnomalousId] - 1 == 1
+					anomalies_discovered += 1
+				end
+				println("So far we hit $anomalies_discovered anomalies out of $fc trials")
 
 	            values, probScore = classify(test[1], κ)
 	            values = Flux.Tracker.data(values)
@@ -176,8 +189,9 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 	            f3auc = pyauc(test[2] .- 1, probScore)
 	            println("mem κ = $κ AUC f3: $f3auc")
 
-	            push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, "best"))
+	            # push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, "best"))
 			end
+			exit()
 		end
     end
     return results
@@ -193,7 +207,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 15000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -213,7 +227,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 0.1 1 10 100])
+	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10 100])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
