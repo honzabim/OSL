@@ -18,6 +18,8 @@ using InformationMeasures
 using kNN
 using Random
 using LinearAlgebra
+using CSV
+using DataFrames
 
 using PyCall
 @pyimport sklearn.metrics as sm
@@ -31,6 +33,9 @@ using Plots
 plotly()
 
 include(folderpath * "OSL/SVAE/svae.jl")
+
+csvOutputFolder = folderpath * "data/CSV/"
+mkpath(csvOutputFolder)
 
 
 """
@@ -54,8 +59,6 @@ function meanpairwisemutualinf(x)
     end
     return mutualinf / (dim * (dim - 1) / 2)
 end
-
-
 
 function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
@@ -116,12 +119,25 @@ function f3score(memory::KNNmemory, model::SVAE, x, κ)
 	return score
 end
 
-function runExperiment(datasetName, trainall, test, createModel, feedbackCounts, batchSize = 100, numBatches = 10000, it = 1)
+function savetodf(ds, filename)
+    header = vcat("label", (repeat(["X"], size(ds[1], 1)) .* string.(collect(1:size(ds[1], 1)))...))
+    labels = (x -> x == 1 ? "nominal" : "anomaly").(ds[2])
+    data = hcat(labels, collect(ds[1]'))
+    df = DataFrame(data)
+    rename!(df, :x1, :label)
+    CSV.write(filename, df)
+end
+
+
+function runExperiment(datasetName, trainall, test, createModel, feedbackCounts, batchSize, numBatches, it)
     anomalyRatios = [0.05, 0.01, 0.005]
     results = []
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
         train = ADatasets.subsampleanomalous(trainall, ar)
+
+		savetodf(train, csvOutputFolder * datasetName * "-$ar-$it.csv")
+
         (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
@@ -194,7 +210,7 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 	            f3auc = pyauc(test[2] .- 1, probScore)
 	            println("mem κ = $κ AUC f3: $f3auc")
 
-	            # push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, "best"))
+	            push!(results, (fc, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, anomalies_discovered))
 			end
 		end
     end
@@ -211,7 +227,7 @@ datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 15000
+iterations = 150
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -231,7 +247,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10 100])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
