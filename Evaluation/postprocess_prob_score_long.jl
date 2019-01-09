@@ -47,7 +47,7 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 
 CSV.write(dataFolder * "results.csv", allData)
 
-function aggr(df::DataFrame)
+function aggrmaxmean(df::DataFrame)
     dfagg = []
     for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
         dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
@@ -61,6 +61,25 @@ function aggr(df::DataFrame)
             itermax = hcat(itermax...)
             meanvals = mean(itermax, dims = 2)
             push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
+        end
+    end
+    return vcat(dfagg...)
+end
+
+function aggrmeanmax(df::DataFrame)
+    dfagg = []
+    for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
+        dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
+        for aseen in unique(dfaseen[:anomaliesSeen])
+            dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
+            parmean = []
+            for (ms, b, k) in Base.product(unique(df[:memorysize]), unique(df[:β]), unique(df[:κ]))
+                dfperpars = dfall[(dfall[:memorysize] .== ms) .& (dfall[:β] .== b) .& (dfall[:κ] .== k), :]
+                push!(parmean, [mean(dfperpars[:aucpxv]), mean(dfperpars[:aucf2]), mean(dfperpars[:aucf3])])
+            end
+            parmean = hcat(parmean...)
+            maxvals = maximum(parmean, dims = 2)
+            push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = maxvals[1], f2 = maxvals[2], f3 = maxvals[3]))
         end
     end
     return vcat(dfagg...)

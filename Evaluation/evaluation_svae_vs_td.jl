@@ -142,38 +142,43 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 			learnRepresentation!(train[1], zero(train[2]))
 			anomalies_discovered = 0
 
+			t = copy(train[1])
+			l = copy(train[2])
 			for fc in feedbackCounts
 				println("Feedback count $fc κ $κ")
 
 				mostAnomalousId = -1
-				avgNormal = collect(normalize(vec(mean(zparams(model, train[1])[1], dims = 2)))')
+				avgNormal = collect(normalize(vec(mean(zparams(model, t)[1], dims = 2)))')
 
 				if ! any(mem.V .== 1)
-					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, train[1])[1])))
-					println("Avg chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
+					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
+					println("Avg chose most anomalous with label $(l[mostAnomalousId] - 1)")
 					# mostAnomalousId = argmax(vec(.-pxvita(model, test[1])))
 					# println("Pxvita chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
 				else
-					mostAnomalousId = argmax(vec(classify(train[1], κ)[2]))
+					mostAnomalousId = argmax(vec(classify(t, κ)[2]))
 				end
 
 				data = Flux.Tracker.data(zparams(model, train[1])[1])
 				nrm = train[2] .== 1
 				anm = train[2] .== 2
 
-				scatter3d(data[1, nrm], data[2, nrm], data[3, nrm], label = "Normal")
-				scatter3d!(data[1, anm], data[2, anm], data[3, anm], label = "Anomalous")
-				scatter3d!(mem.M[mem.V .== 0, 1], mem.M[mem.V .== 0, 2], mem.M[mem.V .== 0, 3], label = "Memory normal")
-				scatter3d!(mem.M[mem.V .== 1, 1], mem.M[mem.V .== 1, 2], mem.M[mem.V .== 1, 3], label = "Memory anomalous")
-				plot!(size = (950, 900), title = "Dataset")
-				display(Plots.plot!([0, -avgNormal[1]], [0, -avgNormal[2]], [0, -avgNormal[3]], color = "red", linewidth = "5"))
+				# scatter3d(data[1, nrm], data[2, nrm], data[3, nrm], label = "Normal")
+				# scatter3d!(data[1, anm], data[2, anm], data[3, anm], label = "Anomalous")
+				# scatter3d!(mem.M[mem.V .== 0, 1], mem.M[mem.V .== 0, 2], mem.M[mem.V .== 0, 3], label = "Memory normal")
+				# scatter3d!(mem.M[mem.V .== 1, 1], mem.M[mem.V .== 1, 2], mem.M[mem.V .== 1, 3], label = "Memory anomalous")
+				# plot!(size = (950, 900), title = "Dataset")
+				# display(Plots.plot!([0, -avgNormal[1]], [0, -avgNormal[2]], [0, -avgNormal[3]], color = "red", linewidth = "5"))
 
-				println("We chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
-				l = learnAnomaly!(train[1][:, mostAnomalousId], train[2][mostAnomalousId] - 1)
-				if train[2][mostAnomalousId] - 1 == 1
+				println("We chose most anomalous with label $(l[mostAnomalousId] - 1)")
+				learnAnomaly!(t[:, mostAnomalousId], l[mostAnomalousId] - 1)
+				if l[mostAnomalousId] - 1 == 1
 					anomalies_discovered += 1
 				end
 				println("So far we hit $anomalies_discovered anomalies out of $fc trials")
+
+				t = hcat(t[:, 1:(mostAnomalousId - 1)], t[:, (mostAnomalousId + 1):end])
+				deleteat!(l, mostAnomalousId)
 
 	            values, probScore = classify(test[1], κ)
 	            values = Flux.Tracker.data(values)
@@ -191,7 +196,6 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 
 	            # push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, "best"))
 			end
-			exit()
 		end
     end
     return results
@@ -227,7 +231,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [3], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10 100])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10 100])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
