@@ -214,8 +214,8 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["breast-cancer-wisconsin"]
-# datasets = ["pendigits"]
+# datasets = ["breast-cancer-wisconsin"]
+datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100

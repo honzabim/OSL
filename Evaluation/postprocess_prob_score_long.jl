@@ -8,6 +8,7 @@ using Crayons.Box
 using StatsBase
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
+const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEshortProbMem/"
 const knnfolder = "d:/dev/julia/data/knn/"
 const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
@@ -39,8 +40,6 @@ function processFile!(dataframe, model, dataset)
         end
     end
 end
-
-getMax(allData, dataset, anomaliesSeen, model, score) = maximum(allData[(allData[:dataset] .== dataset) .* (allData[:model] .== model) .* (allData[:anomaliesSeen] .== anomaliesSeen), score])
 
 allData = DataFrame(types, params, 0)
 foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets))
@@ -83,6 +82,20 @@ function aggrmeanmax(df::DataFrame)
         end
     end
     return vcat(dfagg...)
+end
+
+function cmpnonsampledz(nzdf, szdf)
+    df = []
+    for (ar, asel, d) in Base.product(unique(nzdf[:anom_ratio]), unique(nzdf[:anom_sel]), unique(nzdf[:dataset]))
+        nzdfaseen = nzdf[(nzdf[:dataset] .== d) .& (nzdf[:anom_sel] .== asel) .& (nzdf[:anom_ratio] .== ar), :]
+        szdfaseen = szdf[(szdf[:dataset] .== d) .& (szdf[:anom_sel] .== asel) .& (szdf[:anom_ratio] .== ar), :]
+        for aseen in unique(nzdfaseen[:anom_seen])
+            nz = nzdfaseen[nzdfaseen[:anom_seen] .== aseen, :]
+            sz = szdfaseen[szdfaseen[:anom_seen] .== aseen, :]
+            push!(df, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anomaliesSeen = aseen, nzpxv = nz[:pxvita], szpxv = sz[:pxvita], nzf2 = nz[:f2], szf2 = sz[:f2], nzf3 = nz[:f3], szf3 = sz[:f3]))
+        end
+    end
+    return vcat(df...)
 end
 
 function printbest3(df, cmp_name)
@@ -142,7 +155,7 @@ function comparewithknn(knndf, svaedf)
     df = []
     for d in unique(svaedf[:dataset])
         knnauc = maximum(knndf[knndf[:dataset] .== d, :][:auc])
-        svaeddf = svaedf[svaedf[:dataset] .== d]
+        svaeddf = svaedf[svaedf[:dataset] .== d, :]
         svaeddf[:knnauc] = knnauc
         push!(df, svaeddf)
     end
