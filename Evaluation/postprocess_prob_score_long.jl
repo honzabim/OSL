@@ -85,12 +85,12 @@ function aggrmeanmax(df::DataFrame)
     return vcat(dfagg...)
 end
 
-function printbest3(df)
+function printbest3(df, cmp_name)
     collen = 20
     maxlen = [maximum(vcat(length.(df[:dataset])..., 45))]
     maxlen = vcat(maxlen, 10, 10, 10)
     names = ["dataset", "anom_sel", "anom_ratio", "anom_seen"]
-    metds = ["pxvita", "f2", "f3"]
+    metds = [cmp_name, "f2", "f3"]
 
     for i in 1:4
         print(names[i])
@@ -126,8 +126,25 @@ function loadknn()
         if !isfile(filename)
             println("$filename not found.")
         else
-            push!(df, CSV.read(filename))
+            ddf = CSV.read(filename)
+            pardf = []
+            for (prn, k) in Base.product(unique(ddf[:prname]), unique(ddf[:k]))
+                seldf = ddf[(ddf[:prname] .== prn) .& (ddf[:k] .== k), :]
+                push!(pardf, DataFrame(dataset = d, prname = prn, k = k, auc = mean(seldf[:auc_test])))
+            end
+            push!(df, vcat(pardf...))
         end
+    end
+    df = vcat(df...)
+end
+
+function comparewithknn(knndf, svaedf)
+    df = []
+    for d in unique(svaedf[:dataset])
+        knnauc = maximum(knndf[knndf[:dataset] .== d, :][:auc])
+        svaeddf = svaedf[svaedf[:dataset] .== d]
+        svaeddf[:knnauc] = knnauc
+        push!(df, svaeddf)
     end
     return vcat(df...)
 end
