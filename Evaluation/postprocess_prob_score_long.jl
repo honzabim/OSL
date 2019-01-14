@@ -8,7 +8,7 @@ using Crayons.Box
 using StatsBase
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
-const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEshortProbMem/"
+# const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEshortProbMem/"
 const knnfolder = "d:/dev/julia/data/knn/"
 const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
@@ -20,7 +20,6 @@ loadExperiment(filePath) = load(filePath)["results"]
 params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :aucpxv, :aucf2, :aucf3, :ar, :i, :κ, :anom_sel, :model, :dataset]
 types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Int, Float64, String, String, String]
 
-const anomalycount = 10
 function processFile!(dataframe, model, dataset)
     for i in 1:10
         println("Processing $model $dataset $i")

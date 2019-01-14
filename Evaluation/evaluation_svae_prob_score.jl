@@ -58,7 +58,8 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
     svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
-    mem, train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, memorySize, labelCount, α, T) # TODO the second memsize should be k !!!
+	# mem, train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, memorySize, labelCount, α, T) # TODO the second memsize should be k !!!
+    mem, train!, classify, trainOnLatent!, classifyOnLatent = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, memorySize, labelCount, x -> normalizecolumns(x), α, T) # TODO the second memsize should be k !!!
 
     function learnRepresentation!(data, labels)
         trainOnLatent!(zparams(svae, data)[1], collect(labels)) # changes labels to zeros!
@@ -119,9 +120,10 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         println("Running $datasetName with ar: $ar iteration: $it")
         train = ADatasets.subsampleanomalous(trainall, ar)
         (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
+		# println(mem.encoder)
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
-        Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
+        Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
 
@@ -214,8 +216,8 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-# datasets = ["breast-cancer-wisconsin"]
-datasets = ["pendigits"]
+datasets = ["breast-cancer-wisconsin"]
+# datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
