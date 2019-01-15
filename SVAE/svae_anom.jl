@@ -217,13 +217,15 @@ function wloss_anom_vasek(m::SVAE_anom, x, y, β, d, α)
 
 	if count(y .== 1) > 0
 		anom_ids = findall(y .== 1)
-		μzanom = μz[:, anom_ids[rand(1:length(anom_ids), length(y))]]
-		κzanom = κz[anom_ids[rand(1:length(anom_ids), length(y))]]
+		anom_ids = anom_ids[rand(1:length(anom_ids), length(y))]
+		μzanom = μz[:, anom_ids]
+		κzanom = κz[anom_ids]
 		zanom = samplez(m, μzanom, collect(κzanom'))
 
 		norm_ids = findall(y .== 0)
-		μznorm = μz[:, norm_ids[rand(1:length(norm_ids), length(y))]]
-		κznorm = κz[norm_ids[rand(1:length(norm_ids), length(y))]]
+		norm_ids = norm_ids[rand(1:length(norm_ids), length(y))]
+		μznorm = μz[:, norm_ids]
+		κznorm = κz[norm_ids]
 		znorm = samplez(m, μznorm, collect(κznorm'))
 
 		anom_prior = samplez(m, ones(size(μz)) .* normalizecolumns(m.anom_priorμ), ones(size(κz)) .* m.anom_priorκ)
