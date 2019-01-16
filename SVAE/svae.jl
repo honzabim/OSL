@@ -73,6 +73,16 @@ function loss(m::SVAE, x, β)
 	return Flux.mse(x, xgivenz) + β * mean(kldiv(m, κz))
 end
 
+log_normal(x) = - sum((x .^ 2), dims = 1) ./ 2 .- size(x, 1) .* log(2π) ./ 2
+log_normal(x, μ) = log_normal(x - μ)
+
+# Likelihood estimation of a sample x under VMF with given parameters taken from https://pdfs.semanticscholar.org/2b5b/724fb175f592c1ff919cc61499adb26996b1.pdf
+# normalizing constant for density function of VMF
+c(p, κ) = κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
+
+# log likelihood of one sample under the VMF dist with given parameters
+log_vmf_c(x, μ, κ) = κ * μ' * x .+ log(c(length(μ), κ))
+
 function pairwisecos(x, y)
 	m = x' * y .* (1 - eps(Float32) * size(x, 1))
 	acos.(m)
@@ -90,6 +100,29 @@ k_imq(x::T,c) where {T<:AbstractVector} = zero(eltype(x))
 
 mmd_imq(x,y,c) = k_imq(x,c) + k_imq(y,c) - 2 * k_imq(x,y,c)
 
+function pxvita(m::SVAE, x)
+	xgivenz = m.g(zparams(m, x)[1])
+	Flux.Tracker.data(log_normal(xgivenz, x))
+end
+
+function pz(m::SVAE, x)
+	z = Flux.Tracker.data(zparams(m, x)[1])
+	priorμ = zeros(size(z, 1))
+	priorμ[1] = 1
+	log_vmf_c(z, priorμ, 1)
+end
+
+function wloss_prior(m::SVAE, x, β, d)
+	(μz, κz) = zparams(m, x)
+	z = samplez(m, μz, κz)
+	priorμ = zeros(size(z, 1))
+	priorμ[1] = 1
+	zp = samplez(m, repeat(priorμ, 1, size(z, 2)), repeat([1.], 1, size(z, 2)))
+	Ω = d(z, zp)
+	xgivenz = m.g(z)
+	return Flux.mse(x, xgivenz) + β * Ω
+end
+
 function wloss(m::SVAE, x, β, d)
 	(μz, κz) = zparams(m, x)
 	z = samplez(m, μz, κz)
@@ -97,38 +130,6 @@ function wloss(m::SVAE, x, β, d)
 	Ω = d(z, zp)
 	xgivenz = m.g(z)
 	return Flux.mse(x, xgivenz) + β * Ω
-end
-
-function mem_wloss(svae::SVAE, mem::KNNmemory, x, y, β, d, α)
-	(μz, κz) = zparams(svae, x)
-	z = samplez(svae, μz, κz)
-	xgivenz = svae.g(z)
-
-	repetitions = 5
-	(priorμ, priorκ) = zparams(svae, repeat(mem.M', 1, repetitions))
-	priorlabels = repeat(mem.V, repetitions)
-	priorsamples = samplez(svae, priorμ, priorκ)
-
-	if count(y .== 1) > 0
-		anom_ids = findall(y .== 1)
-		anom_ids = anom_ids[rand(1:length(anom_ids), length(y))]
-		μzanom = μz[:, anom_ids]
-		κzanom = κz[anom_ids]
-		zanom = samplez(svae, μzanom, collect(κzanom'))
-
-		norm_ids = findall(y .== 0)
-		norm_ids = norm_ids[rand(1:length(norm_ids), length(y) * repetitions)]
-		μznorm = μz[:, norm_ids]
-		κznorm = κz[norm_ids]
-		znorm = samplez(svae, μznorm, collect(κznorm'))
-
-		Ωnorm = d(znorm, priorsamples[:, priorlabels .== 0])
-		Ωanom = d(zanom, priorsamples[:, priorlabels .== 1])
-		return Flux.mse(x, xgivenz) + β * (α .* Ωnorm .+ (1 - α) .* Ωanom)
-	else
-		Ωnorm = d(z, priorsamples[:, priorlabels .== 0])
-		return Flux.mse(x, xgivenz) + β * Ωnorm
-	end
 end
 
 """

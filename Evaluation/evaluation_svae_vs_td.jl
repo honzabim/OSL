@@ -8,14 +8,15 @@ using FileIO
 folderpath = "D:/dev/julia/"
 # folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
+
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
+# push!(LOAD_PATH, folderpath)
 using KNNmem
 using FluxExtensions
 using ADatasets
 using NearestNeighbors
 using StatsBase
 using InformationMeasures
-using kNN
 using Random
 using LinearAlgebra
 using CSV
@@ -29,8 +30,8 @@ function pyauc(labels, ascores)
 	pyauc = sm.auc(pyfpr, pytpr)
 end
 
-using Plots
-plotly()
+# using Plots
+# plotly()
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
@@ -124,20 +125,16 @@ function savetodf(ds, filename)
     labels = (x -> x == 1 ? "nominal" : "anomaly").(ds[2])
     data = hcat(labels, collect(ds[1]'))
     df = DataFrame(data)
-    rename!(df, :x1, :label)
+    rename!(df, :x1 => :label)
     CSV.write(filename, df)
 end
 
 
-function runExperiment(datasetName, trainall, test, createModel, feedbackCounts, batchSize, numBatches, it)
-    anomalyRatios = [0.05, 0.01, 0.005]
+function runExperiment(datasetName, train, test, createModel, feedbackCounts, batchSize, numBatches, it)
+    anomalyRatios = [0.05]
     results = []
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
-        train = ADatasets.subsampleanomalous(trainall, ar)
-
-		savetodf(train, csvOutputFolder * datasetName * "-$ar-$it.csv")
-
         (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
@@ -161,14 +158,13 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 			t = copy(train[1])
 			l = copy(train[2])
 			for fc in feedbackCounts
-				println("Feedback count $fc κ $κ")
 
 				mostAnomalousId = -1
 				avgNormal = collect(normalize(vec(mean(zparams(model, t)[1], dims = 2)))')
 
 				if ! any(mem.V .== 1)
 					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
-					println("Avg chose most anomalous with label $(l[mostAnomalousId] - 1)")
+					# println("Avg chose most anomalous with label $(l[mostAnomalousId] - 1)")
 					# mostAnomalousId = argmax(vec(.-pxvita(model, test[1])))
 					# println("Pxvita chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
 				else
@@ -186,12 +182,13 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 				# plot!(size = (950, 900), title = "Dataset")
 				# display(Plots.plot!([0, -avgNormal[1]], [0, -avgNormal[2]], [0, -avgNormal[3]], color = "red", linewidth = "5"))
 
-				println("We chose most anomalous with label $(l[mostAnomalousId] - 1)")
+				# println("We chose most anomalous with label $(l[mostAnomalousId] - 1)")
 				learnAnomaly!(t[:, mostAnomalousId], l[mostAnomalousId] - 1)
 				if l[mostAnomalousId] - 1 == 1
 					anomalies_discovered += 1
 				end
-				println("So far we hit $anomalies_discovered anomalies out of $fc trials")
+				println("Feedback count $fc κ $κ anoms_disc: $anomalies_discovered")
+				# println("So far we hit $anomalies_discovered anomalies out of $fc trials")
 
 				t = hcat(t[:, 1:(mostAnomalousId - 1)], t[:, (mostAnomalousId + 1):end])
 				deleteat!(l, mostAnomalousId)
@@ -202,13 +199,13 @@ function runExperiment(datasetName, trainall, test, createModel, feedbackCounts,
 
 	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
 	            f2auc = pyauc(test[2] .- 1, probScore)
-	            println("mem κ = $κ AUC f2: $f2auc")
+	            # println("mem κ = $κ AUC f2: $f2auc")
 
 				probScore = f3score(mem, model, test[1], κ)
 
 	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
 	            f3auc = pyauc(test[2] .- 1, probScore)
-	            println("mem κ = $κ AUC f3: $f3auc")
+	            # println("mem κ = $κ AUC f3: $f3auc")
 
 	            push!(results, (fc, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, anomalies_discovered))
 			end
@@ -222,7 +219,7 @@ mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["breast-cancer-wisconsin"]
+datasets = ["yeast", "cardiotocography", "sonar"]
 # datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
@@ -236,18 +233,22 @@ if length(ARGS) != 0
     difficulties = ["easy"]
 end
 
-for i in 1:10
+for i in 1:5
 	for (dn, df) in zip(datasets, difficulties)
 
-	    train, test, clusterdness = loadData(dn, df)
+	    trainall, test, clusterdness = loadData(dn, df)
+
+		ar = 0.05
+		train = ADatasets.subsampleanomalous(trainall, ar)
+		savetodf(train, csvOutputFolder * dn * "-$ar-$i.csv")
 
 	    println("$dn")
 	    println("$(size(train[2]))")
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 .1 1 10])
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:50, batchSize, iterations, i)
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.01 .1 1 10])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

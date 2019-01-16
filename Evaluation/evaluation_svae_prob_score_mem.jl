@@ -26,7 +26,7 @@ function pyauc(labels, ascores)
 	pyauc = sm.auc(pyfpr, pytpr)
 end
 
-include(folderpath * "OSL/SVAE/svae.jl")
+include(folderpath * "OSL/SVAE/svae_mem.jl")
 
 
 """
@@ -39,19 +39,6 @@ function printAndRun(f, p)
     println(p)
     (p, f(p))
 end
-
-function meanpairwisemutualinf(x)
-    dim = size(x, 1)
-    mutualinf = 0
-    for i in 1:(dim - 1)
-        for j in (i + 1):dim
-            mutualinf += get_mutual_information(x[i, :], x[j, :], mode = "uniform_count")
-        end
-    end
-    return mutualinf / (dim * (dim - 1) / 2)
-end
-
-
 
 function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, memorySize, k, labelCount, β, loss_α, α = 0.1, T = Float64)
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
@@ -143,8 +130,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
                 l = learnRepresentation!(train[1][:, a_ids[ac]], [1])
 				newlabels = zero(train[2])
 				newlabels[a_ids[1:ac]] .= 1
-				opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
-		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
+				opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
+		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(learnWithAnomalies!(train[1], []))"), 5)
 				println("Starting learning")
 		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
             else
@@ -171,6 +158,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 	            push!(results, (ac, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, "rnd"))
 			end
         end
+		exit()
     end
     return results
 end
@@ -182,7 +170,7 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 # datasets = ["breast-cancer-wisconsin"]
 # datasets = ["magic-telescope"]
-datasets = ["wall-following-robot"]
+datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -206,7 +194,7 @@ for i in 1:10
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [32 128 512], [0], [1], [0.01 0.1 1 10 100], [0.5, 0.1, 0.9])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

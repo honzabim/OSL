@@ -4,24 +4,15 @@ using MLBase: roc, f1score, precision, recall
 using MLDataPattern
 using JLD2
 using FileIO
-
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
-# folderpath = "D:/dev/"
-push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
-using KNNmem
 using FluxExtensions
 using ADatasets
 using NearestNeighbors
 using StatsBase
 
-using PyCall
-@pyimport sklearn.metrics as sm
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/
 
-function pyauc(labels, ascores)
-	pyfpr, pytpr, _ = sm.roc_curve(labels, ascores, drop_intermediate = true)
-	pyauc = sm.auc(pyfpr, pytpr)
-end
+
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
