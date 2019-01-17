@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -99,7 +99,7 @@ end
 
 function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
 	# anomalyRatios = [0.05, 0.01, 0.005]
-	anomalyRatios = [0.05]
+	anomalyRatios = [0.01]
     results = []
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
@@ -171,7 +171,7 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 # datasets = ["breast-cancer-wisconsin"]
 # datasets = ["magic-telescope"]
-datasets = ["pendigits"]
+datasets = ["musk-2"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
