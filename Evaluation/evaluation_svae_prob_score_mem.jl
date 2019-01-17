@@ -5,17 +5,14 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
 using FluxExtensions
 using ADatasets
-using NearestNeighbors
 using StatsBase
-using InformationMeasures
-using kNN
 using Random
 
 using PyCall
@@ -57,8 +54,10 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     end
 
-    function learnWithAnomalies!(data, labels)
+    function learnWithAnomalies!(data, labels, anoms)
         #trainOnLatent!(data, labels)
+		data[:, 1]  = anoms[:, 1]
+		labels[1] = 1
         return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
     end
 
@@ -113,7 +112,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
 
-        learnRepresentation!(train[1], zero(train[2]))
+        # learnRepresentation!(train[1], zero(train[2]))
 		println("Added all normal to memory")
 
 		pxv = collect(.-pxvita(model, test[1])')
@@ -131,10 +130,11 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
                 l = learnRepresentation!(train[1][:, a_ids[ac]], [1])
 				newlabels = zero(train[2])
 				newlabels[a_ids[1:ac]] .= 1
+				anoms = train[1][:, a_ids[rand(1:ac, length(newlabels))]]
 				opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(learnWithAnomalies!(train[1], []))"), 5)
+		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(learnWithAnomalies!(train[1], newlabels, anoms))"), 5)
 				println("Starting learning")
-		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
+		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels, anoms), batchSize, numBatches), opt, cb = cb)
             else
                 println("Not enough anomalies $ac, $(size(anomalies))")
                 println("Counts: $(counts(train[2]))")
@@ -171,7 +171,7 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 # datasets = ["breast-cancer-wisconsin"]
 # datasets = ["magic-telescope"]
-datasets = ["synthetic-control-chart"]
+datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
@@ -196,7 +196,7 @@ for i in 1:10
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [512], [0], [1], [0.1], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

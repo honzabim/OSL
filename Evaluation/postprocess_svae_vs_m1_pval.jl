@@ -40,7 +40,7 @@ function processFile!(dataframe, model, dataset)
 end
 
 function printbest2(df)
-    collen = 15
+    collen = 20
     maxlen = maximum(vcat(length.(df[:dataset])..., 45))
 
     metds = ["m1", "svae-wass"]
@@ -86,18 +86,18 @@ for d in unique(allData[:dataset])
     allwass = allData[(allData[:method] .== "wass") .& (allData[:dataset] .== d), :]
 
     iters = maximum(allm1[:i])
-    maxed = []
+    averaged = []
 
-    for i in 1:iters
-        maxm1 = maximum(allm1[allm1[:i] .== i, :][:auc])
-        maxwass = maximum(allwass[allwass[:i] .== i, :][:auc])
-        push!(maxed, [maxm1, maxwass])
+    for b in unique(allData[:β])
+        meanm1 = mean(allm1[allm1[:β] .== b, :][:auc])
+        meanwass = mean(allwass[allwass[:β] .== b, :][:auc])
+        push!(averaged, [meanm1, meanwass])
     end
-    maxed = hcat(maxed...)
-    pval = pvalue(SignedRankTest(maxed[1, :], maxed[2, :]))
-    means = mean(maxed, 2)
+    averaged = hcat(averaged...)
+    pval = pvalue(SignedRankTest(averaged[1, :], averaged[2, :]))
+    maxs = maximum(averaged, dims = 2)
 
-    compared = push!(compared, DataFrame(dataset = d, m1auc = means[1], wassauc = means[2], pval = pval))
+    push!(compared, DataFrame(dataset = d, m1auc = maxs[1], wassauc = maxs[2], pval = pval))
 end
 compared = vcat(compared...)
 CSV.write(dataFolder * "results-compared.csv", compared)

@@ -53,29 +53,30 @@ function aggrmeanmax(df::DataFrame)
             parmean = []
             for (a, b) in Base.product(unique(df[:α]), unique(df[:β]))
                 dfperpars = dfall[(dfall[:α] .== a) .& (dfall[:β] .== b), :]
-                push!(parmean, [mean(dfperpars[:aucpxv]), mean(dfperpars[:auc])])
+                push!(parmean, [mean(dfperpars[:aucpxv]), mean(dfperpars[:auc]), a, b])
             end
             parmean = hcat(parmean...)
-            maxvals = maximum(parmean, dims = 2)
-            push!(dfagg, DataFrame(dataset = d, anom_ratio = ar, anom_seen = aseen, pxvita = maxvals[1], auc = maxvals[2]))
+            maxvals = maximum(parmean[1:2, :], dims = 2)
+            maxids = argmax(parmean[1:2, :], dims = 2)
+            push!(dfagg, DataFrame(dataset = d, anom_ratio = ar, anom_seen = aseen, pxvita = maxvals[1], auc = maxvals[2], α = parmean[3, maxids[1][2]], β = parmean[4, maxids[2][2]]))
         end
     end
     return vcat(dfagg...)
 end
 
-function cmpnonsampledz(nzdf, szdf)
-    df = []
-    for (ar, asel, d) in Base.product(unique(nzdf[:anom_ratio]), unique(nzdf[:anom_sel]), unique(nzdf[:dataset]))
-        nzdfaseen = nzdf[(nzdf[:dataset] .== d) .& (nzdf[:anom_sel] .== asel) .& (nzdf[:anom_ratio] .== ar), :]
-        szdfaseen = szdf[(szdf[:dataset] .== d) .& (szdf[:anom_sel] .== asel) .& (szdf[:anom_ratio] .== ar), :]
-        for aseen in unique(nzdfaseen[:anom_seen])
-            nz = nzdfaseen[nzdfaseen[:anom_seen] .== aseen, :]
-            sz = szdfaseen[szdfaseen[:anom_seen] .== aseen, :]
-            push!(df, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anomaliesSeen = aseen, nzpxv = nz[:pxvita], szpxv = sz[:pxvita], nzf2 = nz[:f2], szf2 = sz[:f2], nzf3 = nz[:f3], szf3 = sz[:f3]))
-        end
-    end
-    return vcat(df...)
-end
+# function cmpnonsampledz(nzdf, szdf)
+#     df = []
+#     for (ar, asel, d) in Base.product(unique(nzdf[:anom_ratio]), unique(nzdf[:anom_sel]), unique(nzdf[:dataset]))
+#         nzdfaseen = nzdf[(nzdf[:dataset] .== d) .& (nzdf[:anom_sel] .== asel) .& (nzdf[:anom_ratio] .== ar), :]
+#         szdfaseen = szdf[(szdf[:dataset] .== d) .& (szdf[:anom_sel] .== asel) .& (szdf[:anom_ratio] .== ar), :]
+#         for aseen in unique(nzdfaseen[:anom_seen])
+#             nz = nzdfaseen[nzdfaseen[:anom_seen] .== aseen, :]
+#             sz = szdfaseen[szdfaseen[:anom_seen] .== aseen, :]
+#             push!(df, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anomaliesSeen = aseen, nzpxv = nz[:pxvita], szpxv = sz[:pxvita], nzf2 = nz[:f2], szf2 = sz[:f2], nzf3 = nz[:f3], szf3 = sz[:f3]))
+#         end
+#     end
+#     return vcat(df...)
+# end
 
 function printbest3(df)
     collen = 20
