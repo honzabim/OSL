@@ -45,24 +45,24 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 
 CSV.write(dataFolder * "results.csv", allData)
 
-function aggrmaxmean(df::DataFrame)
-    dfagg = []
-    for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
-        dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
-        for aseen in unique(dfaseen[:anomaliesSeen])
-            dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
-            itermax = []
-            for i in 1:maximum(dfall[:i])
-                dfperi = dfall[dfall[:i] .== i, :]
-                push!(itermax, [maximum(dfperi[:aucpxv]), maximum(dfperi[:aucf2]), maximum(dfperi[:aucf3])])
-            end
-            itermax = hcat(itermax...)
-            meanvals = mean(itermax, dims = 2)
-            push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
-        end
-    end
-    return vcat(dfagg...)
-end
+# function aggrmaxmean(df::DataFrame)
+#     dfagg = []
+#     for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
+#         dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
+#         for aseen in unique(dfaseen[:anomaliesSeen])
+#             dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
+#             itermax = []
+#             for i in 1:maximum(dfall[:i])
+#                 dfperi = dfall[dfall[:i] .== i, :]
+#                 push!(itermax, [maximum(dfperi[:aucpxv]), maximum(dfperi[:aucf2]), maximum(dfperi[:aucf3])])
+#             end
+#             itermax = hcat(itermax...)
+#             meanvals = mean(itermax, dims = 2)
+#             push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
+#         end
+#     end
+#     return vcat(dfagg...)
+# end
 
 function aggrmeanmax(df::DataFrame)
     dfagg = []

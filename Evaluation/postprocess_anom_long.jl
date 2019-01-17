@@ -7,18 +7,17 @@ using Crayons
 using Crayons.Box
 using StatsBase
 
-const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
-# const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEshortProbMem/"
+const dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongSVAEanom/"
 const knnfolder = "d:/dev/julia/data/knn/"
-const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "glass", "haberman", "ionosphere", "iris", "magic-telescope", "musk-2", "ionosphere", "page-blocks", "parkinsons", "pendigits", "pima-indians", "sonar", "spect-heart", "statlog-satimage", "statlog-vehicle", "synthetic-control-chart", "wall-following-robot", "waveform-1", "waveform-2", "wine", "yeast"]
+const datasets = ["abalone", "blood-transfusion", "breast-tissue", "haberman", "iris", "breast-cancer-wisconsin", "cardiotocography", "ecoli", "glass", "pima-indians", "sonar", "statlog-satimage", "waveform-1", "waveform-2", "yeast", "ionosphere", "wine"]
 const models = ["svae"]
-const anomalycount = 10
+const anomalycount = 5
 
 loadExperiment(filePath) = load(filePath)["results"]
 
 
-params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :anomaliesSeen, :aucpxv, :aucf2, :aucf3, :ar, :i, :κ, :anom_sel, :model, :dataset]
-types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Int, Float64, String, String, String]
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :β, :anomaliesSeen, :auc, :aucpxv, :ar, :i, :α, :model, :dataset]
+types = [Int, Int, Int, String, String, Float64, Int, Float64, Float64, Float64, Int, Float64, String, String]
 
 function processFile!(dataframe, model, dataset)
     for i in 1:10
@@ -31,9 +30,9 @@ function processFile!(dataframe, model, dataset)
 
             for i in 1:length(results)
                 for j in 1:length(results[1][2])
-                    pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
+                    pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:6]...) : vcat(results[i][1]..., -1, -1)
                     # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
-                    push!(dataframe, vcat(pars..., results[i][2][j][1:4]..., results[i][2][j][7:10]..., model, dataset))
+                    push!(dataframe, vcat(pars..., results[i][2][j][1:3]..., results[i][2][j][5:7]..., model, dataset))
                 end
             end
         end
@@ -45,39 +44,20 @@ foreach((t) -> processFile!(allData, t[1], t[2]), Base.product(models, datasets)
 
 CSV.write(dataFolder * "results.csv", allData)
 
-function aggrmaxmean(df::DataFrame)
-    dfagg = []
-    for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
-        dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
-        for aseen in unique(dfaseen[:anomaliesSeen])
-            dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
-            itermax = []
-            for i in 1:maximum(dfall[:i])
-                dfperi = dfall[dfall[:i] .== i, :]
-                push!(itermax, [maximum(dfperi[:aucpxv]), maximum(dfperi[:aucf2]), maximum(dfperi[:aucf3])])
-            end
-            itermax = hcat(itermax...)
-            meanvals = mean(itermax, dims = 2)
-            push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = meanvals[1], f2 = meanvals[2], f3 = meanvals[3]))
-        end
-    end
-    return vcat(dfagg...)
-end
-
 function aggrmeanmax(df::DataFrame)
     dfagg = []
-    for (ar, asel, d) in Base.product(unique(df[:ar]), unique(df[:anom_sel]), unique(df[:dataset]))
-        dfaseen = df[(df[:dataset] .== d) .& (df[:anom_sel] .== asel) .& (df[:ar] .== ar), :]
+    for (ar, d) in Base.product(unique(df[:ar]), unique(df[:dataset]))
+        dfaseen = df[(df[:dataset] .== d) .& (df[:ar] .== ar), :]
         for aseen in unique(dfaseen[:anomaliesSeen])
             dfall = dfaseen[dfaseen[:anomaliesSeen] .== aseen, :]
             parmean = []
-            for (ms, b, k) in Base.product(unique(df[:memorysize]), unique(df[:β]), unique(df[:κ]))
-                dfperpars = dfall[(dfall[:memorysize] .== ms) .& (dfall[:β] .== b) .& (dfall[:κ] .== k), :]
-                push!(parmean, [mean(dfperpars[:aucpxv]), mean(dfperpars[:aucf2]), mean(dfperpars[:aucf3])])
+            for (a, b) in Base.product(unique(df[:α]), unique(df[:β]))
+                dfperpars = dfall[(dfall[:α] .== a) .& (dfall[:β] .== b), :]
+                push!(parmean, [mean(dfperpars[:aucpxv]), mean(dfperpars[:auc])])
             end
             parmean = hcat(parmean...)
             maxvals = maximum(parmean, dims = 2)
-            push!(dfagg, DataFrame(dataset = d, anom_sel = asel, anom_ratio = ar, anom_seen = aseen, pxvita = maxvals[1], f2 = maxvals[2], f3 = maxvals[3]))
+            push!(dfagg, DataFrame(dataset = d, anom_ratio = ar, anom_seen = aseen, pxvita = maxvals[1], auc = maxvals[2]))
         end
     end
     return vcat(dfagg...)
@@ -97,14 +77,14 @@ function cmpnonsampledz(nzdf, szdf)
     return vcat(df...)
 end
 
-function printbest3(df, cmp_name)
+function printbest3(df)
     collen = 20
     maxlen = [maximum(vcat(length.(df[:dataset])..., 45))]
     maxlen = vcat(maxlen, 10, 10, 10)
-    names = ["dataset", "anom_sel", "anom_ratio", "anom_seen"]
-    metds = [cmp_name, "f2", "f3"]
+    names = ["dataset", "anom_ratio", "anom_seen"]
+    metds = ["pxvita", "auc", "knnauc"]
 
-    for i in 1:4
+    for i in 1:3
         print(names[i])
         print(repeat(" ", maxlen[i] - length(names[i])) * " | ")
     end
@@ -116,11 +96,11 @@ function printbest3(df, cmp_name)
     crays = [Crayon(foreground = :red), Crayon(foreground = :yellow), Crayon(foreground = :green)]
     defc = Crayon(reset = true)
     for i in 1:size(df, 1)
-        for j in 1:4
+        for j in 1:3
             print(defc, df[i, j])
             print(defc, repeat(" ", maxlen[j] - length("$(df[i, j])")) * " | ")
         end
-        aucs = df[i, 5:7]
+        aucs = df[i, 4:6]
         p = ordinalrank(vec(convert(Array, aucs)))
         for c in 1:3
             s = "$(aucs[c])"
@@ -169,7 +149,6 @@ function loadknn()
 end
 
 function selectminmaxanoms(df)
-    df = filter(row -> row[:anom_sel] == "rnd", df)
     ddf = []
     for (ar, d) in Base.product(unique(df[:anom_ratio]), unique(df[:dataset]))
         seldf = df[(df[:dataset] .== d) .& (df[:anom_ratio] .== ar), :]
