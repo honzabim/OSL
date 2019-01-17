@@ -18,8 +18,13 @@ include(folderpath * "OSL/SVAE/svae.jl")
 outputFolder = folderpath * "OSL/experiments/WSVAE_PXV_vs_PZ/"
 mkpath(outputFolder)
 
-datasets = ["breast-cancer-wisconsin"]
+datasets = ["cardiotocography"]
 difficulties = ["easy"]
+
+if length(ARGS) != 0
+    datasets = [ARGS[1]]
+end
+
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
 iterations = 10000
@@ -73,11 +78,6 @@ function runExperiment(datasetName, trainall, test, createModel, batchSize, numB
 end
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
-
-if length(ARGS) != 0
-    datasets = [ARGS[1]]
-    difficulties = ["easy"]
-end
 
 for i in 1:10
 	for (dn, df) in zip(datasets, difficulties)

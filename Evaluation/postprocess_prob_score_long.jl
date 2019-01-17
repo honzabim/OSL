@@ -144,17 +144,49 @@ function loadknn()
                 seldf = ddf[(ddf[:prname] .== prn) .& (ddf[:k] .== k), :]
                 push!(pardf, DataFrame(dataset = d, prname = prn, k = k, auc = mean(seldf[:auc_test])))
             end
-            push!(df, vcat(pardf...))
+            pardf = vcat(pardf...)
+            pardf[:anom_ratio] = 0.05
+            push!(df, pardf)
+        end
+        for ar in [0.01, 0.005]
+            filename = knnfolder * d * "/knn_easy_$(ar)_low.jld2"
+            if !isfile(filename)
+                println("$filename not found.")
+            else
+                ddf = load(filename)["auc"]
+                pardf = []
+                for (prn, k) in Base.product(unique(ddf[:prname]), unique(ddf[:k]))
+                    seldf = ddf[(ddf[:prname] .== prn) .& (ddf[:k] .== k), :]
+                    push!(pardf, DataFrame(dataset = d, prname = prn, k = k, auc = mean(seldf[:auc_test])))
+                end
+                pardf = vcat(pardf...)
+                pardf[:anom_ratio] = ar
+                push!(df, pardf)
+            end
         end
     end
     df = vcat(df...)
 end
 
+function selectminmaxanoms(df)
+    df = filter(row -> row[:anom_sel] == "rnd", df)
+    ddf = []
+    for (ar, d) in Base.product(unique(df[:anom_ratio]), unique(df[:dataset]))
+        seldf = df[(df[:dataset] .== d) .& (df[:anom_ratio] .== ar), :]
+        maxas = maximum(seldf[:anom_seen])
+        push!(ddf, seldf[seldf[:anom_seen] .== 1, :])
+        if (maxas != 1)
+            push!(ddf, seldf[seldf[:anom_seen] .== maxas, :])
+        end
+    end
+    return vcat(ddf...)
+end
+
 function comparewithknn(knndf, svaedf)
     df = []
-    for d in unique(svaedf[:dataset])
-        knnauc = maximum(knndf[knndf[:dataset] .== d, :][:auc])
-        svaeddf = svaedf[svaedf[:dataset] .== d, :]
+    for (ar, d) in Base.product(unique(svaedf[:anom_ratio]), unique(svaedf[:dataset]))
+        knnauc = maximum(knndf[(knndf[:dataset] .== d) .& (knndf[:anom_ratio] .== ar), :][:auc])
+        svaeddf = svaedf[(svaedf[:dataset] .== d) .& (svaedf[:anom_ratio] .== ar), :]
         svaeddf[:knnauc] = knnauc
         push!(df, svaeddf)
     end
