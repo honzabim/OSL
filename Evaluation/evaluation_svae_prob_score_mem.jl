@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -56,9 +56,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
 
     function learnWithAnomalies!(data, labels, anoms)
         #trainOnLatent!(data, labels)
-		data[:, 1]  = anoms[:, 1]
-		labels[1] = 1
-        return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
+        return mem_wloss(svae, mem, hcat(data, anoms[:, 1]), vcat(labels, 1), β, (x, y) -> mmd_imq(x, y, 1), loss_α)
     end
 
     return mem, svae, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent
@@ -106,7 +104,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         train = ADatasets.subsampleanomalous(trainall, ar)
         (mem, model, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent) = createModel()
 
-		numBatches = 10000
+		numBatches = 100
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
@@ -171,11 +169,11 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 # datasets = ["breast-cancer-wisconsin"]
 # datasets = ["magic-telescope"]
-datasets = ["musk-2"]
+datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 10000
+iterations = 100
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -196,7 +194,7 @@ for i in 1:10
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.1], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128], [0], [1], [0.1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
