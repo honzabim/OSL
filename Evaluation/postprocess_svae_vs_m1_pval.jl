@@ -9,6 +9,8 @@ using Crayons.Box
 using StatsBase
 using HypothesisTests
 using Printf
+using Plots
+plotly()
 
 const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1pval/"
 
@@ -56,7 +58,7 @@ function printbest2(df)
         print(defc, df[i, 1])
         print(defc, repeat(" ", maxlen - length(df[i, 1])) * " | ")
         aucs = df[i, 2:3]
-        p = ordinalrank(vec(convert(Array, aucs)))
+        p = ordinalrank(Vector(aucs))
         for c in 1:2
             s = "$(aucs[c])"
             print(crays[p[c]], s)
@@ -101,3 +103,8 @@ for d in unique(allData[:dataset])
 end
 compared = vcat(compared...)
 CSV.write(dataFolder * "results-compared.csv", compared)
+
+sigdf = filter(x -> x[:pval] <= 0.05, compared)
+
+p = plot(histogram(sigdf[:wassauc] .- sigdf[:m1auc], seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count"), size = (300, 300), legend = :none,  title = "VAE and SVAE comparison")
+# savefig(p, "trial.svg")
