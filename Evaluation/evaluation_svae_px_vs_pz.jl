@@ -15,7 +15,7 @@ folderpath = "D:/dev/julia/"
 
 include(folderpath * "OSL/SVAE/svae.jl")
 
-outputFolder = folderpath * "OSL/experiments/WSVAE_PXV_vs_PZ/"
+outputFolder = folderpath * "OSL/experiments/WSVAE_PXV_vs_PZ_KLD/"
 mkpath(outputFolder)
 
 datasets = ["cardiotocography"]
@@ -47,7 +47,7 @@ function createSVAE(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, lay
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
     svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
-    train! = (data, labels) -> wloss_prior(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
+    train! = (data, labels) -> loss(svae, data, β)
 
     return svae, train!
 end
@@ -67,12 +67,12 @@ function runExperiment(datasetName, trainall, test, createModel, batchSize, numB
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
 
 		pxv = vec(collect(.-pxvita(model, test[1])'))
-		pzs = vec(collect(.-pz(model, test[1])'))
+		# pzs = vec(collect(.-pz(model, test[1])'))
 		println(size(pxv))
 		auc_pxv = computeauc(pxv, test[2] .- 1)
-		auc_pz = computeauc(pzs, test[2] .- 1)
-		println("P(X) Vita AUC vs P(Z) AUC: $auc_pxv vs $auc_pz on $datasetName with ar: $ar iteration: $it")
-		push!(results, (auc_pxv, auc_pz, ar, it))
+		# auc_pz = computeauc(pzs, test[2] .- 1)
+		println("P(X) Vita AUC  $auc_pxv on $datasetName with ar: $ar iteration: $it")
+		push!(results, (auc_pxv, ar, it))
     end
     return results
 end
