@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -54,11 +54,11 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     end
 
-	# function learnWithAnomalies!(data, labels, anoms)
-    function learnWithAnomalies!(data, labels)
+	function learnWithAnomalies!(data, labels, anoms)
+    # function learnWithAnomalies!(data, labels)
         #trainOnLatent!(data, labels)
-        # return mem_wloss(svae, mem, hcat(data, anoms[:, 1]), vcat(labels, 1), β, (x, y) -> mmd_imq(x, y, 1), loss_α)
-		return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
+        return mem_wloss(svae, mem, hcat(data, anoms[:, 1]), vcat(labels, 1), β, (x, y) -> mmd_imq(x, y, 1), loss_α)
+		# return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
     end
 
     return mem, svae, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent
@@ -106,13 +106,13 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         train = ADatasets.subsampleanomalous(trainall, ar)
         (mem, model, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent) = createModel()
 
-		numBatches = 100
+		numBatches = 10000
         opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
 
-        # learnRepresentation!(train[1], zero(train[2]))
+        learnRepresentation!(train[1], zero(train[2]))
 		println("Added all normal to memory")
 
 		pxv = collect(.-pxvita(model, test[1])')
@@ -132,9 +132,9 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 				newlabels[a_ids[1:ac]] .= 1
 				anoms = train[1][:, a_ids[rand(1:ac, length(newlabels))]]
 				opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
-		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(learnWithAnomalies!(train[1], newlabels))"), 5)
+		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], newlabels))"), 5)
 				println("Starting learning")
-		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
+		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels, anoms), batchSize, numBatches), opt, cb = cb)
             else
                 println("Not enough anomalies $ac, $(size(anomalies))")
                 println("Counts: $(counts(train[2]))")
