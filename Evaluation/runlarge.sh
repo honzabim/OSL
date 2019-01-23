@@ -1,33 +1,33 @@
-julia evaluation_svae_anom.jl abalone &
+# julia evaluation_svae_vs_td.jl abalone &
+# sleep 40
+julia evaluation_svae_vs_td.jl blood-transfusion &
 sleep 40
-julia evaluation_svae_anom.jl blood-transfusion &
+julia evaluation_svae_vs_td.jl breast-tissue &
 sleep 40
-julia evaluation_svae_anom.jl breast-tissue &
+julia evaluation_svae_vs_td.jl haberman &
 sleep 40
-julia evaluation_svae_anom.jl haberman &
+julia evaluation_svae_vs_td.jl iris &
 sleep 40
-julia evaluation_svae_anom.jl iris &
+julia evaluation_svae_vs_td.jl breast-cancer-wisconsin &
 sleep 40
-julia evaluation_svae_anom.jl breast-cancer-wisconsin &
+julia evaluation_svae_vs_td.jl cardiotocography &
 sleep 40
-julia evaluation_svae_anom.jl cardiotocography &
+julia evaluation_svae_vs_td.jl ecoli &
 sleep 40
-julia evaluation_svae_anom.jl ecoli &
+julia evaluation_svae_vs_td.jl glass &
 sleep 40
-julia evaluation_svae_anom.jl glass &
+julia evaluation_svae_vs_td.jl pima-indians &
 sleep 40
-julia evaluation_svae_anom.jl pima-indians &
+julia evaluation_svae_vs_td.jl sonar &
 sleep 40
-julia evaluation_svae_anom.jl sonar &
+julia evaluation_svae_vs_td.jl statlog-satimage &
 sleep 40
-julia evaluation_svae_anom.jl statlog-satimage &
+julia evaluation_svae_vs_td.jl waveform-1 &
 sleep 40
-julia evaluation_svae_anom.jl waveform-1 &
+julia evaluation_svae_vs_td.jl waveform-2 &
 sleep 40
-julia evaluation_svae_anom.jl waveform-2 &
+# julia evaluation_svae_vs_td.jl yeast &
+# sleep 40
+julia evaluation_svae_vs_td.jl ionosphere &
 sleep 40
-julia evaluation_svae_anom.jl yeast &
-sleep 40
-julia evaluation_svae_anom.jl ionosphere &
-sleep 40
-julia evaluation_svae_anom.jl wine &
+julia evaluation_svae_vs_td.jl wine &

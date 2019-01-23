@@ -1,27 +1,27 @@
-julia evaluation_svae_anom.jl magic-telescope &
+julia evaluation_svae_vs_td.jl magic-telescope &
 sleep 100
-julia evaluation_svae_anom.jl page-blocks &
+julia evaluation_svae_vs_td.jl page-blocks &
 sleep 100
-julia evaluation_svae_anom.jl pendigits &
+julia evaluation_svae_vs_td.jl pendigits &
 sleep 100
-julia evaluation_svae_anom.jl isolet &
+julia evaluation_svae_vs_td.jl isolet &
 sleep 100
-julia evaluation_svae_anom.jl miniboone &
+julia evaluation_svae_vs_td.jl miniboone &
 sleep 100
-julia evaluation_svae_anom.jl multiple-features &
+julia evaluation_svae_vs_td.jl multiple-features &
 sleep 100
-julia evaluation_svae_anom.jl parkinsons &
+julia evaluation_svae_vs_td.jl parkinsons &
 sleep 100
-julia evaluation_svae_anom.jl spect-heart &
+julia evaluation_svae_vs_td.jl spect-heart &
 sleep 100
-julia evaluation_svae_anom.jl statlog-shuttle &
+julia evaluation_svae_vs_td.jl statlog-shuttle &
 sleep 100
-julia evaluation_svae_anom.jl statlog-vehicle &
+julia evaluation_svae_vs_td.jl statlog-vehicle &
 sleep 100
-julia evaluation_svae_anom.jl synthetic-control-chart &
+julia evaluation_svae_vs_td.jl synthetic-control-chart &
 sleep 100
-julia evaluation_svae_anom.jl wall-following-robot &
+julia evaluation_svae_vs_td.jl wall-following-robot &
 sleep 100
-julia evaluation_svae_anom.jl statlog-segment &
+julia evaluation_svae_vs_td.jl statlog-segment &
 sleep 100
-julia evaluation_svae_anom.jl musk-2 &
+julia evaluation_svae_vs_td.jl musk-2 &
