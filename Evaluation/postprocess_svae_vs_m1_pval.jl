@@ -103,8 +103,12 @@ for d in unique(allData[:dataset])
 end
 compared = vcat(compared...)
 CSV.write(dataFolder * "results-compared.csv", compared)
+compared = CSV.read(dataFolder * "results-compared.csv")
 
 sigdf = filter(x -> x[:pval] <= 0.05, compared)
+diff = sigdf[:wassauc] .- sigdf[:m1auc]
 
-p = plot(histogram(sigdf[:wassauc] .- sigdf[:m1auc], seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count"), size = (300, 300), legend = :none,  title = "VAE and SVAE comparison")
-# savefig(p, "trial.svg")
+pyplot()
+p = plot(histogram(diff[diff .>= 0], bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count", label = "SVAE"), size = (300, 300),  title = "VAE and SVAE comparison")
+p = plot!(histogram!(diff[diff .< 0], bins = [-0.1, -0.05, 0], seriescolor = "#F51069", linecolor = false, label = "VAE"))
+savefig(p, "figures/m1_vs_svae_hist.pdf")

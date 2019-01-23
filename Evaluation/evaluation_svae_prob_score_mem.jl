@@ -54,11 +54,11 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
         return wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     end
 
-	# function learnWithAnomalies!(data, labels, anoms)
-    function learnWithAnomalies!(data, labels)
+	function learnWithAnomalies!(data, labels, anoms)
+    # function learnWithAnomalies!(data, labels)
         #trainOnLatent!(data, labels)
-        # return mem_wloss(svae, mem, hcat(data, anoms[:, 1]), vcat(labels, 1), β, (x, y) -> mmd_imq(x, y, 1), loss_α)
-		return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
+        return mem_wloss(svae, mem, hcat(data, anoms[:, 1]), vcat(labels, 1), β, (x, y) -> mmd_imq(x, y, 1), loss_α)
+		# return mem_wloss(svae, mem, data, labels, β, (x, y) -> mmd_imq(x, y, 1), loss_α)
     end
 
     return mem, svae, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent
@@ -99,7 +99,7 @@ end
 
 function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, batchSize = 100, numBatches = 10000, it = 1)
 	# anomalyRatios = [0.05, 0.01, 0.005]
-	anomalyRatios = [0.01]
+	anomalyRatios = [0.05]
     results = []
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
@@ -130,11 +130,11 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
                 l = learnRepresentation!(train[1][:, a_ids[ac]], [1])
 				newlabels = zero(train[2])
 				newlabels[a_ids[1:ac]] .= 1
-				# anoms = train[1][:, a_ids[rand(1:ac, length(newlabels))]]
+				anoms = train[1][:, a_ids[rand(1:ac, length(newlabels))]]
 				opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
 		        cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], newlabels))"), 5)
 				println("Starting learning")
-		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels), batchSize, numBatches), opt, cb = cb)
+		        Flux.train!(learnWithAnomalies!, RandomBatches((train[1], newlabels, anoms), batchSize, numBatches), opt, cb = cb)
             else
                 println("Not enough anomalies $ac, $(size(anomalies))")
                 println("Counts: $(counts(train[2]))")
@@ -196,7 +196,7 @@ for i in 1:10
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128], [0], [1], [0.2], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.2], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
