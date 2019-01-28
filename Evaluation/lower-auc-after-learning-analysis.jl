@@ -38,7 +38,7 @@ function createSVAEWithMem(inputDim, hiddenDim, latentDim, numLayers, nonlineari
     encoder = Adapt.adapt(T, FluxExtensions.layerbuilder(inputDim, hiddenDim, hiddenDim, numLayers - 1, nonlinearity, "", layerType))
     decoder = Adapt.adapt(T, FluxExtensions.layerbuilder(latentDim, hiddenDim, inputDim, numLayers + 1, nonlinearity, "linear", layerType))
 
-    svae = SVAE(encoder, decoder, hiddenDim, latentDim, T)
+    svae = SVAE2(encoder, decoder, hiddenDim, latentDim, T)
     mem, train!, classify, trainOnLatent! = augmentModelWithMemory((x) -> zfromx(svae, x), memorySize, latentDim, k, labelCount, α, T)
 
     function learnRepresentation!(data, labels)
@@ -73,7 +73,7 @@ trainall, test, clusterdness = loadData(d, "easy")
 idim = size(trainall[1], 1)
 hdim = 32
 zdim = 3
-numLayers = 4
+numLayers = 3
 nonlinearity = "relu"
 layerType = "Dense"
 memorySize = 128
@@ -88,16 +88,23 @@ train = ADatasets.subsampleanomalous(trainall, ar)
 
 plotly()
 
-function rscore(m::SVAE, x)
+function rscore(m::SVAE2, x)
     xgivenz = m.g(zfromx(m, x))
     return Flux.mse(x, xgivenz)
 end
 
 # Plots.display(plotmemory(mem))
 
-opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
+z = Flux.Tracker.data(zfromx(svae, train[1]))
+p1 = Plots.scatter3d(z[1, train[2] .== 1], z[2, train[2] .== 1], z[3, train[2] .== 1])
+p2 = Plots.scatter3d!(z[1, train[2] .== 2], z[2, train[2] .== 2], z[3, train[2] .== 2])
+p2 = Plots.plot!([0, 1.2], [0, 0.], [0, 0.], color = "red")
+Plots.title!("Before training")
+Plots.display(p2)
+
+opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
 cb = Flux.throttle(() -> println("$d AR=$ar : $(justTrain!(train[1], []))"), 5)
-Flux.train!(justTrain!, RandomBatches((train[1], zeros(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
+Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
 
 z = Flux.Tracker.data(zfromx(svae, train[1]))
 p1 = Plots.scatter3d(z[1, train[2] .== 1], z[2, train[2] .== 1], z[3, train[2] .== 1])
@@ -116,13 +123,13 @@ balltree = BallTree(Flux.Tracker.data(zfromx(svae, train[1])), Euclidean(); reor
 idxs, dists = knn(balltree, Flux.Tracker.data(zfromx(svae, test[1])), 1, false)
 knnscores = map((i, d) -> sum(softmax(1 ./ d)[train[2][i] .== 2]), idxs, dists)
 knnauc, _, _ = pyauc(test[2] .- 1, knnscores)
-knnroc = roc(test[2] .- 1, map(i -> indmax(counts(train[2][i], 2)) - 1, idxs))
+knnroc = roc(test[2] .- 1, map(i -> argmax(counts(train[2][i], 2)) - 1, idxs))
 knnprec = precision(knnroc)
 knnrecall = recall(knnroc)
 println("kNN tp: $(true_positive(knnroc)) fp: $(false_positive(knnroc)) tn: $(true_negative(knnroc)) fn: $(false_negative(knnroc))")
 
 println("kNN AUC: $knnauc")
-learnRepresentation!(train[1], zeros(collect(train[2])))
+learnRepresentation!(train[1], zero(collect(train[2])))
 
 anomalies = train[1][:, train[2] .- 1 .== 1]
 anomalies = anomalies[:, randperm(size(anomalies, 2))]

@@ -9,7 +9,7 @@ using StatsBase
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEvsTDlong/"
 const tdfolder = "d:/dev/experiments/FeedbackIsolationForest/test/svaetest/out/"
-const datasets = ["abalone", "yeast"]
+const datasets = ["abalone", "blood-transfusion", "breast-tissue", "ecoli", "glass", "haberman", "ionosphere", "iris", "pima-indians", "statlog-satimage", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
 
 loadExperiment(filePath) = load(filePath)["results"]

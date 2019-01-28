@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
 using KNNmem
@@ -184,7 +184,7 @@ if length(ARGS) != 0
     difficulties = ["easy"]
 end
 
-for i in 1:10
+for i in 1:3
 	for (dn, df) in zip(datasets, difficulties)
 
 	    train, test, clusterdness = loadData(dn, df)
@@ -196,7 +196,7 @@ for i in 1:10
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.2], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.1], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

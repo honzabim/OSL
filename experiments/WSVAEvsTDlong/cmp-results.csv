@@ -1,0 +1,15 @@
+dataset,anom_ratio,anom_discovered,anom_discovered_td
+abalone,0.05,2.8,2.76
+blood-transfusion,0.05,6.0,6.0
+breast-tissue,0.05,3.0,3.0
+ecoli,0.05,7.0,7.58
+glass,0.05,3.8,5.0
+haberman,0.05,3.0,3.0
+ionosphere,0.05,10.0,9.92
+iris,0.05,5.0,5.0
+pima-indians,0.05,14.8,15.56
+statlog-satimage,0.05,38.2,49.24
+waveform-1,0.05,26.8,21.2
+waveform-2,0.05,24.8,19.94
+wine,0.05,5.0,5.0
+yeast,0.05,15.6,8.52

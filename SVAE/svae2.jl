@@ -82,7 +82,7 @@ function loss(m::SVAE2, x, β)
 end
 
 function pairwisecos(x, y)
-	m = x' * y .* (1 - eps(Float32) * size(x, 1))
+	m = x' * y .* (1 - eps(Float32) * size(x, 1) * 5)
 	acos.(m)
 end
 pairwisecos(x) = pairwisecos(x, x)
@@ -294,13 +294,13 @@ end
 function rejectionsampling(m, a, b, d)
 	beta = Beta((m - 1) / 2, (m - 1) / 2)
 	T = eltype(Flux.Tracker.data(a))
-	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(size(a)))
+	ϵ, u = Adapt.adapt(T, rand(beta, size(a)...)), Adapt.adapt(T, rand(T, size(a)))
 
 	accepted = isaccepted(ϵ, u, m, Flux.data(a), Flux.Tracker.data(b), Flux.data(d))
 	while !all(accepted)
 		mask = .! accepted
 		ϵ[mask] = Adapt.adapt(T, rand(beta, sum(mask)))
-		u[mask] = Adapt.adapt(T, rand(sum(mask)))
+		u[mask] = Adapt.adapt(T, rand(T, sum(mask)))
 		ia = isaccepted(mask, ϵ, u, m, Flux.data(a), Flux.data(b), Flux.data(d))
 		accepted[mask] = ia
 	end
