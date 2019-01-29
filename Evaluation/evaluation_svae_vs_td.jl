@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-folderpath = "D:/dev/julia/"
-# folderpath = "/home/bimjan/dev/julia/"
+# folderpath = "D:/dev/julia/"
+folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
@@ -150,7 +150,7 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
     for ar in anomalyRatios
         println("Running $datasetName with ar: $ar iteration: $it")
         (mem, model, learnRepresentation!, learnAnomaly!, classify, justTrain!) = createModel()
-        opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+        opt = Flux.Optimise.ADAM(Flux.params(model), 4e-5)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2]) .+ 2), batchSize, numBatches), opt, cb = cb)
         # FluxExtensions.learn(learnRepresentation!, opt, RandomBatches((train[1], train[2] .- 1), batchSize, numBatches), ()->(), 100)
@@ -177,14 +177,15 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
 				avgNormal = collect(normalize(vec(mean(zparams(model, t)[1], dims = 2)))')
 
 				if ! any(mem.V .== 1)
-					# mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
-					mostAnomalousId = argmax(.-vec(f3normalscore(mem, model, t, κ)))
+					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
+					# mostAnomalousId = argmax(.-vec(f3normalscore(mem, model, t, κ)))
 					# println("Avg chose most anomalous with label $(l[mostAnomalousId] - 1)")
 					# mostAnomalousId = argmax(vec(.-pxvita(model, test[1])))
 					# println("Pxvita chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
 				else
 					# mostAnomalousId = argmax(vec(classify(t, κ)[2]))
-					mostAnomalousId = argmax(vec(f3score(mem, model, t, κ)))
+					values, probScore = classify(t, κ)
+					mostAnomalousId = argmax(vec(f3score(mem, model, t[:, values .== 0], κ)))
 				end
 
 				data = Flux.Tracker.data(zparams(model, train[1])[1])
@@ -230,17 +231,17 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAEvsTDlong/"
+outputFolder = folderpath * "OSL/experiments/WSVAEvsTDnewacq"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["cardiotocography", "sonar", "abalone"]
+datasets = ["ecoli", "sonar", "abalone"]
 # datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 15000
+iterations = 13000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -264,7 +265,7 @@ for i in 1:5
 	    println("Running svae...")
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:50, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.01 .1 1 10])
+	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 256], [0], [1], [.1 1 5])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end

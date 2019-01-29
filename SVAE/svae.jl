@@ -84,7 +84,7 @@ c(p, κ) = κ ^ (p / 2 - 1) / ((2π) ^ (p / 2) * besseli(p / 2 - 1, κ))
 log_vmf_c(x, μ, κ) = κ * μ' * x .+ log(c(length(μ), κ))
 
 function pairwisecos(x, y)
-	m = x' * y .* (1 - eps(Float32) * size(x, 1))
+	m = x' * y .* (1 - eps(Float32) * size(x, 1) * 3)
 	acos.(m)
 end
 pairwisecos(x) = pairwisecos(x, x)
