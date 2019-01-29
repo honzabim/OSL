@@ -121,7 +121,7 @@ function printbest3(df, cmp_name)
             print(defc, repeat(" ", maxlen[j] - length("$(df[i, j])")) * " | ")
         end
         aucs = df[i, 5:7]
-        p = ordinalrank(vec(convert(Array, aucs)))
+        p = ordinalrank(Vector(aucs))
         for c in 1:3
             s = "$(aucs[c])"
             print(crays[p[c]], s)
@@ -192,3 +192,15 @@ function comparewithknn(knndf, svaedf)
     end
     return vcat(df...)
 end
+
+function computeranks(df)
+    rankdf = []
+    for i in 1:size(cmpdf, 1)
+        row = df[i, :]
+        p = 4 .- ordinalrank(vcat(row[5], Vector(row[7:8])...))
+        push!(rankdf,  DataFrame(dataset = row[1], anom_ratio = row[3], anom_seen = row[4], pxvita = p[1], auc = p[2], knnauc = p[3]))
+    end
+    return vcat(rankdf...)
+end
+
+cmpdf = CSV.read(dataFolder * "pamet-svae_knn_selected_comparison.csv")

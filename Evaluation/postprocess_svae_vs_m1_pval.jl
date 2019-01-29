@@ -110,6 +110,6 @@ diff = sigdf[:wassauc] .- sigdf[:m1auc]
 
 # pyplot()
 plotlyjs()
-p = plot(histogram(diff[diff .>= 0], bins = 0:0.08:0.8, seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count", label = "SVAE"), size = (300, 300),  title = "VAE and SVAE comparison")
+p = plot(histogram(diff[diff .>= 0], bins = 0:0.08:0.8, seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count", label = "SVAE", legend = :right), size = (300, 300),  title = "VAE and SVAE comparison")
 p = plot!(histogram!(diff[diff .< 0], bins = [-0.16, -0.08, 0], seriescolor = "#F51069", linecolor = false, label = "VAE"))
 savefig(p, "figures/m1_vs_svae_hist.pdf")

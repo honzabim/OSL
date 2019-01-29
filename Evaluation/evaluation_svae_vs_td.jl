@@ -5,8 +5,8 @@ using MLDataPattern
 using JLD2
 using FileIO
 
-# folderpath = "D:/dev/julia/"
-folderpath = "/home/bimjan/dev/julia/"
+folderpath = "D:/dev/julia/"
+# folderpath = "/home/bimjan/dev/julia/"
 # folderpath = "D:/dev/"
 
 push!(LOAD_PATH, folderpath, folderpath * "OSL/KNNmemory/")
@@ -120,6 +120,20 @@ function f3score(memory::KNNmemory, model::SVAE, x, κ)
 	return score
 end
 
+function f3normalscore(memory::KNNmemory, model::SVAE, z::Vector, x::Vector, κ)
+	sum(exp.(log_normal(Flux.Tracker.data(model.g(memory.M')), repeat(x, 1, size(memory.M, 1))) .+ log_vmf_c(memory.M', z, κ)))
+end
+
+function f3normalscore(memory::KNNmemory, model::SVAE, x, κ)
+	(μz, _) = zparams(model, x)
+	μz = Flux.Tracker.data(μz)
+	score = []
+	for i in 1:size(x, 2)
+		push!(score, f3normalscore(memory, model, μz[:, i], Flux.Tracker.data(x[:, i]), κ))
+	end
+	return score
+end
+
 function savetodf(ds, filename)
     header = vcat("label", (repeat(["X"], size(ds[1], 1)) .* string.(collect(1:size(ds[1], 1)))...))
     labels = (x -> x == 1 ? "nominal" : "anomaly").(ds[2])
@@ -163,12 +177,14 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
 				avgNormal = collect(normalize(vec(mean(zparams(model, t)[1], dims = 2)))')
 
 				if ! any(mem.V .== 1)
-					mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
+					# mostAnomalousId = argmax(vec((.-(avgNormal) * zparams(model, t)[1])))
+					mostAnomalousId = argmax(.-vec(f3normalscore(mem, model, t, κ)))
 					# println("Avg chose most anomalous with label $(l[mostAnomalousId] - 1)")
 					# mostAnomalousId = argmax(vec(.-pxvita(model, test[1])))
 					# println("Pxvita chose most anomalous with label $(train[2][mostAnomalousId] - 1)")
 				else
-					mostAnomalousId = argmax(vec(classify(t, κ)[2]))
+					# mostAnomalousId = argmax(vec(classify(t, κ)[2]))
+					mostAnomalousId = argmax(vec(f3score(mem, model, t, κ)))
 				end
 
 				data = Flux.Tracker.data(zparams(model, train[1])[1])
@@ -193,21 +209,21 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
 				t = hcat(t[:, 1:(mostAnomalousId - 1)], t[:, (mostAnomalousId + 1):end])
 				deleteat!(l, mostAnomalousId)
 
-	            values, probScore = classify(test[1], κ)
-	            values = Flux.Tracker.data(values)
-	            probScore = Flux.Tracker.data(probScore)
+	            # values, probScore = classify(test[1], κ)
+	            # values = Flux.Tracker.data(values)
+	            # probScore = Flux.Tracker.data(probScore)
+				#
+	            # # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            # f2auc = pyauc(test[2] .- 1, probScore)
+	            # # println("mem κ = $κ AUC f2: $f2auc")
+				#
+				# probScore = f3score(mem, model, test[1], κ)
+				#
+	            # # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            # f3auc = pyauc(test[2] .- 1, probScore)
+	            # # println("mem κ = $κ AUC f3: $f3auc")
 
-	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-	            f2auc = pyauc(test[2] .- 1, probScore)
-	            # println("mem κ = $κ AUC f2: $f2auc")
-
-				probScore = f3score(mem, model, test[1], κ)
-
-	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-	            f3auc = pyauc(test[2] .- 1, probScore)
-	            # println("mem κ = $κ AUC f3: $f3auc")
-
-	            push!(results, (fc, auc_pxv, f2auc, f3auc, values, probScore, ar, it, κ, anomalies_discovered))
+	            push!(results, (fc, auc_pxv, ar, it, κ, anomalies_discovered))
 			end
 		end
     end

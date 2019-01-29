@@ -7,6 +7,7 @@ using Crayons
 using Crayons.Box
 using StatsBase
 using Printf
+using Plots
 
 const dataFolder = "d:/dev/julia/OSL/experiments/WSVAE_PXV_vs_PZ/"
 const datasets = ["abalone", "blood-transfusion", "breast-cancer-wisconsin", "breast-tissue", "cardiotocography", "ecoli", "haberman", "ionosphere", "iris", "pima-indians", "sonar", "statlog-satimage", "waveform-1", "waveform-2", "wine", "yeast"]
@@ -91,3 +92,9 @@ function printbest2(df)
         println()
     end
 end
+
+aggdf = CSV.read(dataFolder * "agg-results.csv")
+plotlyjs()
+diff = aggdf[:aucpz] .- aggdf[:aucpxv]
+p = plot(histogram(diff[diff .>= 0], bins = 0:0.05:0.25, seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (P(z) - P(x))", ylabel = "count", label = "P(z)", legend = :right), size = (300, 300),  title = "P(z) and P(x) comparison")
+p = plot!(histogram!(diff[diff .< 0], bins = -0.45:0.05:0, seriescolor = "#F51069", linecolor = false, label = "P(x)"))

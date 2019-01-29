@@ -81,3 +81,5 @@ function loadtd(df)
     end
     return vcat(newdf...)
 end
+
+cmpdf = CSV.read(dataFolder * "cmp-results.csv")

@@ -102,7 +102,7 @@ function printbest3(df)
             print(defc, repeat(" ", maxlen[j] - length("$(df[i, j])")) * " | ")
         end
         aucs = df[i, 4:6]
-        p = ordinalrank(vec(convert(Array, aucs)))
+        p = ordinalrank(Vector(aucs))
         for c in 1:3
             s = "$(aucs[c])"
             print(crays[p[c]], s)
@@ -171,4 +171,16 @@ function comparewithknn(knndf, svaedf)
         push!(df, svaeddf)
     end
     return vcat(df...)
+end
+
+cmpdf = CSV.read(dataFolder * "polokoule-knn-comparison-selected-anoms.csv")
+
+function computeranks(df)
+    rankdf = []
+    for i in 1:size(cmpdf, 1)
+        row = df[i, :]
+        p = 4 .- ordinalrank(Vector(row[4:6]))
+        push!(rankdf,  DataFrame(dataset = row[1], anom_ratio = row[2], anom_seen = row[3], pxvita = p[1], auc = p[2], knnauc = p[3]))
+    end
+    return vcat(rankdf...)
 end
