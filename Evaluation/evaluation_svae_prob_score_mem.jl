@@ -106,8 +106,8 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
         train = ADatasets.subsampleanomalous(trainall, ar)
         (mem, model, learnRepresentation!, learnWithAnomalies!, classify, justTrain!, classifyOnLatent) = createModel()
 
-		numBatches = 10000
-        opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+		numBatches = 12000
+        opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
         cb = Flux.throttle(() -> println("$datasetName AR=$ar : $(justTrain!(train[1], []))"), 5)
         Flux.train!(justTrain!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
 		println("Finished learning $datasetName with ar: $ar iteration: $it")
@@ -195,7 +195,7 @@ for i in 1:3
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.1], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.5], [0.1])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 	end
