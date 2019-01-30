@@ -79,7 +79,7 @@ function loss(m::SVAE_anom, x, β)
 end
 
 function pairwisecos(x, y)
-	m = x' * y .* (1 - eps(Float32) * size(x, 1))
+	m = x' * y .* (1 - eps(Float32) * size(x, 1) * 5)
 	acos.(m)
 end
 pairwisecos(x) = pairwisecos(x, x)
@@ -153,6 +153,13 @@ function set_anomalous_μ(m::SVAE_anom, μ)
 	T = eltype(m.hue)
 	m.anom_priorμ = Flux.param(Adapt.adapt(T, Flux.Tracker.data(μ)))
 	m.anom_priorκ = Flux.param(Adapt.adapt(T, [κz]))
+end
+
+function set_anomalous_μ_nonparam(m::SVAE_anom, μ)
+	κz = 100.
+	T = eltype(m.hue)
+	m.anom_priorμ = Adapt.adapt(T, Flux.Tracker.data(μ))
+	m.anom_priorκ = Adapt.adapt(T, [κz])
 end
 
 function set_anomalous_hypersphere(m::SVAE_anom, anomaly)

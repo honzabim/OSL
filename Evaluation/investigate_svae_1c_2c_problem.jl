@@ -36,7 +36,7 @@ function createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity
     learnRepresentation!(data, foo) = wloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
 	learnPrintingRepresentation!(data, foo) = printingwloss(svae, data, β, (x, y) -> mmd_imq(x, y, 1))
     learnAnomaly!(μ) = set_anomalous_μ(svae, μ)
-	learnWithAnomaliesWass!(data, labels) = wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
+	learnWithAnomaliesWass!(data, labels) = wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1), 0.5)
 	learnWithAnomaliesPrintingWass!(data, labels) = printing_wloss_anom_vasek(svae, data, labels, β, (x, y) -> mmd_imq(x, y, 1))
 
     return svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!
@@ -69,7 +69,7 @@ nonlinearity = "relu"
 layerType = "Dense"
 batchSize = 100
 numBatches = 10000
-βsvae = 1.0
+βsvae = 0.5
 
 (svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
 learnAnomaly!([-1., 0, 0])
@@ -78,9 +78,9 @@ learnAnomaly!([-1., 0, 0])
 # cb = Flux.throttle(() -> println("SVAE : $(learnPrintingRepresentation!(data, []))"), 5)
 # Flux.train!(learnRepresentation!, RandomBatches((data, zeros(labels)), batchSize, numBatches), opt, cb = cb)
 
-opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
-cb = Flux.throttle(() -> println("SVAE : $(learnWithAnomaliesWass!(data, zeros(labels)))"), 5)
-Flux.train!(learnWithAnomaliesWass!, RandomBatches((data, zeros(labels)), batchSize, numBatches), opt, cb = cb)
+opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
+cb = Flux.throttle(() -> println("SVAE : $(learnWithAnomaliesWass!(data, zero(labels)))"), 5)
+Flux.train!(learnWithAnomaliesWass!, RandomBatches((data, zero(labels)), batchSize, numBatches), opt, cb = cb)
 
 fillc = true
 nlevels = 20
@@ -116,10 +116,10 @@ display(Plots.plot!([0, μplot[1]], [0, μplot[2]], [0, μplot[3]], title = "sam
 numBatches = 1000
 learnAnomaly!(.-μnormal)
 opt = Flux.Optimise.ADAM(Flux.params(svae), 1e-4)
-cb = Flux.throttle(() -> println("SVAE : $(learnWithAnomaliesPrintingWass!(hcat(data, newclass), vcat(zeros(labels), ones(size(newclass, 2)))))"), 5)
+cb = Flux.throttle(() -> println("SVAE : $(learnWithAnomaliesPrintingWass!(hcat(data, newclass), vcat(zero(labels), ones(size(newclass, 2)))))"), 5)
 
 for i in 1:5
-	Flux.train!(learnWithAnomaliesWass!, RandomBatches((hcat(data, newclass), vcat(zeros(labels), ones(size(newclass, 2)))), batchSize, numBatches), opt, cb = cb)
+	Flux.train!(learnWithAnomaliesWass!, RandomBatches((hcat(data, newclass), vcat(zero(labels), ones(size(newclass, 2)))), batchSize, numBatches), opt, cb = cb)
 
 	z = Flux.Tracker.data(zparams(svae, data)[1])
 	nz = Flux.Tracker.data(zparams(svae, newclass)[1])
