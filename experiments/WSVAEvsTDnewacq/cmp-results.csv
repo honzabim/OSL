@@ -1,0 +1,9 @@
+dataset,anom_ratio,anom_discovered,anom_discovered_td
+abalone,0.05,2.4,3.14
+ecoli,0.05,8.4,7.3
+glass,0.05,3.6,4.98
+pima-indians,0.05,10.6,15.44
+statlog-satimage,0.05,10.6,49.44
+waveform-1,0.05,11.6,20.78
+waveform-2,0.05,13.6,19.32
+yeast,0.05,6.4,8.7

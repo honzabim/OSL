@@ -210,28 +210,28 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
 				t = hcat(t[:, 1:(mostAnomalousId - 1)], t[:, (mostAnomalousId + 1):end])
 				deleteat!(l, mostAnomalousId)
 
-	            # values, probScore = classify(test[1], κ)
-	            # values = Flux.Tracker.data(values)
-	            # probScore = Flux.Tracker.data(probScore)
-				#
-	            # # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-	            # f2auc = pyauc(test[2] .- 1, probScore)
-	            # # println("mem κ = $κ AUC f2: $f2auc")
-				#
-				# probScore = f3score(mem, model, test[1], κ)
-				#
-	            # # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
-	            # f3auc = pyauc(test[2] .- 1, probScore)
-	            # # println("mem κ = $κ AUC f3: $f3auc")
+	            values, probScore = classify(test[1], κ)
+	            values = Flux.Tracker.data(values)
+	            probScore = Flux.Tracker.data(probScore)
 
-	            push!(results, (fc, auc_pxv, ar, it, κ, anomalies_discovered))
+	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            f2auc = pyauc(test[2] .- 1, probScore)
+	            # println("mem κ = $κ AUC f2: $f2auc")
+
+				probScore = f3score(mem, model, test[1], κ)
+
+	            # auc = EvalCurves.auc(EvalCurves.roccurve(probScore, test[2] .- 1)...)
+	            f3auc = pyauc(test[2] .- 1, probScore)
+	            # println("mem κ = $κ AUC f3: $f3auc")
+
+	            push!(results, (fc, auc_pxv, f2auc, f3auc, ar, it, κ, anomalies_discovered))
 			end
 		end
     end
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAEvsTDnewacq"
+outputFolder = folderpath * "OSL/experiments/WSVAEvsTDnewacq/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]

@@ -7,15 +7,16 @@ using Crayons
 using Crayons.Box
 using StatsBase
 
-const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEvsTDlong/"
+# const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEvsTDlong/"
+const dataFolder = "d:/dev/julia/OSL/experiments/WSVAEvsTDnewacq/"
 const tdfolder = "d:/dev/experiments/FeedbackIsolationForest/test/svaetest/out/"
 const datasets = ["abalone", "blood-transfusion", "breast-tissue", "ecoli", "glass", "haberman", "ionosphere", "iris", "pima-indians", "statlog-satimage", "waveform-1", "waveform-2", "wine", "yeast"]
 const models = ["svae"]
 
 loadExperiment(filePath) = load(filePath)["results"]
 
-params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :fc, :aucpxv, :aucf2, :aucf3, :ar, :i, :κ, :anom_disc, :model, :dataset]
-types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Float64, Float64, Int, Float64, Int, String, String]
+params = [:hidden, :latent, :layers, :nonlinearity, :layertype, :memorysize, :k, :β, :fc, :aucpxv, :ar, :i, :κ, :anom_disc, :model, :dataset]
+types = [Int, Int, Int, String, String, Int, Int, Float64, Int, Float64, Float64, Int, Float64, Int, String, String]
 
 function processFile!(dataframe, model, dataset)
     for i in 1:5
@@ -30,7 +31,7 @@ function processFile!(dataframe, model, dataset)
                 for j in 1:length(results[1][2])
                     pars = length(results[1][1]) > 5 ? vcat(results[i][1][1:7]..., results[i][1][9]) : vcat(results[i][1]..., -1, -1)
                     # push!(dataframe, vcat(pars..., results[i][2][ac][1:3]..., model, dataset))
-                    push!(dataframe, vcat(pars..., results[i][2][j][1:4]..., results[i][2][j][7:10]..., model, dataset))
+                    push!(dataframe, vcat(pars..., results[i][2][j][1:6]..., model, dataset))
                 end
             end
         end

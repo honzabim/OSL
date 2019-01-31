@@ -9,6 +9,7 @@ using ADatasets
 
 # folderpath = "D:/dev/julia/"
 folderpath = "/home/bimjan/dev/julia/"
+const dataPath = folderpath * "data/loda/public/datasets/numerical"
 # folderpath = "D:/dev/"
 push!(LOAD_PATH, folderpath)
 using NearestNeighbors
@@ -73,7 +74,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 	        (model, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createModel()
 			numBatches = 10000
 
-			opt = Flux.Optimise.ADAM(Flux.params(model), 1e-4)
+			opt = Flux.Optimise.ADAM(Flux.params(model), 3e-5)
 	        cb = Flux.throttle(() -> println("SVAE $datasetName AR=$ar : $(learnRepresentation!(train[1], []))"), 5)
 	        Flux.train!(learnRepresentation!, RandomBatches((train[1], zero(train[2])), batchSize, numBatches), opt, cb = cb)
 
@@ -122,30 +123,32 @@ mkpath(outputFolder)
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
 datasets = ["breast-cancer-wisconsin"]
 difficulties = ["easy"]
-const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
 iterations = 10000
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
+i = 42
+
 if length(ARGS) != 0
     datasets = [ARGS[1]]
+	i = parse(Int, ARGS[2])
     difficulties = ["easy"]
 end
 
-for i in 1:10
-	for (dn, df) in zip(datasets, difficulties)
 
-	    train, test, clusterdness = loadData(dn, df)
 
-	    println("$dn")
-	    println("$(size(train[2]))")
-	    println("$(counts(train[2]))")
-	    println("Running svae...")
+for (dn, df) in zip(datasets, difficulties)
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
-	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [0.01 0.1 1 10])
-	    results = reshape(results, length(results), 1)
-	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
-	end
+    train, test, clusterdness = loadData(dn, df)
+
+    println("$dn")
+    println("$(size(train[2]))")
+    println("$(counts(train[2]))")
+    println("Running svae...")
+
+    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAE_anom(size(train[1], 1), p...), 1:5, batchSize, iterations, i)
+    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [0.01 0.1 1 10])
+    results = reshape(results, length(results), 1)
+    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
 end

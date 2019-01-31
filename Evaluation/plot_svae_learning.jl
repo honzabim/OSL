@@ -81,14 +81,14 @@ numBatches = 10000
 βsvae = 0.5
 
 (svae, learnRepresentation!, learnPrintingRepresentation!, learnAnomaly!, learnWithAnomaliesWass!, learnWithAnomaliesPrintingWass!) = createSVAE_anom(inputDim, hiddenDim, latentDim, numLayers, nonlinearity, layerType, βsvae)
-learnAnomaly!(normalize([1., 1, 0]))
+learnAnomaly!(normalize([-1., -1, 0]))
 
 # z = Flux.Tracker.data(zparams(svae, train[1])[1])
 z = Flux.Tracker.data(zfromx(svae, train[1]))
 nrm = train[2] .== 1
 anm = train[2] .== 2
-bp = scatter3d(z[1, nrm], z[2, nrm], z[3, nrm], label = "Normal")
-bp = plot!(scatter3d!(z[1, anm], z[2, anm], z[3, anm], label = "Anomalous"), size = (600, 550), title = "Train - before")
+bp = scatter3d(z[1, nrm], z[2, nrm], z[3, nrm], alpha = 0.8, label = "Normal")
+bp = plot!(scatter3d!(z[1, anm], z[2, anm], z[3, anm], alpha = 0.8,  label = "Anomalous"), size = (600, 550), title = "Train - before")
 
 opt = Flux.Optimise.ADAM(Flux.params(svae), 3e-5)
 cb = Flux.throttle(() -> println("SVAE : $(learnRepresentation!(train[1], zero(train[2])))"), 5)
@@ -104,7 +104,7 @@ ap = plot!(scatter3d!(z[1, anm], z[2, anm], z[3, anm], label = "Anomalous"), siz
 μplot = μnormal .* 1.3
 ap = Plots.plot!([0, μplot[1]], [0, μplot[2]], [0, μplot[3]], color = "red", linewidth = "5", label = "learned mean")
 μanom = Flux.Tracker.data(svae.anom_priorμ)
-ap = Plots.plot!([0, -μanom[1]], [0, -μanom[2]], [0, -μanom[3]], color = "green", linewidth = "5", label = "prior mean", title = "Train - after")
+ap = Plots.plot!([0, μanom[1]], [0, μanom[2]], [0, μanom[3]], color = "green", linewidth = "5", label = "prior mean", title = "Train - after")
 
 z = Flux.Tracker.data(zfromx(svae, test[1]))
 nrm = test[2] .== 1
@@ -115,7 +115,7 @@ tp = plot!(scatter3d!(z[1, anm], z[2, anm], z[3, anm], label = "Anomalous"), siz
 μplot = μnormal .* 1.3
 tp = Plots.plot!([0, μplot[1]], [0, μplot[2]], [0, μplot[3]], color = "red", linewidth = "5", label = "learned mean")
 μanom = Flux.Tracker.data(svae.anom_priorμ)
-tp = Plots.plot!([0, -μanom[1]], [0, -μanom[2]], [0, -μanom[3]], color = "green", linewidth = "5", label = "prior mean", title = "Test - after")
+tp = Plots.plot!([0, μanom[1]], [0, μanom[2]], [0, μanom[3]], color = "green", linewidth = "5", label = "prior mean", title = "Test - after")
 display(plot(bp))
 display(plot(ap))
 display(plot(tp))
