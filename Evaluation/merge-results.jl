@@ -1,5 +1,6 @@
 using CSV
 using DataFrames
+using PaperUtils
 
 dataFolder = "d:/dev/julia/OSL/experiments/WSVAElongProbMem/"
 memdf = CSV.read(dataFolder * "pamet-svae_knn_selected_comparison.csv")
@@ -48,7 +49,9 @@ for (ar, d) in Base.product(anom_ratios, datasets)
         as = ["1", "max"]
     end
     # println("$ds, $anr, $as, $knn, $pxvita, $pzauc, $tcauc, $memauc")
-    push!(mergeddf, DataFrame(dataset = ds, anom_ratio = anr, anom_seen = as, knn = knn, svae_px = pxvita, svae_pz = pzauc, two_caps = tcauc, mem = memauc))
+    topercents = 100
+    push!(mergeddf, DataFrame(dataset = ds, anom_ratio = anr, anom_seen = as, knn = knn .* topercents, svae_px = pxvita .* topercents, svae_pz = pzauc .* topercents, two_caps = tcauc .* topercents, mem = memauc .* topercents))
 end
 
 mergeddf = vcat(mergeddf...)
+PaperUtils.rounddf!(mergeddf)
