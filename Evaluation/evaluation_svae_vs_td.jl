@@ -231,17 +231,17 @@ function runExperiment(datasetName, train, test, createModel, feedbackCounts, ba
     return results
 end
 
-outputFolder = folderpath * "OSL/experiments/WSVAEvsTDnewacq/"
+outputFolder = folderpath * "OSL/experiments/WSVAEvsTDnewacqAUC/"
 mkpath(outputFolder)
 
 # datasets = ["breast-cancer-wisconsin", "sonar", "wall-following-robot", "waveform-1"]
 # datasets = ["breast-cancer-wisconsin", "sonar", "statlog-segment"]
-datasets = ["ecoli", "sonar", "abalone"]
+datasets = ["abalone"]
 # datasets = ["pendigits"]
 difficulties = ["easy"]
 const dataPath = folderpath * "data/loda/public/datasets/numerical"
 batchSize = 100
-iterations = 13000
+iterations = 130
 
 loadData(datasetName, difficulty) =  ADatasets.makeset(ADatasets.loaddataset(datasetName, difficulty, dataPath)..., 0.8, "low")
 
@@ -264,7 +264,7 @@ for i in 1:5
 	    println("$(counts(train[2]))")
 	    println("Running svae...")
 
-	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:50, batchSize, iterations, i)
+	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 256], [0], [1], [.1 1 5])
 	    results = reshape(results, length(results), 1)
 	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
