@@ -122,7 +122,7 @@ function runExperiment(datasetName, trainall, test, createModel, anomalyCounts, 
 		a_ids = findall(train[2] .- 1 .== 1)
 		a_ids = a_ids[randperm(length(a_ids))]
 
-		numBatches = 4000
+		numBatches = 3000
 
         for ac in anomalyCounts
 			println("Anomaly count $ac")
@@ -195,8 +195,8 @@ for i in 1:3
 
 	    evaluateOneConfig = p -> runExperiment(dn, train, test, () -> createSVAEWithMem(size(train[1], 1), p...), 1:10, batchSize, iterations, i)
 	    # results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [128 512], [0], [1], [0.1 0.01 1 10 100], [0.1, 0.5, 0.9])
-		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.5], [0.1])
+		results = gridSearch(evaluateOneConfig, [32], [8], [3], ["relu"], ["Dense"], [256], [0], [1], [0.1], [0.1])
 	    results = reshape(results, length(results), 1)
-	    save(outputFolder * dn *  "-$i-svae.jld2", "results", results)
+	    save(outputFolder * dn *  "-$(i+3)-svae.jld2", "results", results)
 	end
 end

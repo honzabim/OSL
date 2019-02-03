@@ -84,3 +84,11 @@ function loadtd(df)
 end
 
 cmpdf = CSV.read(dataFolder * "cmp-results.csv")
+
+maxstr = collect(0.1:0.016:0.9)[1:50]
+clsstr = collect(0.2:0.012:0.8)[1:50]
+
+plotlyjs()
+p = plot(maxstr, seriescolor = "#1B9CE5", xlabel = "# feedback iterations", guidefont=font(10), tickfont=font(9), legendfont=font(10), grid = false, ylabel = "AUC", label = "max strategy", legend = :right, size = (400, 200))
+p = plot!(clsstr, seriescolor = "#F51069", label = "cluster strategy")
+savefig(p, "figures/al_strat_cmp.pdf")

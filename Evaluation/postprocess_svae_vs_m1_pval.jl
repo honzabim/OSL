@@ -10,6 +10,7 @@ using StatsBase
 using HypothesisTests
 using Printf
 using Plots
+using LaTeXStrings
 plotly()
 
 const dataFolder = "D:/dev/julia/OSL/experiments/SVAEvsM1pval/"
@@ -110,6 +111,6 @@ diff = sigdf[:wassauc] .- sigdf[:m1auc]
 
 # pyplot()
 plotlyjs()
-p = plot(histogram(diff[diff .>= 0], bins = 0:0.08:0.8, seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC (SVAE - VAE)", ylabel = "count", label = "SVAE", legend = :right), size = (300, 300),  title = "VAE and SVAE comparison")
-p = plot!(histogram!(diff[diff .< 0], bins = [-0.16, -0.08, 0], seriescolor = "#F51069", linecolor = false, label = "VAE"))
+p = plot(histogram(diff[diff .>= 0], bins = 0:0.08:0.8, seriescolor = "#1B9CE5", linecolor = false, xlabel = "difference in AUC", guidefont=font(10), tickfont=font(9), legendfont=font(10), grid = false, ylabel = "count", label = "S-VAE higher", legend = :top), size = (400, 200))
+p = plot!(histogram!(diff[diff .< 0], bins = [-0.16, -0.08, 0], seriescolor = "#F51069", linecolor = false, label = "VAE higher"))
 savefig(p, "figures/m1_vs_svae_hist.pdf")
