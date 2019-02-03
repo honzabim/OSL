@@ -93,6 +93,8 @@ function printbest2(df)
     end
 end
 
+
+aggdf = aggrmeanmax(allData)
 aggdf = CSV.read(dataFolder * "agg-results.csv")
 plotlyjs()
 diff = aggdf[:aucpz] .- aggdf[:aucpxv]

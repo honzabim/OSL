@@ -55,7 +55,7 @@ end
 
 function cols2string!(df)
     for cname in names(df)
-        map(x->df[x]=eltype(df[x]) == String ? df[x] : string.(df[x]) .* "%", names(df))
+        map(x->df[x]=eltype(df[x]) == String ? df[x] : string.(df[x]) .* "\\%", names(df))
         if eltype(df[cname]) != String
             df[cname] = string.(df[cname]) .* "%"
         end
